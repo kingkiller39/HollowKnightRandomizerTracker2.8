@@ -221,13 +221,13 @@
 		}
 	},
 	"skills": {
-		"hasDashSlash": {
+		"hasUpwardSlash": {
 			"sprite": "Inv_0021_inv_dash_strike_skill.png",
 			"enabled": true,
 			"order": 7,
 			"name": "Dash Strike"
 		},
-		"hasUpwardSlash": {
+		"hasDashSlash": {
 			"sprite": "Inv_0022_inv_uppercut_skill.png",
 			"enabled": true,
 			"order": 8,
@@ -406,69 +406,87 @@
 	},
 
 	"misc": {
+		"maskBrokenLurien": {
+			"sprite": "beast_mask_break002.png",
+			"enabled": true,
+			"name": "Beast Mask",
+			"order": 3
+		},
+		"maskBrokenMonomon": {
+			"sprite": "teacher_mask_break002.png",
+			"enabled": true,
+			"name": "Teatcher Mask",
+			"order": 2
+		},
+		"maskBrokenHegemol": {
+			"sprite": "watcher_mask_break002.png",
+			"enabled": true,
+			"name": "Watcher Mask",
+			"order": 1
+		},
 		"Inv_0027_spell_slot.png": {
 			"sprite": "Inv_0027_spell_slot.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"Inv_0028_spell_ring.png": {
 			"sprite": "Inv_0028_spell_ring.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"Inv_0029_spell_core.png": {
 			"sprite": "Inv_0029_spell_core.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"Inv_charge_slashes_backboard - Copy.png": {
 			"sprite": "Inv_charge_slashes_backboard - Copy.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"Inventory_soul_vessel - Copy.png": {
 			"sprite": "Inventory_soul_vessel - Copy.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"Inventory_soul_vessel_full - Copy.png": {
 			"sprite": "Inventory_soul_vessel_full - Copy.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"Inventory_soul_vessel_level_01 - Copy.png": {
 			"sprite": "Inventory_soul_vessel_level_01 - Copy.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"item_examples_0001_a - Copy.png": {
 			"sprite": "item_examples_0001_a - Copy.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"slotBG.png": {
 			"sprite": "slotBG.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"slotCost.png": {
 			"sprite": "slotCost.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"slotOff.png": {
 			"sprite": "slotOff.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"slotOn.png": {
 			"sprite": "slotOn.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		},
 		"inv_dream_charm - Copy.png": {
 			"sprite": "inv_dream_charm - Copy.png",
-			"enabled": true,
+			"enabled": false,
 			"name": ""
 		}
 	}

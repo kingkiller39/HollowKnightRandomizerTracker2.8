@@ -4,17 +4,28 @@
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous"></script>
+  <script type="text/javascript" src="localMap.js"></script>
   <script type="text/javascript">
   
   $( document ).ready(function() {
 		var map;
 		var playerData;
 		var ws;	
-		
-		//Initialize icons
-		$.getJSON("map.json")
-			.done(function(data) { 
-				
+		console.log('hi2');
+		if (getParameterByName('isLocal') == "true") {
+			console.log('hi');
+			localLoad(init);
+		}else{
+			//Initialize icons
+			$.getJSON("map.json")
+				.done(init)
+				.fail(function(xhr, status, error) {
+					console.log(status);
+					console.log(error);
+				});
+		}
+		function init(data) {
+							
 				map = data;
 					$.each(getSubSortKeys(map["charms"]), function(i,e) {
 						var charm = map["charms"][e];
@@ -71,20 +82,27 @@
 						$('#items').append(div);
 					});
 					
-					connect();
+					$.each(getSubSortKeys(map.misc), function(i,e) {
+						var misc = map.misc[e];
+						if (!misc.enabled)
+							return;
+							
+						var div = $("<div></div>");
+						var img = $('<img></img>').attr({ 'src': "images/" + misc.sprite, 'id': 'misc_'+e });
+																		
+						div.append(img);
+						$('#misc').append(div);
+					});
 					
-			})
-			.fail(function(xhr, status, error) {
-				console.log(status);
-				console.log(error);
-			});
+					connect();
+		}
 		
 		function connect() {
 			console.log("Connecting");
 			try {
 				var url = "localhost";
 				var overrideUrl = getParameterByName("url");
-				
+
 				if (overrideUrl != undefined  && overrideUrl != null)
 					url = overrideUrl;
 					
@@ -125,7 +143,9 @@
 				ws.send("json");
 				return;
 			}else{
+			
 				data = minData;
+				console.log(data);
 			}
 			
 			$.each(map.charms, function(i,e) {
@@ -178,6 +198,14 @@
 							$('#item_' + i + '_count').hide();
 						}
 					}
+				}
+			});
+			
+			$.each(map.misc, function(i,e) {
+				if (!e.enabled)
+					return;
+				if (i in data) {
+					setSelcted(data[i], "#misc_" + i);
 				}
 			});
 			
@@ -325,8 +353,31 @@
 		height:123px;
 	}
 
+	body.sm > #misc img {
+		zoom: 25%;
+	}
+	body.med > #misc img {
+		zoom: 50%;
+	}
+	body.lg > #misc img {
+		zoom: 75%;
+	}
 	
-	#charms img, #spells img, #skills img, #items img {
+	body.sm > #misc div {
+		width: 43px;
+		height:43px;
+	}
+	body.med > #misc div {
+		width: 82px;
+		height:82px;
+	}
+	body.lg > #misc div {
+		width: 123px;
+		height:123px;
+	}
+	
+	
+	#charms img, #spells img, #skills img, #items img, #misc img {
 		-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
 		filter: grayscale(100%);
 		position: relative;
@@ -334,7 +385,7 @@
 		transform: translateY(-50%);
 	}
 	
-	#charms img.selected, #spells img.selected, #skills img.selected, #items img.selected {
+	#charms img.selected, #spells img.selected, #skills img.selected, #items img.selected, #misc img.selected {
 		-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
 		filter: grayscale(0%);
 		border-radius: 50%;
@@ -342,7 +393,7 @@
 	}
 	
 	#charms img.equipped, #spells img.equipped, #skills img.equipped {
-		box-shadow: 0px 0px 40px 10px #8912ff;
+		box-shadow: 0px 0px 40px 10px #f75b5b;
 	}
 
 	#charms {
@@ -403,6 +454,19 @@
 		filter: grayscale(0%);
 	}
 	
+	#misc {
+		position:absolute;
+		top: 75px;
+		right: 10px;
+	}
+	
+	#misc > div {
+		width: 164px;
+		height:164px;
+		vertical-align: middle;
+		float:left;
+		position:relative;
+	}
 	
 	#items div.counter {
 		width: 19px !important;
@@ -426,5 +490,6 @@
 	<div id="spells"></div>
 	<div id="skills"></div>
 	<div id="items"></div>
+	<div id="misc"></div>
   </body>
   </html>
