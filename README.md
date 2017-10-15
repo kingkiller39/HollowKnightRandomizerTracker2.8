@@ -1,6 +1,6 @@
 # HollowKnightRandomizerTracker
 
-This is the UI side of a tracker for items in Hollow Knight as an overlay in OBS.  You'll need to install this for it to work: https://drive.google.com/open?id=0B1-JBoX3q-gVal9SQUh5dEJVTFU
+This is the UI side of a tracker for items in Hollow Knight as an overlay in OBS.  You'll need to install this for it to work: https://drive.google.com/open?id=0B1-JBoX3q-gVal9SQUh5dEJVTFU. Big Thanks to @KDT for getting the Game Side working to get this data out.  This wouldn't work at all without it.  (and of course to Team Cherry for an amazing game)
 
 
 # Setup
