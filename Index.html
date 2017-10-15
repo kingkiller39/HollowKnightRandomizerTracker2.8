@@ -220,7 +220,10 @@
 			
 			if ($('#misc_hasDreamNail').hasClass("selected") && $('#misc_dreamNailUpgraded').hasClass("selected"))
 				$('#misc_hasDreamNail').removeClass("selected").parent().hide();
-				
+			else if ($('#misc_hasDreamNail').hasClass("selected") && !$('#misc_dreamNailUpgraded').hasClass("selected"))
+				$('#misc_dreamNailUpgraded').removeClass("selected").parent().hide();
+			else
+				$('#misc_dreamNailUpgraded').removeClass("selected").parent().hide();
 			
 			//setTimeout(getPlayerData, 2000);
 		}
