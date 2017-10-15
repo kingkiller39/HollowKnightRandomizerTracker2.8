@@ -300,19 +300,19 @@
 		}
 	},
 	"items": {
-		"trinket4": {
+		"trinket3": {
 			"sprite": "inv_item__0010_Kings_idol - Copy.png",
 			"enabled": true,
 			"name": "",
 			"multiple": true,
-			"order": 4
+			"order": 3
 		},
-		"trinket3": {
+		"trinket4": {
 			"sprite": "inv_item__0011_arcane-egg - Copy.png",
 			"enabled": true,
 			"name": "",
 			"multiple": true,
-			"order": 3
+			"order": 4
 		},
 		"trinket2": {
 			"sprite": "inv_item__0012_hallownest-seal - Copy.png",
@@ -395,6 +395,13 @@
 			"enabled": true,
 			"name": "",
 			"order": 14
+		},
+		"grubsCollected" : {
+			"sprite": "grub.png",
+			"enabled": true,
+			"name": "",
+			"multiple": true,
+			"order": 15
 		}
 	},
 
