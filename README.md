@@ -22,23 +22,52 @@ This is the UI side of a tracker for items in Hollow Knight as an overlay in OBS
 In the event that you want to adjust how certain things look, you can do so using the CSS section of the BrowserSource Properties.  
 
 ## Changing the "Item Gotten" green glow. 
+
 Paste the following in, then change `#07ff6e` with whatever color you want.  (Use a color picker, like the one that pops up here: https://www.google.com/search?q=color+picker)
 ```css
-	#charms img.selected, #spells img.selected, #skills img.selected, #items img.selected, #misc img.selected {
+	#spells img.selected, #skills img.selected, #items img.selected, #misc img.selected {
 		-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
 		filter: grayscale(0%);
 		border-radius: 50%;
 		box-shadow: 0px 0px 40px 10px #07ff6e;
+		display:block;
 	}
 ```
-## Changing the "Charm Equipped" Purple Glow:
-Like the green glow, replace `#8912ff` with your color choice.
+
+## Changing the "Charm Equipped" Glow:
+Like the green glow, replace `#07ff6e` with your color choice.
 
 ```css
 	#charms img.equipped, #spells img.equipped, #skills img.equipped {
-		box-shadow: 0px 0px 40px 10px #8912ff;
+		box-shadow: 0px 0px 40px 10px #07ff6e;
 	}
 ```
+
+## Hiding/Showing ungotten items
+
+By default the UI overlay will hide "items" like keys/grubs/eggs/lantern/etc that you haven't picked up.
+Spells/Skills/Misc will show regardless, but will get the green glow when you get that item.  
+
+If you want to show the Items in grey when you don't have them, add the following css:
+
+```css
+#items .hideIfSet { display:unset;}
+#items .hideIfSet img { display:unset;}
+```
+
+Likewise if you want to hide Spells/Skills/Misc that you don't have:
+
+```css
+#spells .hideIfSet { display:none;}
+#spells .hideIfSet img { display:none;}
+
+#skills .hideIfSet { display:none;}
+#skills .hideIfSet img { display:none;}
+
+#misc .hideIfSet { display:none;}
+#misc .hideIfSet img { display:none;}
+```
+
 
 ## Changing the location of the UI elements
 

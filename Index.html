@@ -32,7 +32,7 @@
 						if (!charm.enabled)
 							return;
 						
-						var div = $("<div></div>");
+						var div = $("<div></div>").addClass('hideIfSet');
 						var img = $('<img></img>').attr({ 'src': "images/" + charm.sprite, 'id': 'charm_'+e });
 						
 						if (i % 9 == 0) //This just matches what's in the game's inventory, you don't *have* to break on 9, but why confuse folks?
@@ -46,7 +46,7 @@
 						if (!spell.enabled)
 							return;
 							
-						var div = $("<div></div>");
+						var div = $("<div></div>").addClass('hideIfSet');
 						var img = $('<img></img>').attr({ 'src': "images/" + spell.levelSprites[0], 'id': 'spell_'+e });
 
 						div.append(img);
@@ -57,7 +57,7 @@
 						if (!skill.enabled)
 							return;
 							
-						var div = $("<div></div>");
+						var div = $("<div></div>").addClass('hideIfSet');
 						var img = $('<img></img>').attr({ 'src': "images/" + skill.sprite, 'id': 'skill_'+e });
 																		
 						div.append(img);
@@ -69,7 +69,7 @@
 						if (!item.enabled)
 							return;
 							
-						var div = $("<div></div>");
+						var div = $("<div></div>").addClass('hideIfSet');
 						var img = $('<img></img>').attr({ 'src': "images/" + item.sprite, 'id': 'item_'+e });
 						div.append(img);
 						
@@ -87,7 +87,7 @@
 						if (!misc.enabled)
 							return;
 							
-						var div = $("<div></div>");
+						var div = $("<div></div>").addClass('hideIfSet');
 						var img = $('<img></img>').attr({ 'src': "images/" + misc.sprite, 'id': 'misc_'+e });
 																		
 						div.append(img);
@@ -158,6 +158,15 @@
 						$('#charm_'+i).addClass('equipped');
 					else if (!data[i.replace('got', 'equipped')] && $('#charm_'+i).hasClass('equipped'))
 						$('#charm_'+i).removeClass('equipped')
+						
+					var brokenId = i.replace("got","broken");
+					if (brokenId in data) {
+						if (data[brokenId]) {
+							$('#charm_' + i).attr('src', "images/" + e.brokenSprite);
+						}else{
+							$('#charm_' + i).attr('src', "images/" + e.sprite);
+						}
+					}
 					
 				}
 			});
@@ -209,21 +218,25 @@
 				}
 			});
 			
+			if ($('#misc_hasDreamNail').hasClass("selected") && $('#misc_dreamNailUpgraded').hasClass("selected"))
+				$('#misc_hasDreamNail').removeClass("selected").parent().hide();
+				
+			
 			//setTimeout(getPlayerData, 2000);
 		}
 		
 		function setSelcted(has, id) {
 			if (has && !$(id).hasClass('selected')) 
-				$(id).addClass('selected');
+				$(id).addClass('selected').parent().removeClass('hideIfSet');
 			else if (!has && $(id).hasClass('selected'))
-				$(id).removeClass('selected');
+				$(id).removeClass('selected').parent().addClass('hideIfSet');
 		}
 		
 		function setMultipleSelected(has, id) {
 			if (has && !$(id).hasClass('multiple')) 
-				$(id).addClass('multiple');
+				$(id).addClass('multiple').parent().removeClass('hideIfSet');
 			else if (!has && $(id).hasClass('multiple'))
-				$(id).removeClass('multiple');
+				$(id).removeClass('multiple').parent().addClass('hideIfSet');
 		}
 		
 		function getSubSortKeys(list) {
@@ -249,6 +262,14 @@
   </script>
   <style>
     
+	.hideIfSet {
+		display:none;
+	}
+	
+	.hideIfSet img{
+		display:none;
+	}
+	
 	body.sm > #charms img {
 		zoom: 25%;
 	}
@@ -376,24 +397,52 @@
 		height:123px;
 	}
 	
+	#charms div {
+		background: url(images/slotBGsm.png) no-repeat;
+		background-position: center;
+		display:block;
+	}
 	
-	#charms img, #spells img, #skills img, #items img, #misc img {
+	#charms img {
+		display:none;
+	}
+	
+	#spells div, #skills div, #misc div {
+		display:block;
+	}
+	
+	#spells img, #skills img, #misc img {
 		-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
 		filter: grayscale(100%);
 		position: relative;
 		top: 50%;
 		transform: translateY(-50%);
+		display:block;
 	}
 	
-	#charms img.selected, #spells img.selected, #skills img.selected, #items img.selected, #misc img.selected {
+	#spells img, #skills img, #items img, #misc img {
+		-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+		filter: grayscale(100%);
+		position: relative;
+		top: 50%;
+		transform: translateY(-50%);
+		
+	}
+	#charms img.selected {
+		display:block;
+	}
+	
+	#spells img.selected, #skills img.selected, #items img.selected, #misc img.selected {
 		-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
 		filter: grayscale(0%);
 		border-radius: 50%;
 		box-shadow: 0px 0px 40px 10px #07ff6e;
+		display:block;
 	}
 	
 	#charms img.equipped, #spells img.equipped, #skills img.equipped {
-		box-shadow: 0px 0px 40px 10px #f75b5b;
+		border-radius: 50%;
+		box-shadow: 0px 0px 40px 10px #07ff6e;
 	}
 
 	#charms {

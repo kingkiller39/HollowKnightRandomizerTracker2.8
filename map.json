@@ -10,7 +10,7 @@
 			"sprite": "charmSprite10.png",
 			"order": 10,
 			"enabled": true,
-			"Sprite": "charmSprite10_2.png",
+			"brokenSprite": "charmSprite10_2.png",
 			"name": "Fragile Greed"
 		},
 		"gotCharm_25": {
@@ -328,10 +328,11 @@
 			"multiple": true,
 			"order": 1
 		},
-		"inv_item__00014_graveyard_key - Copy.png": {
+		"simpleKeys": {
 			"sprite": "inv_item__00014_graveyard_key - Copy.png",
-			"enabled": false,
+			"enabled": true,
 			"name": "",
+			"multiple": true,
 			"order": 6
 		},
 		"hasTramPass": {
@@ -396,6 +397,12 @@
 			"name": "",
 			"order": 14
 		},
+		"hasLantern": {
+			"sprite": "item_examples_0001_a - Copy.png",
+			"enabled": true,
+			"name": "Lantern",
+			"order": 16
+		},
 		"grubsCollected" : {
 			"sprite": "grub.png",
 			"enabled": true,
@@ -415,14 +422,14 @@
 		"maskBrokenMonomon": {
 			"sprite": "teacher_mask_break002.png",
 			"enabled": true,
-			"name": "Teatcher Mask",
-			"order": 2
+			"name": "Teacher Mask",
+			"order": 1
 		},
 		"maskBrokenHegemol": {
 			"sprite": "watcher_mask_break002.png",
 			"enabled": true,
 			"name": "Watcher Mask",
-			"order": 1
+			"order": 2
 		},
 		"Inv_0027_spell_slot.png": {
 			"sprite": "Inv_0027_spell_slot.png",
@@ -459,11 +466,6 @@
 			"enabled": false,
 			"name": ""
 		},
-		"item_examples_0001_a - Copy.png": {
-			"sprite": "item_examples_0001_a - Copy.png",
-			"enabled": false,
-			"name": ""
-		},
 		"slotBG.png": {
 			"sprite": "slotBG.png",
 			"enabled": false,
@@ -488,6 +490,24 @@
 			"sprite": "inv_dream_charm - Copy.png",
 			"enabled": false,
 			"name": ""
+		},
+		"hasDreamNail": {
+			"sprite": "DreamNail1.png",
+			"enabled": true,
+			"name": "Dream Nail",
+			"order": 4
+		},
+		"hasDreamGate": {
+			"enabled": true,
+			"sprite": "DreamGate.png",
+			"name": "Teatcher Mask",
+			"order": 6
+		},
+		"dreamNailUpgraded": {
+			"sprite": "DreamNail2.png",
+			"enabled": true,
+			"name": "Teatcher Mask",
+			"order": 5
 		}
 	}
 }
