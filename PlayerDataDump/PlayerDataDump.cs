@@ -10,13 +10,14 @@ using UnityEngine.SceneManagement;
 using HutongGames.PlayMaker;
 using System.Reflection;
 using WebSocketSharp.Server;
+using System.Net;
 
 namespace PlayerDataDump
 {
     public class PlayerDataDump : Mod
     {
         public WebSocketServer wss = new WebSocketServer(11420);
-        public static String version = "16/10/17.c";
+        public static String version = "18/10/17.a";
         public static String current;
 
         public static string GetCurrentMods()
@@ -36,11 +37,11 @@ namespace PlayerDataDump
             try
             {
                 System.Net.WebClient web = new System.Net.WebClient();
-                System.IO.Stream stream = web.OpenRead("https://iamwyza.github.io/HollowKnightRandomizerTracker/version.txt");
-                using (System.IO.StreamReader reader = new System.IO.StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
+                web.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
+                string text = web.DownloadString("https://iamwyza.github.io/HollowKnightRandomizerTracker/version.txt");
+                //string text = web.DownloadString("http://www.google.com");
+            
+                return text;
             } catch (Exception e){
                 return version;
             }
@@ -50,6 +51,7 @@ namespace PlayerDataDump
         {
             if (current == null)
                 current = GetCurrentVersion();
+            ModHooks.ModLog("c: " + current);
             if ( current == version )
                 return version;
             return version + " | UPDATE REQUIRED";
