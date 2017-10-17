@@ -625,7 +625,11 @@ function getDefault() {
 					"dreamNailUpgraded"
 				]	
 			},
-			"disabled": [
+			"disabled": {
+				"scale" : 25,
+				"left": 10,
+				"top":25,
+				"items": [
 				"Inv_0027_spell_slot.png",
 				"Inv_0029_spell_core.png",
 				"Inv_charge_slashes_backboard - Copy.png",
@@ -637,7 +641,8 @@ function getDefault() {
 				"slotOff.png",
 				"slotOn.png",
 				"inv_dream_charm - Copy.png",
-			]
+				]
+			}
 		}
 	};
 }
