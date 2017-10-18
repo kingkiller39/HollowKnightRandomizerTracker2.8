@@ -404,7 +404,7 @@ function getEntities() {
 			"multiple": true,
 			"order": 15
 		},
-		"maskBrokenLurien": {
+		"maskBrokenHegemol": {
 			"sprite": "beast_mask_break002.png",
 			"enabled": true,
 			"name": "Beast Mask", "type":"generic",
@@ -416,7 +416,7 @@ function getEntities() {
 			"name": "Teacher Mask", "type":"generic",
 			"order": 1
 		},
-		"maskBrokenHegemol": {
+		"maskBrokenLurien": {
 			"sprite": "watcher_mask_break002.png",
 			"enabled": true,
 			"name": "Watcher Mask", "type":"generic",
