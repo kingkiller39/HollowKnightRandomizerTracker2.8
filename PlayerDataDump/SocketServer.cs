@@ -17,45 +17,42 @@ namespace PlayerDataDump
             Sessions.Broadcast(s);
         }
 
-        
-
         protected override void OnMessage(MessageEventArgs e)
         {
-            if (e.Data == "random")
+            switch (e.Data)
             {
-                Send(getRandom());
-            }
-            else if (e.Data == "json")
-            {
-                Send(getJson());
-            }
-            else
-            {
-                if (e.Data.Contains('|'))
-                {
-                    if (e.Data.Split('|')[0] == "bool")
+                case "random":
+                    Send(getRandom());
+                    break;
+                case "mods":
+                    Send(PlayerDataDump.GetCurrentMods());
+                    break;
+                case "version":
+                    Send(PlayerDataDump.version);
+                    break;
+                case "json":
+                    Send(getJson());
+                    break;
+                default:
+                    if (e.Data.Contains('|'))
                     {
-                        string b = ModHooks.Instance.GetPlayerBool(e.Data.Split('|')[1]).ToString();
-                        Send("{"
-                        + "\"var\":\"" + e.Data.Split('|')[1] + "\","
-                        + "\"value\":\"" + b + "\""
-                        + "}"
-                        ); 
+                        if (e.Data.Split('|')[0] == "bool")
+                        {
+                            string b = ModHooks.Instance.GetPlayerBool(e.Data.Split('|')[1]).ToString();
+                            sendMessage(e.Data.Split('|')[1], b);
+                        }
+                        if (e.Data.Split('|')[0] == "int")
+                        {
+                            string i = ModHooks.Instance.GetPlayerInt(e.Data.Split('|')[1]).ToString();
+                            sendMessage(e.Data.Split('|')[1], i);
+                        }
                     }
-                    if (e.Data.Split('|')[0] == "int")
+                    else
                     {
-                        string i = ModHooks.Instance.GetPlayerInt(e.Data.Split('|')[1]).ToString();
-                        Send("{"
-                        + "\"var\":\"" + e.Data.Split('|')[1] + "\","
-                        + "\"value\":\"" + i + "\""
-                        + "}"
-                        ); 
+                        Send("random,mods,version,json,bool|{var},int|{var}");
                     }
-                }
-                //Send("the only supported request is \"json\"");
+                    break;
             }
-            ModHooks.ModLog("[PlayerDataDump] MSG: " + e.Data);
-            //Send("I'll be the one sending messages here");
         }
 
         protected override void OnError(WebSocketSharp.ErrorEventArgs e)
@@ -69,8 +66,8 @@ namespace PlayerDataDump
 
             ModHooks.Instance.NewGameHook -= this.newGame;
             ModHooks.Instance.SavegameLoadHook -= this.loadSave;
-            ModHooks.Instance.SetPlayerBoolHook -= this.updateJson;
-            ModHooks.Instance.SetPlayerIntHook -= this.updateJson;
+            ModHooks.Instance.SetPlayerBoolHook -= this.echoBool;
+            ModHooks.Instance.SetPlayerIntHook -= this.echoInt;
 
             ModHooks.Instance.ApplicationQuitHook -= this.onQuit;
 
@@ -82,38 +79,30 @@ namespace PlayerDataDump
             ModHooks.ModLog("[PlayerDataDump] OPEN");
         }
 
+        public void sendMessage(string var, string value)
+        {
+            Send(String.Format("{{ {0} : {1}, {2} : {3} }}", "\"var\"", '"' + var + '"', "\"value\"", '"' + value + '"'));
+        }
 
         public void loadSave(int slot)
         {
-            Send("{"
-                + "\"var\":\"SaveLoaded\","
-                + "\"value\":\"true\""
-                + "}"
-                );
+            sendMessage("SaveLoaded", "true");
         }
 
-        public void updateJson(string var, bool value)
+        public void echoBool(string var, bool value)
         {
-            if (var.StartsWith("gotCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
+            if (var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
             {
-                Send("{"
-                + "\"var\":\"" + var + "\","
-                + "\"value\":\"" + value.ToString() + "\""
-                + "}"
-                );
+                sendMessage(var, value.ToString());
             }
         }
 
-        public void updateJson(string var, int value)
+
+        public void echoInt(string var, int value)
         {
-            //trinket1, trinket2, trinket3, trinket4, ore, rancidEggs, & grubsCollected?
             if (var.EndsWith("Level") || var == "simpleKeys" || var == "nailDamage" || var == "maxHealth" || var == "MPReserveMax" || var.StartsWith("trinket") || var == "ore" || var == "rancidEggs" || var == "grubsCollected")
             {
-                Send("{"
-                + "\"var\":\"" + var + "\","
-                + "\"value\":\"" + value.ToString() + "\""
-                + "}"
-                );
+                sendMessage(var, value.ToString());
             }
         }
 
