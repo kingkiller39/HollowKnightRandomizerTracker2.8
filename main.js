@@ -343,7 +343,7 @@
 					var received_msg = evt.data;
 					
 					var json = JSON.parse(received_msg);
-					console.log(json);
+					
 					updatePlayerData(json);
 				}
 				ws.onclose = function(){
