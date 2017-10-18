@@ -413,7 +413,7 @@
 	},
 
 	"misc": {
-		"maskBrokenLurien": {
+		"maskBrokenHegemol": {
 			"sprite": "beast_mask_break002.png",
 			"enabled": true,
 			"name": "Beast Mask",
@@ -425,7 +425,7 @@
 			"name": "Teacher Mask",
 			"order": 1
 		},
-		"maskBrokenHegemol": {
+		"maskBrokenLurien": {
 			"sprite": "watcher_mask_break002.png",
 			"enabled": true,
 			"name": "Watcher Mask",
