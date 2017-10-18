@@ -102,17 +102,24 @@
 								
 							});
 							
-					var div = $('<div></div>').html("PREVIEW MODE").css({'color':'#FFFFFF', 'top' :'2px', 'left' : '2px', "padding":"5px", "position":"absolute", "cursor": 'pointer', 'border' :'1px solid #FFFFFF', 'border-radius' :'5px', 'width' : '150px'});
+					var div = $('<div></div>').html("PREVIEW MODE").css({'top' :'2px'}).addClass('pageButton');
 					div.on("click", function(e) {
 						
 						$('.container').toggleClass('editingDiv');
 						if ($('.editingDiv').length > 0){
+							$('.pageButton').show();
 							$(e.target).html("PREVIEW MODE");
 							$(document.body).css('background-image', 'unset');
 							$('#disabled').show();
 						}else{
+							$('.pageButton').hide();
+							$(e.target).show();
 							$(e.target).html("EDIT MODE");
-							$(document.body).css('background-image', 'url("sampleempty.png")');
+							$(document.body).css({
+							'background-image':	'url("sampleempty.png")',
+							'background-repeat':'no-repeat',
+							'background-size':urlParams.width + 'px '+ urlParams.height + 'px'
+							});
 							$('#disabled').hide();
 						}
 					});
@@ -127,7 +134,7 @@
 					
 					$(document.body).append(div);
 					
-					var div = $('<div></div>').html("Toggle Snap").css({'top' :'66px'}).addClass('pageButton');
+					var div = $('<div></div>').html("Toggle Snap").css({'top' :'66px', 'color' : '#00FF00'}).addClass('pageButton');
 					div.on("click", function(e) {
 						var isSnap = !$('.container').draggable("option", "snap");
 						
@@ -135,6 +142,9 @@
 							$(e).draggable("option", "snap", isSnap); 
 							$(e).draggable("option", "grid", isSnap ? [20,20] : null);
 						});
+						console.log(e);
+						$(e.target).css('color', (isSnap ? '#00FF00' : '#FFFFFF'));
+						
 					});
 					
 					$(document.body).append(div);
@@ -577,7 +587,9 @@
 				});
 			});
 
-			if ($('#hasDreamNail').length > 0 && $('#dreamNailUpgraded').length > 0) {
+			updateVisible();
+			
+			if ($('#hasDreamNail').length > 0 && $('#dreamNailUpgraded').length > 0 && !isEditing) {
 				if ($('#hasDreamNail').hasClass("selected") && $('#dreamNailUpgraded').hasClass("selected"))
 					$('#hasDreamNail').removeClass("selected").parent().hide();
 				else if ($('#hasDreamNail').hasClass("selected") && !$('#dreamNailUpgraded').hasClass("selected"))
@@ -586,7 +598,9 @@
 					$('#dreamNailUpgraded').removeClass("selected").parent().hide();
 			}
 			
-			updateVisible();
+			
+				
+			
 			updateUrlConfig();
 		}
 		
