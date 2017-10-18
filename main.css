@@ -3,7 +3,11 @@
 		border-radius : 5px
 	}
   
-	.editingDiv > .divMoveHandleBottom {
+	  .editingDiv > .divMoveHandleBottom, .editingDiv > .divMoveHandleTop {
+		display:none;  
+	  }
+  
+	.editingDiv:hover > .divMoveHandleBottom {
 		background-color: #FFFFFF;
 		height: 40px;
 		width: 40px;
@@ -14,9 +18,10 @@
 		text-align:center;
 		border-radius: 0px 0px 5px 5px;
 		z-index:10;
+		display:block;
 	}
 	
-	.editingDiv > .divMoveHandleTop {
+	.editingDiv:hover > .divMoveHandleTop {
 		background-color: #FFFFFF;
 		height: 40px;
 		width: 40px;
@@ -27,6 +32,7 @@
 		text-align: center;
 		border-radius: 5px 5px 0px 0px;
 		z-index:10;
+		display:block;
 	}
 	
 	.editingDiv > .divMoveHandleTop > span, .editingDiv > .divMoveHandleBottom > span {
@@ -156,3 +162,19 @@
 		left: 250px;
 		position: absolute;
 	}
+/* handle icon (corner) */
+.ui-resizable-se {
+    background-image: url(images/ui-icons_ff0000_256x240.png);
+}
+
+.pageButton {
+	color:#FFFFFF;
+
+	left : 2px;
+	padding:5px;
+	position:absolute;
+	cursor: pointer;
+	border :1px solid #FFFFFF;
+	border-radius :5px;
+	width : 150px
+}

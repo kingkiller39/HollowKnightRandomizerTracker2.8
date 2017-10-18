@@ -11,13 +11,37 @@
 		var lastCommand;
 		var randomMap;
 		*/
+		
+		var urlParams;
+		(window.onpopstate = function () {
+			var match,
+				pl     = /\+/g,  // Regex for replacing addition symbol with a space
+				search = /([^&=]+)=?([^&]*)/g,
+				decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+				query  = window.location.search.substring(1);
+
+			urlParams = {};
+			while (match = search.exec(query))
+			   urlParams[decode(match[1])] = decode(match[2]);
+		})();
+		
 		var isEditing = getParameterByName('editing') == "true";
 		var entities = getEntities();
 		var currentId;
+		var width = 1920;
+		var height = 1080;
+		
+		var temp = getParameterByName('width');
+		if (temp != undefined && temp !=null) {
+			width = temp;
+		}
+		
+		temp = getParameterByName('height');
+		if (temp != undefined && temp !=null) {
+			height = temp;
+		}
 		
 		var urlConfig = getParameterByName("config");
-		
-		
 		
 		if (urlConfig !=undefined && urlConfig.length > 0) {
 			try {
@@ -30,12 +54,12 @@
 		}else{
 			map = getDefault();
 		}
-			
+		
 		init();
 		
 		$("html").css({
-			'height':"1080px",
-			'width':"1920px",
+			'height':height + "px",
+			'width':width + "px",
 			'margin': "0px",
 			'padding': "0px",
 			'overflow' : "hidden"
@@ -47,14 +71,24 @@
 			'margin': "0px",
 			'padding': "0px"
 		});
+		$('#pageWidth').val(width);
+		$('#pageHeight').val(height);
+		
 		
 		function init() {
 		
 			if(isEditing) {
+				
 				$('#containerSettingDialog').show().dialog({
 					width:500,
 					title: "Settings"
 				});
+				
+				$('#pageSettingsDialog').show().dialog({
+					width:500,
+					title: "Page Settings"
+				}).dialog("close");
+				
 				$('#containerSettingDialog').dialog("close");
 					$(document.body).contextMenu({
 								selector: '.container:not([id=disabled])', 
@@ -67,21 +101,41 @@
 								}
 								
 							});
-					var div = $('<div></div>').html("EDIT MODE").css({'color':'#FFFFFF', 'top' :'50%', 'left' : '50%', "cursor": 'pointer', 'border' :'1px solid #FFFFFF', 'border-radius' :'5px', 'width' : '100px'});
+							
+					var div = $('<div></div>').html("PREVIEW MODE").css({'color':'#FFFFFF', 'top' :'2px', 'left' : '2px', "padding":"5px", "position":"absolute", "cursor": 'pointer', 'border' :'1px solid #FFFFFF', 'border-radius' :'5px', 'width' : '150px'});
 					div.on("click", function(e) {
 						
 						$('.container').toggleClass('editingDiv');
 						if ($('.editingDiv').length > 0){
-							$(e.target).html("EDIT MODE");
+							$(e.target).html("PREVIEW MODE");
 							$(document.body).css('background-image', 'unset');
 							$('#disabled').show();
 						}else{
-							$(e.target).html("PREVIEW MODE");
+							$(e.target).html("EDIT MODE");
 							$(document.body).css('background-image', 'url("sampleempty.png")');
 							$('#disabled').hide();
 						}
 					});
+					$(document.body).append(div);
 					
+					
+					var div = $('<div></div>').html("Page Settings").css({'top' :'33px'}).addClass('pageButton');
+					div.on("click", function(e) {
+						
+						$('#pageSettingsDialog').dialog().show();
+					});
+					
+					$(document.body).append(div);
+					
+					var div = $('<div></div>').html("Toggle Snap").css({'top' :'66px'}).addClass('pageButton');
+					div.on("click", function(e) {
+						var isSnap = !$('.container').draggable("option", "snap");
+						
+						$('.container').each(function(i,e) { 
+							$(e).draggable("option", "snap", isSnap); 
+							$(e).draggable("option", "grid", isSnap ? [20,20] : null);
+						});
+					});
 					
 					$(document.body).append(div);
 					
@@ -130,6 +184,25 @@
 					$('#' + currentId).addClass('itemDivGrow' + map.containers[currentId].growDirection);
 					
 					updateUrlConfig();
+				});
+				
+				$('#pageWidth').on('change', function() {
+					var value = $('#pageWidth').val();
+					
+					if (isNumber(value)) {
+						$('html').css("width", value + "px");
+						urlParams.width = value;
+						updateUrlConfig();
+					}
+				});
+				$('#pageHeight').on('change', function() {
+					var value = $('#pageHeight').val();
+					
+					if (isNumber(value)) {
+						$('html').css("height", value + "px");
+						urlParams.height = value;
+						updateUrlConfig();
+					}
 				});
 			}
 		
@@ -185,6 +258,8 @@
 							containment: $(document.body), 
 							handle: ".divMoveHandleBottom, .divMoveHandleTop",
 							scroll: false,
+							grid: [ 20, 20 ],
+							snap: true,
 							stop: function(event, ui) {
 								var id = $(ui.helper).attr('id');
 								map.containers[id].left = ui.position.left;
@@ -198,7 +273,7 @@
 					div.append($('<div></div>').addClass('divMoveHandleTop').append($('<span></span>').addClass('ui-icon ui-icon-arrow-4-diag')));
 					div.append($('<div></div>').addClass('divMoveHandleBottom').append($('<span></span>').addClass('ui-icon ui-icon-arrow-4-diag')));
 						
-					$(document.body).css("background-color", '#000000');
+					$(document.body).css({"background-color" : '#000000', "border" :"2px solid #00FF00"});
 				}
 				
 				$.each(container.items, function(i2, name) {
@@ -521,9 +596,13 @@
 		}
 		
 		function updateUrlConfig() {
-		console.log("Upading url string");
+			console.log("Updating url string");
+		
 			config = LZString.compressToEncodedURIComponent(JSON.stringify(map));
-			window.history.pushState(config, "", "Index.html?editing=" + (isEditing ? "true" :"false")+ "&config=" + config );
+			
+			urlParams["config"] = config;
+			
+			window.history.pushState(config, "", "Index.html?" + $.param(urlParams) );
 			
 			if (config.length > 1900)
 				alert("Developer Warning, config length is > 1900.  If you see this message let the developer know.");
@@ -553,13 +632,14 @@
 			});
 		}
 		
-		function getParameterByName(name, url) {
-			if (!url) url = window.location.href;
-			name = name.replace(/[\[\]]/g, "\\$&");
-			var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-				results = regex.exec(url);
-			if (!results) return null;
-			if (!results[2]) return '';
-			return decodeURIComponent(results[2].replace(/\+/g, " "));
+		function isNumber(n) {
+		  return !isNaN(parseFloat(n)) && isFinite(n);
+		}
+		
+		function getParameterByName(name) {
+			if (name in urlParams)
+				return urlParams[name];
+			
+			return null;
 		}
 });
