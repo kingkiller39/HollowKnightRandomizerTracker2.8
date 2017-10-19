@@ -170,7 +170,7 @@ function getEntities() {
 			"enabled": true,
 			"name": "Dream Wielder", "type":"charm"
 		},
-		"gotCharm_36c": {
+		"gotCharm_36": {
 			"sprite": "charmSprite35.png",
 			"order": 35,
 			"enabled": true,
@@ -556,7 +556,7 @@ function getDefault() {
 					"gotCharm_28",
 					"gotCharm_26",
 					"gotCharm_30",
-					"gotCharm_36c"
+					"gotCharm_36"
 				]
 			},
 			"skills": {

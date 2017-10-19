@@ -343,6 +343,11 @@
 				
 				$.each(container.items, function(i2, name) {
 					var item = entities[name];
+
+					if (item == undefined){
+						container.items.splice(i2, 1);
+						return;
+					}
 					
 					if (!item.enabled)
 						return;
@@ -581,22 +586,39 @@
 					if (name in data) {
 						switch (item.type) {
 							case "charm":
-								setSelected(data[name], id);
-								if (!$(id).hasClass('selected'))
-									$(id).hide();
-								else
-									$(id).show();
-									
-								if (data[name.replace('got', 'equipped')] && !img.hasClass('equipped') )
-									img.addClass('equipped');
-								else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped'))
-									img.removeClass('equipped');
-								var brokenId = name.replace("got","broken");
-								if (brokenId in data) {
-									if (data[brokenId]) {
-										img.attr('src', "images/" + item.brokenSprite);
-									}else{
-										img.attr('src', "images/" + item.sprite);
+								if (name == "gotCharm_36") // Kingsoul / Void Heart is special
+								{
+									setSelected(data[name], id);
+
+									if (data.gotKingFragment && !data.gotQueenFragment)
+										$(id).attr('src', "images/Charm_KingSoul_Left.png");
+									else if (!data.gotKingFragment && data.gotQueenFragment)
+										$(id).attr('src', "images/Charm_KingSoul_Right.png");
+									else if (data.gotKingFragment && data.gotQueenFragment && !data.gotShadeCharm)
+										$(id).attr('src', "images/Kingsoul.png");
+
+									if (!$(id).hasClass('selected'))
+										$(id).hide();
+									else
+										$(id).show();
+								}else{
+									setSelected(data[name], id);
+									if (!$(id).hasClass('selected'))
+										$(id).hide();
+									else
+										$(id).show();
+																		
+									if (data[name.replace('got', 'equipped')] && !img.hasClass('equipped') )
+										img.addClass('equipped');
+									else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped'))
+										img.removeClass('equipped');
+									var brokenId = name.replace("got","broken");
+									if (brokenId in data) {
+										if (data[brokenId]) {
+											img.attr('src', "images/" + item.brokenSprite);
+										}else{
+											img.attr('src', "images/" + item.sprite);
+										}
 									}
 								}
 								break;
