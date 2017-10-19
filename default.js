@@ -342,6 +342,13 @@ function getEntities() {
 			"order": 8,
 			"useItemState" : "gaveSlykey"
 		},
+		"hasWhiteKey": {
+			"sprite": "Elegant_Key.png",
+			"enabled": true,
+			"name": "", "type":"item",
+			"order": 8,
+			"useItemState" : "usedWhiteKey"
+		},
 		"hasQuill": {
 			"sprite": "inv_item__0004_quill - Copy.png",
 			"enabled": false,
@@ -607,6 +614,7 @@ function getDefault() {
 					"simpleKeys",
 					"hasTramPass",
 					"hasSlykey",
+					"hasWhiteKey",
 					"hasQuill",
 					"hasMap",
 					"hasCityKey",

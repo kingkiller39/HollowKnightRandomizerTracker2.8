@@ -121,7 +121,8 @@
 		}
 		
 		function init() {
-		
+			var seenItems = {};  //If I add new icons, they aren't going to be in any of the containers, so we need to go ahead and add them somewhere, for now they'll get added to the disabled box.
+
 			if(isEditing) {
 				
 				$('#containerSettingDialog').show().dialog({
@@ -349,51 +350,16 @@
 						container.items.splice(i2, 1);
 						return;
 					}
+
+					if (isEditing){
+						seenItems[name] = true;
+					}
 					
 					if (!item.enabled)
 						return;
 					
-					var itemDiv = $("<div></div>").addClass('itemDiv');
-					var img = $('<img></img>').attr({'id' : name});
-					img.css("zoom" , container.scale + "%");
-					itemDiv.append(img);
+					addItem(container, item, name, div);
 					
-					
-					switch (item.type) {
-						case "charm":
-							img.attr('src', "images/" + item.sprite);
-							itemDiv.addClass('charmDiv');
-							itemDiv.removeClass("hideIfSet");
-							break;
-							
-						case "spell":
-							img.attr('src', "images/" + item.levelSprites[0]);
-							break;
-						
-						case "skill":
-							img.attr('src', "images/" + item.sprite);
-							break;
-							
-						case "item":
-							img.attr('src', "images/" + item.sprite);
-							if ("multiple" in item && item.multiple) {
-								var countDiv = $('<div></div>').attr({ 'id': name + '_count'});
-								countDiv.addClass('counter');
-								itemDiv.append(countDiv);
-							}
-							break;
-							
-						case "generic":
-							img.attr('src', "images/" + item.sprite);
-							break;	
-						default:
-							break;
-					}
-					/*
-					if (i2 % container.itemsPerRow == 0)
-						itemDiv.css({"clear":"both"});*/
-					
-					div.append(itemDiv);
 				});
 			
 				$('body').append(div);
@@ -404,7 +370,59 @@
 				}
 			
 			});
+			
+			if (isEditing) {
+				$.each(entities, function(name,entity) {
+					if (!(name in seenItems) && entity.enabled) {
+						addItem(map.containers.disabled, entity, name, $('#disabled'));
+					}
+				}); 
+			}
+			
+
 			connect();
+		}
+
+		function addItem(container, item, name, div) {
+			var itemDiv = $("<div></div>").addClass('itemDiv');
+			var img = $('<img></img>').attr({'id' : name});
+			img.css("zoom" , container.scale + "%");
+			itemDiv.append(img);
+			
+			
+			switch (item.type) {
+				case "charm":
+					img.attr('src', "images/" + item.sprite);
+					itemDiv.addClass('charmDiv');
+					itemDiv.removeClass("hideIfSet");
+					break;
+					
+				case "spell":
+					img.attr('src', "images/" + item.levelSprites[0]);
+					break;
+				
+				case "skill":
+					img.attr('src', "images/" + item.sprite);
+					break;
+					
+				case "item":
+					img.attr('src', "images/" + item.sprite);
+					if ("multiple" in item && item.multiple) {
+						var countDiv = $('<div></div>').attr({ 'id': name + '_count'});
+						countDiv.addClass('counter');
+						itemDiv.append(countDiv);
+					}
+					break;
+					
+				case "generic":
+					img.attr('src', "images/" + item.sprite);
+					break;	
+				default:
+					break;
+			}
+			
+			div.append(itemDiv);
+
 		}
 		
 		function addFlourish(id, flourish) {
@@ -465,7 +483,7 @@
 						$('#' + name).parent().css({"clear":"none"});
 				});
 			})
-			
+			updateUrlConfig();
 		}
 		
 		
@@ -516,6 +534,7 @@
 
 			if ("var" in minData) {
 				if (minData.var == "SaveLoaded" || minData.var == "NewSave") {
+					randomMap == undefined;
 					send("random");
 					return;
 				}else{
@@ -630,12 +649,10 @@
 									img.attr("src", "images/" + item.levelSprites[1]);
 								else if (data[name] != 2 && img.attr("src") == item.levelSprites[1])
 									img.attr("src", "images/" + item.levelSprites[0]);
-								
 								break;
 							
 							case "skill":
 								setSelected(data[name], id);
-								
 								break;
 								
 							case "item":
@@ -683,12 +700,13 @@
 			
 				
 			
-			updateUrlConfig();
+			//updateUrlConfig();
 		}
 		
 		function updateVisible() {
 			$('.hideIfSet > div.itemDiv:not(:has(>.selected)):not(:has(>.multiple))').hide();
 			$('.container:not(.hideIfSet) div.itemDiv').css("display", "block");
+			$('.container.hideIfSet div.itemDiv:has(>.selected):has(>.multiple)').css("display", "block");
 		}
 		
 		function updateUrlConfig() {

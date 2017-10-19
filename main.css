@@ -96,7 +96,6 @@ img.equipped {
 .itemDiv { 
 	width: 41px;
 	height: 41px;
-	vertical-align: middle;
 	position:relative;
 	display:block;
 }
