@@ -17,7 +17,7 @@ namespace PlayerDataDump
     public class PlayerDataDump : Mod
     {
         public WebSocketServer wss = new WebSocketServer(11420);
-        public static String version = "18/10/17.a";
+        public static String version = "19/10/17.a";
         public static String current;
 
         public static string GetCurrentMods()
@@ -37,11 +37,8 @@ namespace PlayerDataDump
             try
             {
                 System.Net.WebClient web = new System.Net.WebClient();
-                web.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
-                string text = web.DownloadString("https://iamwyza.github.io/HollowKnightRandomizerTracker/version.txt");
-                //string text = web.DownloadString("http://www.google.com");
-            
-                return text;
+                web.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";      
+                return web.DownloadString("https://iamwyza.github.io/HollowKnightRandomizerTracker/version.txt");  
             } catch (Exception e){
                 return version;
             }
@@ -51,7 +48,6 @@ namespace PlayerDataDump
         {
             if (current == null)
                 current = GetCurrentVersion();
-            ModHooks.ModLog("c: " + current);
             if ( current == version )
                 return version;
             return version + " | UPDATE REQUIRED";

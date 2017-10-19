@@ -22,13 +22,20 @@ namespace PlayerDataDump
             switch (e.Data)
             {
                 case "random":
-                    Send(getRandom());
-                    break;
+                    if (File.Exists(Application.persistentDataPath + "/rnd.js"))
+                    {
+                        Send(getRandom());
+                    }
+                    else
+                    {
+                        Send("undefined");
+                    }
+                        break;
                 case "mods":
                     Send(PlayerDataDump.GetCurrentMods());
                     break;
                 case "version":
-                    Send(PlayerDataDump.version);
+                    Send(String.Format("{{ \"version\":\"{0}\" }}", PlayerDataDump.version));
                     break;
                 case "json":
                     Send(getJson());
