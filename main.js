@@ -101,7 +101,8 @@
 						$('#pageWidth').val(width);
 						$('#pageHeight').val(height);
 						$('html').css({'width' : width + 'px', 'height' : height + 'px'});
-						
+						urlParams.editing = "true";
+
 						init();
 						updateUrlConfig();
 						$(this).remove();
@@ -188,7 +189,7 @@
 						title: "Export Config"
 					});
 
-					$('#tinyUrlText').val(toTiny(window.location.href, googleApikey));
+					$('#tinyUrlText').val(toTiny(window.location.href.replace("editing=true",""), googleApikey));
 				});
 
 				$('#pageButtons').show();
