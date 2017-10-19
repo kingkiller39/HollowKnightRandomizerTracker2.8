@@ -639,8 +639,8 @@ function getDefault() {
 				"height": 52,
 				"items": [
 					"hasDreamNail",
-					"hasDreamGate",
-					"dreamNailUpgraded"
+					"dreamNailUpgraded",
+					"hasDreamGate"
 				]	
 			},
 			"disabled": {
