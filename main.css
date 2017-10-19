@@ -1,178 +1,181 @@
-	.editingDiv {
-		border :3px solid #FFFFFF;
-		border-radius : 5px
-	}
-  
-	  .editingDiv > .divMoveHandleBottom, .editingDiv > .divMoveHandleTop {
-		display:none;  
-	  }
-  
-	.editingDiv:hover > .divMoveHandleBottom {
-		background-color: #FFFFFF;
-		height: 40px;
-		width: 40px;
-		position: absolute;
-		bottom: -42px;
-		right: 0px;
-		cursor:move;
-		text-align:center;
-		border-radius: 0px 0px 5px 5px;
-		z-index:10;
-		display:block;
-	}
-	
-	.editingDiv:hover > .divMoveHandleTop {
-		background-color: #FFFFFF;
-		height: 40px;
-		width: 40px;
-		position: absolute;
-		top: -42px;
-		left: 0px;
-		cursor: move;
-		text-align: center;
-		border-radius: 5px 5px 0px 0px;
-		z-index:10;
-		display:block;
-	}
-	
-	.editingDiv > .divMoveHandleTop > span, .editingDiv > .divMoveHandleBottom > span {
-		top: 41%
-	}
-	
-	.container:not(.editingDiv) > .divMoveHandleBottom,.container:not(.editingDiv) > .divMoveHandleTop {
-		display:none;
-	}
-	
-	.container:not(.editingDiv) > .ui-resizable-handle {
-		display:none;
-	}
-  
-    .ui-icon-gripsmall-diagonal-se {
-		color: #FFFFFF;
-	}
-	
-		
-	div.charmDiv > img {
-		display:none;
-	}
-	
-	
-	.charmDiv {
-		background: url(images/slotBGsm.png) no-repeat;
-		background-position: center;
-		display:block;
-	}
-	
-	.container > div.itemDiv > img:not(.selected):not(.multiple) {
-		-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
-		filter: grayscale(100%);
-		
-	}
-	
-	.container > div.itemDiv > img {
-		position: relative;
-		top: 50%;
-		transform: translateY(-50%);
-		display:block;
-	}
-	
-	.container > div.itemDiv:not(.charmDiv) >  img.selected {
-		-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
-		filter: grayscale(0%);
-		border-radius: 50%;
-		box-shadow: 0px 0px 40px 10px #07ff6e;
-		display:block !important;
-	}
-	
-	img.equipped {
-		border-radius: 50%;
-		box-shadow: 0px 0px 40px 10px #07ff6e;
+.editingDiv {
+	border :3px solid #FFFFFF;
+	border-radius : 5px
+}
+
+	.editingDiv > .divMoveHandleBottom, .editingDiv > .divMoveHandleTop {
+	display:none;  
 	}
 
-	.itemDiv { 
-		width: 41px;
-		height: 41px;
-		vertical-align: middle;
-		position:relative;
-		display:block;
-	}
+.editingDiv:hover > .divMoveHandleBottom {
+	background-color: #FFFFFF;
+	height: 40px;
+	width: 40px;
+	position: absolute;
+	bottom: -42px;
+	right: 0px;
+	cursor:move;
+	text-align:center;
+	border-radius: 0px 0px 5px 5px;
+	z-index:10;
+	display:block;
+}
+
+.editingDiv:hover > .divMoveHandleTop {
+	background-color: #FFFFFF;
+	height: 40px;
+	width: 40px;
+	position: absolute;
+	top: -42px;
+	left: 0px;
+	cursor: move;
+	text-align: center;
+	border-radius: 5px 5px 0px 0px;
+	z-index:10;
+	display:block;
+}
+
+.editingDiv > .divMoveHandleTop > span, .editingDiv > .divMoveHandleBottom > span {
+	top: 41%
+}
+
+.container:not(.editingDiv) > .divMoveHandleBottom,.container:not(.editingDiv) > .divMoveHandleTop {
+	display:none;
+}
+
+.container:not(.editingDiv) > .ui-resizable-handle {
+	display:none;
+}
+
+.ui-icon-gripsmall-diagonal-se {
+	color: #FFFFFF;
+}
+
 	
-	.itemDivGrowLeft > .itemDiv {
-		float:left;
-	}
+div.charmDiv > img {
+	display:none;
+}
+
+
+.charmDiv {
+	background: url(images/slotBGsm.png) no-repeat;
+	background-position: center;
+	display:block;
+}
+
+.container > div.itemDiv > img:not(.selected):not(.multiple) {
+	-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+	filter: grayscale(100%);
 	
-	.itemDivGrowRight > .itemDiv {
-		float:right;
-	}
-			
-	img.multiple {
-		-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
-		filter: grayscale(0%);
-		border-radius: 50%;
-		box-shadow: 0px 0px 40px 10px #07ff6e;
-		display:block !important;
-	}
-	
-	div.counter {
-		width: 19px !important;
-		height: 19px !important;
-		border-radius: 50%;
-		box-shadow: 0px 0px 5px 2px #FFFFFF;
-		position: absolute;
-		top: 25px;
-		left: 20px;
-		background-color: #000000;
-		color: #FFFFFF;
-		text-align: center;
-		vertical-align: middle;
-		display:none;
-	}
-	
-	.topLeftFlourish {
-		right: 0;
-		position: absolute;
-		top: -15px;
-		border-top: solid #FFFFFF;
-		padding-top: 0px;
-	}
-	
-	.topLeftFlourish > img {
-		top: -14px;
-		left: -174px;
-		position:absolute;
-	}
-	
-	
-	.topRightFlourish {
-		left: 0;
-		position: absolute;
-		top: -15px;
-		border-top: solid #FFFFFF;
-		padding-top: 0px;
-	}
-	
-	.topRightFlourish > img {
-		-moz-transform: scaleX(-1);
-		-o-transform: scaleX(-1);
-		-webkit-transform: scaleX(-1);
-		transform: scaleX(-1);
-		filter: FlipH;
-		-ms-filter: "FlipH";
-		top: -14px;
-		left: 250px;
-		position: absolute;
-	}
+}
+
+.container > div.itemDiv > img {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	display:block;
+}
+
+.container > div.itemDiv:not(.charmDiv) >  img.selected {
+	-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
+	filter: grayscale(0%);
+	border-radius: 50%;
+	box-shadow: 0px 0px 40px 10px #07ff6e;
+	display:block !important;
+}
+
+.container > div.itemDiv:not(.charmDiv) >  img.gaveItem {
+	box-shadow: 0px 0px 40px 10px #FF0000;
+}
+
+img.equipped {
+	border-radius: 50%;
+	box-shadow: 0px 0px 40px 10px #07ff6e;
+}
+
+.itemDiv { 
+	width: 41px;
+	height: 41px;
+	vertical-align: middle;
+	position:relative;
+	display:block;
+}
+
+.itemDivGrowLeft > .itemDiv {
+	float:left;
+}
+
+.itemDivGrowRight > .itemDiv {
+	float:right;
+}
+		
+img.multiple {
+	-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
+	filter: grayscale(0%);
+	border-radius: 50%;
+	box-shadow: 0px 0px 40px 10px #07ff6e;
+	display:block !important;
+}
+
+div.counter {
+	width: 19px !important;
+	height: 19px !important;
+	border-radius: 50%;
+	box-shadow: 0px 0px 5px 2px #FFFFFF;
+	position: absolute;
+	top: 25px;
+	left: 20px;
+	background-color: #000000;
+	color: #FFFFFF;
+	text-align: center;
+	vertical-align: middle;
+	display:none;
+}
+
+.topLeftFlourish {
+	right: 0;
+	position: absolute;
+	top: -15px;
+	border-top: solid #FFFFFF;
+	padding-top: 0px;
+}
+
+.topLeftFlourish > img {
+	top: -14px;
+	left: -174px;
+	position:absolute;
+}
+
+
+.topRightFlourish {
+	left: 0;
+	position: absolute;
+	top: -15px;
+	border-top: solid #FFFFFF;
+	padding-top: 0px;
+}
+
+.topRightFlourish > img {
+	-moz-transform: scaleX(-1);
+	-o-transform: scaleX(-1);
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
+	filter: FlipH;
+	-ms-filter: "FlipH";
+	top: -14px;
+	left: 250px;
+	position: absolute;
+}
 /* handle icon (corner) */
 .ui-resizable-se {
-    background-image: url(images/ui-icons_ff0000_256x240.png);
+	background-image: url(images/ui-icons_ff0000_256x240.png);
 }
 
 .pageButton {
 	color:#FFFFFF;
-
-	left : 2px;
 	padding:5px;
-	position:absolute;
+	float:left;
+	clear:both;
 	cursor: pointer;
 	border :1px solid #FFFFFF;
 	border-radius :5px;

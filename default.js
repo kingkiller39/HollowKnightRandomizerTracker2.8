@@ -339,7 +339,8 @@ function getEntities() {
 			"sprite": "inv_item__0002_storeroom_key - Copy.png",
 			"enabled": true,
 			"name": "", "type":"item",
-			"order": 8
+			"order": 8,
+			"useItemState" : "gaveSlykey"
 		},
 		"hasQuill": {
 			"sprite": "inv_item__0004_quill - Copy.png",
@@ -513,8 +514,12 @@ function getDefault() {
 			"charms": {
 				"itemsPerRow": 9,
 				"scale" : 25,
+				"width" : 388,
+				"height" : 177,
 				"left": 10,
 				"top":25,
+				"flourish" :"topRight",
+				"growDirection" :"Left",
 				"items": [
 					"gotCharm_2",
 					"gotCharm_1",
@@ -555,10 +560,13 @@ function getDefault() {
 				]
 			},
 			"skills": {
-				"itemsPerRow": 10,
+				"growDirection" : "Right",
+				"flourish" :"topLeft",
 				"scale" : 25,
 				"left": 10,
 				"top":25,
+				"width" : 330,
+				"height": 40,
 				"items": [
 					"hasDash", 
 					"hasWalljump", 
@@ -571,10 +579,11 @@ function getDefault() {
 				]
 			},
 			"spells" : {
-			"itemsPerRow": 10,
 				"scale" : 25,
 				"left": 10,
 				"top":25,
+				"width" : 330,
+				"height": 40,
 				"items": [
 					"screamLevel",
 					"fireballLevel",
@@ -585,6 +594,9 @@ function getDefault() {
 				"scale" : 25,
 				"left": 10,
 				"top":25,
+				"width" : 495,
+				"height": 45,
+				"growDirection" : "Right",
 				"items": [
 					"trinket1",
 					"trinket2",
@@ -606,9 +618,12 @@ function getDefault() {
 				]	
 			},
 			"dreamers" :{
-				"scale" : 25,
+				"scale" : 20,
 				"left": 10,
 				"top":25,
+				"width" : 150,
+				"height": 52,
+				"growDirection" : "Left",
 				"items": [
 					"maskBrokenMonomon",
 					"maskBrokenHegemol",
@@ -619,6 +634,9 @@ function getDefault() {
 				"scale" : 25,
 				"left": 10,
 				"top":25,
+				"growDirection" : "Right",
+				"width" : 150,
+				"height": 52,
 				"items": [
 					"hasDreamNail",
 					"hasDreamGate",
@@ -629,18 +647,20 @@ function getDefault() {
 				"scale" : 25,
 				"left": 10,
 				"top":25,
+				"width": 400,
+				"height": 400,
 				"items": [
-				"Inv_0027_spell_slot.png",
-				"Inv_0029_spell_core.png",
-				"Inv_charge_slashes_backboard - Copy.png",
-				"Inventory_soul_vessel - Copy.png",
-				"Inventory_soul_vessel_full - Copy.png",
-				"Inventory_soul_vessel_level_01 - Copy.png",
-				"Inv_0028_spell_ring.png",
-				"slotCost.png",
-				"slotOff.png",
-				"slotOn.png",
-				"inv_dream_charm - Copy.png",
+					"Inv_0027_spell_slot.png",
+					"Inv_0029_spell_core.png",
+					"Inv_charge_slashes_backboard - Copy.png",
+					"Inventory_soul_vessel - Copy.png",
+					"Inventory_soul_vessel_full - Copy.png",
+					"Inventory_soul_vessel_level_01 - Copy.png",
+					"Inv_0028_spell_ring.png",
+					"slotCost.png",
+					"slotOff.png",
+					"slotOn.png",
+					"inv_dream_charm - Copy.png",
 				]
 			}
 		}

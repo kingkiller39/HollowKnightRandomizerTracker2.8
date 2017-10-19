@@ -11,7 +11,8 @@
 		var lastCommand;
 		var randomMap;
 		*/
-		
+
+		var currentId;
 		var urlParams;
 		(window.onpopstate = function () {
 			var match,
@@ -24,13 +25,23 @@
 			while (match = search.exec(query))
 			   urlParams[decode(match[1])] = decode(match[2]);
 		})();
+
+		var googleApikey = "AIzaSyBOxTGl7m1u9h07PHa_H_mW4EVRxobgdpA"; // This will only work from iamwyza.github.io
+		var localKey = getParameterByName("apiKey");
+		if (localKey != null)
+			googleApikey = localKey;
+
+  		var regexReplaceUrl = new RegExp(/^(file:\/\/.*Index.html)/);
+
 		
-		var isEditing = getParameterByName('editing') == "true";
+		
+
 		var entities = getEntities();
-		var currentId;
+		var urlConfig = getParameterByName("config");
 		var width = 1920;
 		var height = 1080;
-		
+
+				
 		var temp = getParameterByName('width');
 		if (temp != undefined && temp !=null) {
 			width = temp;
@@ -40,23 +51,9 @@
 		if (temp != undefined && temp !=null) {
 			height = temp;
 		}
-		
-		var urlConfig = getParameterByName("config");
-		
-		if (urlConfig !=undefined && urlConfig.length > 0) {
-			try {
-				map = JSON.parse(LZString.decompressFromEncodedURIComponent(urlConfig));
-			}catch(e) {
-				alert("failed to load config");
-				console.log(e);
-				map = getDefault();
-			}
-		}else{
-			map = getDefault();
-		}
-		
-		init();
-		
+
+		var isEditing = getParameterByName('editing') == "true";
+
 		$("html").css({
 			'height':height + "px",
 			'width':width + "px",
@@ -71,9 +68,56 @@
 			'margin': "0px",
 			'padding': "0px"
 		});
-		$('#pageWidth').val(width);
-		$('#pageHeight').val(height);
-		
+
+		if (urlConfig == undefined || urlConfig == null )
+		{
+			$('body').css('background-color', '#000000');	
+			$('#initialSettingsDialog').show().dialog({
+				width:500,
+				title: "Initial Setup",
+				buttons: {
+					"Done": function(e) {
+						
+						width = $('#setupPageWidth').val() - 4;
+						height = $('#setupPageHeight').val() - 4;
+						console.log(width);
+						console.log(height);
+						map = getDefault();
+						map.containers.charms.top = height - 180;
+						map.containers.charms.left = 10;
+						map.containers.skills.top = height - 42 - map.containers.spells.height;
+						map.containers.skills.left = width - map.containers.skills.width;
+						map.containers.spells.top = height - 42 ;
+						map.containers.spells.left = width - map.containers.spells.width;
+						map.containers.items.top = 0;
+						map.containers.items.left = width - map.containers.items.width;
+						map.containers.dreamers.top = 55;
+						map.containers.dreamers.left = width - map.containers.dreamers.width;
+						map.containers.misc.top = 55;
+						map.containers.misc.left = width - (map.containers.dreamers.width + map.containers.misc.width);
+						map.containers.disabled.top = 178;
+						map.containers.disabled.left = 508;
+						isEditing = true;
+						$('#pageWidth').val(width);
+						$('#pageHeight').val(height);
+						$('html').css({'width' : width + 'px', 'height' : height + 'px'});
+						
+						init();
+						updateUrlConfig();
+						$(this).remove();
+					}
+				}
+			});
+		}else {
+			try {
+				map = JSON.parse(LZString.decompressFromEncodedURIComponent(urlConfig));
+			}catch(e) {
+				alert("failed to load config");
+				console.log(e);
+				map = getDefault();
+			}
+			init();
+		}
 		
 		function init() {
 		
@@ -88,6 +132,9 @@
 					width:500,
 					title: "Page Settings"
 				}).dialog("close");
+
+				$('#pageWidth').val(width);
+				$('#pageHeight').val(height);
 				
 				$('#containerSettingDialog').dialog("close");
 					$(document.body).contextMenu({
@@ -99,56 +146,64 @@
 								items: {
 									"settings": {name: "settings", icon: "settings"}
 								}
-								
 							});
-							
-					var div = $('<div></div>').html("PREVIEW MODE").css({'top' :'2px'}).addClass('pageButton');
-					div.on("click", function(e) {
-						
-						$('.container').toggleClass('editingDiv');
-						if ($('.editingDiv').length > 0){
-							$('.pageButton').show();
-							$(e.target).html("PREVIEW MODE");
-							$(document.body).css('background-image', 'unset');
-							$('#disabled').show();
-						}else{
-							$('.pageButton').hide();
-							$(e.target).show();
-							$(e.target).html("EDIT MODE");
-							$(document.body).css({
+				
+				$('#previewModeButton').on("click", function(e) {
+					$('.container').toggleClass('editingDiv');
+					if ($('.editingDiv').length > 0){
+						$('.pageButton').show();
+						$(e.target).html("PREVIEW MODE");
+						$(document.body).css('background-image', 'unset');
+						$('#disabled').show();
+					}else{
+						$('.pageButton').hide();
+						$(e.target).show();
+						$(e.target).html("EDIT MODE");
+						$(document.body).css({
 							'background-image':	'url("sampleempty.png")',
 							'background-repeat':'no-repeat',
-							'background-size':urlParams.width + 'px '+ urlParams.height + 'px'
-							});
-							$('#disabled').hide();
-						}
-					});
-					$(document.body).append(div);
-					
-					
-					var div = $('<div></div>').html("Page Settings").css({'top' :'33px'}).addClass('pageButton');
-					div.on("click", function(e) {
-						
-						$('#pageSettingsDialog').dialog().show();
-					});
-					
-					$(document.body).append(div);
-					
-					var div = $('<div></div>').html("Toggle Snap").css({'top' :'66px', 'color' : '#00FF00'}).addClass('pageButton');
-					div.on("click", function(e) {
-						var isSnap = !$('.container').draggable("option", "snap");
-						
-						$('.container').each(function(i,e) { 
-							$(e).draggable("option", "snap", isSnap); 
-							$(e).draggable("option", "grid", isSnap ? [20,20] : null);
+							'background-size': urlParams.width + 'px '+ urlParams.height + 'px'
 						});
-						console.log(e);
-						$(e.target).css('color', (isSnap ? '#00FF00' : '#FFFFFF'));
-						
+						$('#disabled').hide();
+					}
+				});
+				
+				$('#pageSettingsButton').on("click", function(e) {
+					$('#pageSettingsDialog').dialog().show();
+				});
+				
+				$('#toggleSnapButton').on("click", function(e) {
+					var isSnap = !$('.container').draggable("option", "snap");
+					
+					$('.container').each(function(i,e) { 
+						$(e).draggable("option", "snap", isSnap); 
+						$(e).draggable("option", "grid", isSnap ? [20,20] : null);
 					});
-					
-					$(document.body).append(div);
-					
+					$(e.target).css('color', (isSnap ? '#00FF00' : '#FFFFFF'));
+				});
+
+				$('#getTinyUrl').on('click', function(e)  {
+					$('#tinyUrlDiv').show().dialog({
+						width: 500,
+						title: "Export Config"
+					});
+
+					$('#tinyUrlText').val(toTiny(window.location.href, googleApikey));
+				});
+
+				$('#pageButtons').show();
+
+				$('#copyUrl').on('click', function() {
+					$('#tinyUrlText').select();
+					try {
+						var successful = document.execCommand('copy');
+						var msg = successful ? 'successful' : 'unsuccessful';
+						
+					  } catch (err) {
+						console.log('Oops, unable to copy');
+					  }
+				})
+
 				$('#scale').on('change', function() {
 					map.containers[currentId].scale = $('#scale').val();
 					$('#' + currentId + ' .itemDiv img').each(function(i,e) {
@@ -459,8 +514,6 @@
 					return;
 				}else{
 					var name = minData.var;
-					
-					
 					var value;
 					
 					switch (minData.value) {
@@ -528,7 +581,7 @@
 					if (name in data) {
 						switch (item.type) {
 							case "charm":
-								setSelcted(data[name], id);
+								setSelected(data[name], id);
 								if (!$(id).hasClass('selected'))
 									$(id).hide();
 								else
@@ -549,7 +602,7 @@
 								break;
 								
 							case "spell":
-								setSelcted(data[name] > 0, id);
+								setSelected(data[name] > 0, id);
 								if (data[name] == 2 && img.attr("src") != item.levelSprites[1])
 									img.attr("src", "images/" + item.levelSprites[1]);
 								else if (data[name] != 2 && img.attr("src") == item.levelSprites[1])
@@ -558,13 +611,19 @@
 								break;
 							
 							case "skill":
-								setSelcted(data[name], id);
+								setSelected(data[name], id);
 								
 								break;
 								
 							case "item":
 								if (! ("multiple" in item))
-									setSelcted(data[name], id);
+									if ("useItemState" in item && item.useItemState in data && data[item.useItemState])
+									{console.log('hi');
+										setSelected(true, id);
+										$(id).addClass("gaveItem");
+									}else{
+										setSelected(data[name], id);
+									}
 								else
 								{
 									setMultipleSelected(data[name] > 0, id);
@@ -579,7 +638,7 @@
 								break;
 								
 							case "generic":
-								setSelcted(data[name], id);
+								setSelected(data[name], id);
 								
 								break;	
 						}
@@ -622,7 +681,7 @@
 				alert("Developer Warning, config length is > 1900.  If you see this message let the developer know.");
 		}
 		
-		function setSelcted(has, id) {
+		function setSelected(has, id) {
 			if (has && !$(id).hasClass('selected')) 
 				$(id).addClass('selected').parent().removeClass('hideIfSet');
 			else if (!has && $(id).hasClass('selected'))
@@ -655,5 +714,34 @@
 				return urlParams[name];
 			
 			return null;
+		}
+
+		function toTiny(url, apiKey) {
+
+			if (regexReplaceUrl.test(url)){ // only works if not local
+				return url;
+			}
+
+			$.ajax({
+				url: 'https://www.googleapis.com/urlshortener/v1/url?key=' + apiKey,
+				type: 'POST',
+				contentType: 'application/json; charset=utf-8',
+				data: { longUrl: url },
+				success: function(response) {
+					return response.id;
+				}
+			 });
+		}
+
+		function fromTiny(url) {
+			$.ajax({
+				url: 'https://www.googleapis.com/urlshortener/v1/url',
+				type: 'GET',
+				contentType: 'application/json; charset=utf-8',
+				data: { shortUrl: url },
+				success: function(response) {
+					return response.longUrl;
+				}
+			 });
 		}
 });
