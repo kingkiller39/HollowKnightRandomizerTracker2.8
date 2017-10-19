@@ -748,7 +748,7 @@
 				url: 'https://www.googleapis.com/urlshortener/v1/url?key=' + apiKey,
 				type: 'POST',
 				contentType: 'application/json; charset=utf-8',
-				data: { longUrl: url },
+				data: JSON.stringify({ longUrl: url }),
 				success: function(response) {
 					return response.id;
 				}
@@ -760,7 +760,7 @@
 				url: 'https://www.googleapis.com/urlshortener/v1/url',
 				type: 'GET',
 				contentType: 'application/json; charset=utf-8',
-				data: { shortUrl: url },
+				data: JSON.stringify({ shortUrl: url }),
 				success: function(response) {
 					return response.longUrl;
 				}
