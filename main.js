@@ -26,6 +26,15 @@
 			   urlParams[decode(match[1])] = decode(match[2]);
 		})();
 
+		String.prototype.format = function() {
+			var str = this;
+			for (var i = 0; i < arguments.length; i++) {       
+			  var reg = new RegExp("\\{" + i + "\\}", "gm");             
+			  str = str.replace(reg, arguments[i]);
+			}
+			return str;
+		  }
+
 		var googleApikey = "AIzaSyBOxTGl7m1u9h07PHa_H_mW4EVRxobgdpA"; // This will only work from iamwyza.github.io
 		var localKey = getParameterByName("apiKey");
 		if (localKey != null)
@@ -137,7 +146,8 @@
 
 				$('#pageWidth').val(width);
 				$('#pageHeight').val(height);
-				
+				$(document.body).css({"background-color" : '#000000', "border" :"2px solid #00FF00"});
+
 				$('#containerSettingDialog').dialog("close");
 					$(document.body).contextMenu({
 								selector: '.container:not([id=disabled])', 
@@ -151,7 +161,7 @@
 							});
 				
 				$('#previewModeButton').on("click", function(e) {
-					$('.container').toggleClass('editingDiv');
+					$('.container, .misc-container').toggleClass('editingDiv');
 					if ($('.editingDiv').length > 0){
 						$('.pageButton').show();
 						$(e.target).html("PREVIEW MODE");
@@ -305,42 +315,7 @@
 					div.addClass("hideIfSet");
 				
 				if (isEditing) {
-					div.resizable({
-							handles: "se",
-							containment: $(document.body), 
-							stop: function(event, ui) {
-								var id = $(ui.element).attr('id');
-								map.containers[id].width = ui.size.width;
-								map.containers[id].height = ui.size.height;
-								updateUrlConfig();
-							}
-						})
-						.sortable({ 
-							revert: true,
-							connectWith: '.container',
-							update: updateContainerItemOrder,
-							items: '.itemDiv'
-						})
-						.draggable({ 
-							containment: $(document.body), 
-							handle: ".divMoveHandleBottom, .divMoveHandleTop",
-							scroll: false,
-							grid: [ 20, 20 ],
-							snap: true,
-							stop: function(event, ui) {
-								var id = $(ui.helper).attr('id');
-								map.containers[id].left = ui.position.left;
-								map.containers[id].top = ui.position.top;
-								updateUrlConfig();
-								}						
-							})
-						
-						.addClass('editingDiv');
-						
-					div.append($('<div></div>').addClass('divMoveHandleTop').append($('<span></span>').addClass('ui-icon ui-icon-arrow-4-diag')));
-					div.append($('<div></div>').addClass('divMoveHandleBottom').append($('<span></span>').addClass('ui-icon ui-icon-arrow-4-diag')));
-						
-					$(document.body).css({"background-color" : '#000000', "border" :"2px solid #00FF00"});
+					makeDivMovable(div, container);
 				}
 				
 				$.each(container.items, function(i2, name) {
@@ -370,7 +345,29 @@
 				}
 			
 			});
+
+			if (!("misc_containers" in map) )
+				map.misc_containers = getDefault().misc_containers;
+
 			
+
+			$.each(map.misc_containers, function(i, e) {
+				if (e.enabled) {
+					
+					var div = $('<div></div>').attr('id', i).addClass('misc-container').css({
+						width: e.width + 'px',
+						height: e.height + 'px',
+						top: e.top + 'px',
+						left: e.left + 'px',
+						position: 'absolute'
+					});
+					if (isEditing)
+						makeDivMovable(div, e);
+
+					$('body').append(div);
+				}
+			});
+						
 			if (isEditing) {
 				$.each(entities, function(name,entity) {
 					if (!(name in seenItems) && entity.enabled) {
@@ -381,6 +378,57 @@
 			
 
 			connect();
+		}
+
+		function makeDivMovable(div, container) {
+			
+			div.resizable({
+				handles: "n,e,s,w",
+				minWidth:164 * (container.scale/100),
+				minHeight:164 * (container.scale/100),
+				containment: $(document.body), 
+				stop: function(event, ui) {
+					var id = $(ui.element).attr('id');
+					if ($(ui.element).hasClass('container')) {
+						map.containers[id].width = ui.size.width;
+						map.containers[id].height = ui.size.height;
+					}else if  ($(ui.element).hasClass('misc-container')) {
+						map.misc_containers[id].width = ui.size.width;
+						map.misc_containers[id].height = ui.size.height;
+					}
+					updateUrlConfig();
+				}
+			})
+			.sortable({ 
+				revert: true,
+				connectWith: '.container',
+				update: updateContainerItemOrder,
+				items: '.itemDiv'
+			})
+			.draggable({ 
+				containment: $(document.body), 
+				handle: ".divMoveHandleBottom, .divMoveHandleTop",
+				scroll: false,
+				grid: [ 20, 20 ],
+				snap: true,
+				stop: function(event, ui) {
+					var id = $(ui.helper).attr('id');
+
+					if ($(ui.element).hasClass('container')) {
+						map.containers[id].left = ui.position.left;
+						map.containers[id].top = ui.position.top;
+					}else if  ($(ui.element).hasClass('misc-container')) {
+						map.misc_containers[id].left = ui.position.left;
+						map.misc_containers[id].top = ui.position.top;
+					}
+					updateUrlConfig();
+					}						
+				})
+			
+			.addClass('editingDiv');
+			
+			div.append($('<div></div>').addClass('divMoveHandleTop').append($('<span></span>').addClass('ui-icon ui-icon-arrow-4-diag')));
+			div.append($('<div></div>').addClass('divMoveHandleBottom').append($('<span></span>').addClass('ui-icon ui-icon-arrow-4-diag')));
 		}
 
 		function addItem(container, item, name, div) {
@@ -505,7 +553,11 @@
 				ws.onmessage = function (evt) 
 				{ 
 					var received_msg = evt.data;
-					
+					if (received_msg == "undefined"){
+						updatePlayerData({});
+						return;
+					}
+
 					var json = JSON.parse(received_msg);
 					
 					updatePlayerData(json);
@@ -658,7 +710,7 @@
 							case "item":
 								if (! ("multiple" in item))
 									if ("useItemState" in item && item.useItemState in data && data[item.useItemState])
-									{console.log('hi');
+									{
 										setSelected(true, id);
 										$(id).addClass("gaveItem");
 									}else{
@@ -684,6 +736,26 @@
 						}
 					}
 				});
+			});
+
+			$.each(map.misc_containers, function(name, item) {
+				console.log(item);
+				if (item.enabled) {
+					var dataSource;
+					switch (item.dataSource) {
+						case "randomMap":
+							dataSource = randomMap;
+							break;
+						case "playerData":
+							dataSource = map;
+							break;
+					}
+					if (dataSource != undefined && item.dataElement in dataSource){
+						$('#' + name + ' > div.content').remove();
+						var div = $('<div></div>').addClass('content').html(item.text.format(dataSource[item.dataElement]));
+						$('#' + name).append(div);
+					}
+				}
 			});
 
 			updateVisible();

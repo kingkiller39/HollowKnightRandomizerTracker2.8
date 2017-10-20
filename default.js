@@ -517,6 +517,30 @@ function getDefault() {
 			"hasItemColor": "#07ff6e",
 			"version":1.0
 		},
+		"misc_containers" : {
+			"seed" : {
+				enabled : true,
+				text: "Seed: {0}",
+				dataSource: "randomMap",
+				dataElement: "seed",
+				left: 300,
+				top: 10,
+				width: 200,
+				height:20,
+				scale: 100
+			},
+			"mode" : {
+				enabled: true,
+				dataSource: "randomMap",
+				dataElement: "mode",
+				text: "{0}",
+				left: 400,
+				top: 30,
+				width: 100,
+				height:20,
+				scale: 100
+			}
+		},
 		"containers" : {
 			"charms": {
 				"itemsPerRow": 9,
