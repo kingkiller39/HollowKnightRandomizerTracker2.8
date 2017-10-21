@@ -4,23 +4,32 @@ This is the UI side of a tracker for items in Hollow Knight as an overlay in OBS
 
 ![Demo](https://github.com/iamwyza/HollowKnightRandomizerTracker/blob/master/demo.png "Demo")
 
-# Setup
+# Setup & Configuration
+
+* Start out by going to https://iamwyza.github.io/HollowKnightRandomizerTracker/Index.html
+  * Follow the directions on screen to specify the height and width of your OBS capture.
+  * Adjust your layout as desired (Hitting F11 to go to full screen can be helpful if your resolution is the same as your capture resolution.  That is, if you capture at 1080p and your monitor is 1080p, for example)
+    * Containers of Icons can be moved around the screen using the move handles (shown when hovering).
+    * Icons can be moved from one container to another or re-ordered within a container by simple drag/drop.  Icons placed in the red "DISABLED" container will not show ever.
+    * Right Clicking on any container gives settings such as icon scale, flourish, hide/show icons when you don't have the item yet, and icon growth direction.
+    * Containers can be resized by using the borders
+    * The text containers (for seed/difficult also have settings for font size, color, and enabled/disabled)
+    * The "Preview Mode" button will give you an idea of what the layout will look like in OBS.
+    * Once done click the "Get Config URL" button which will give you a short version of the configuration. Copy that.
+      * If you ever need to edit your layout, use this same url, it will bring you back to your configuration.
+
 
 * Open OBS
-* Sources->Add->Browser Source
-  * URL: https://iamwyza.github.io/HollowKnightRandomizerTracker/Index.html
-  * Width: 1920 or <Width Of Your Stream>
-  * Height: 1080 or <Height Of Your Stream
-  * FPS: 5 
-  * CSS: leave default values 
-  * Shutdown Source when not visible: Checked
-  * Refresh browser when scene becomes active: Checked
-  * Hit Ok
- * Right Click on the new source and go to Transform->Fit To Screen (or Ctrl+F)
-
-# `Configure`
-
-
+  * Sources->Add->Browser Source
+    * URL: Use the URL From above.
+    * Width: 1920 or <Width Of Your Stream>
+    * Height: 1080 or <Height Of Your Stream
+    * FPS: 5 
+    * CSS: leave default values 
+    * Shutdown Source when not visible: Checked
+    * Refresh browser when scene becomes active: Checked
+    * Hit Ok
+  * Right Click on the new source and go to Transform->Fit To Screen (or Ctrl+F)
 
 
 
@@ -28,13 +37,12 @@ This is the UI side of a tracker for items in Hollow Knight as an overlay in OBS
 
 If you are running a setup wherein you have 1 machine that you game on, and another computer that does capture and broadcast via OBS, then there is more effort required.  Because Github serves up pages with https only, and because we are using websockets to connect to HollowKnight, OBS Browser Source (using chromium) disallows HTTP access to web sockets.
 
-To get around this, you have to run the UI stuff locally.  Don't worry, it's not too difficult.
+Thankfully Windows provides an excellent and easy workaround.  
 
-* Download The current source from https://github.com/iamwyza/HollowKnightRandomizerTracker/archive/master.zip
-* Pick a folder to unzip the contents into and do so.
-* In OBS set the URL to `file:
-
-What this will do is instruct the page to go query that machine on the WebSocket port instead of localhost.  Note that this does not mean that a server on the internet is querying your machine, all queries are still done purely over the local network.  This simply tells it that the game is running on another machine on your network.
+* Open a Windows Commmand Prompt - Run as administrator
+* Where "gamingpc" is the name of the machine you play Hollow Knight on:
+  * `netsh interface portproxy add v4tov4 listenaddress=localhost listenport=11420 connectaddress=gamingpc connectport=11420`
+* This command sets a redirect in windows that says requests to localhost:11420 are to be directed to gamingpc:11420.
 
 
 ## Credits
