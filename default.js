@@ -525,7 +525,7 @@ function getDefault() {
 				dataElement: "seed",
 				left: 300,
 				top: 10,
-				width: 200,
+				width: 140,
 				height:20,
 				scale: 100,
 				color: "#FFFFFF",
@@ -536,9 +536,9 @@ function getDefault() {
 				dataSource: "randomMap",
 				dataElement: "mode",
 				text: "{0}",
-				left: 400,
-				top: 30,
-				width: 100,
+				left: 252,
+				top: 10,
+				width: 45,
 				height:20,
 				scale: 100,
 				color: "#FFFFFF",
@@ -596,7 +596,7 @@ function getDefault() {
 			},
 			"skills": {
 				"growDirection" : "Right",
-				"flourish" :"topLeft",
+
 				"scale" : 25,
 				"left": 10,
 				"top":25,
@@ -614,6 +614,7 @@ function getDefault() {
 				]
 			},
 			"spells" : {
+				"flourish" :"topLeft",
 				"scale" : 25,
 				"left": 10,
 				"top":25,
@@ -654,15 +655,15 @@ function getDefault() {
 				]	
 			},
 			"dreamers" :{
-				"scale" : 20,
+				"scale" : 25,
 				"left": 10,
 				"top":25,
-				"width" : 150,
-				"height": 52,
+				"width" : 126,
+				"height": 45,
 				"growDirection" : "Left",
 				"items": [
-					"maskBrokenMonomon",
 					"maskBrokenHegemol",
+					"maskBrokenMonomon",
 					"maskBrokenLurien"
 				]	
 			},
@@ -671,8 +672,8 @@ function getDefault() {
 				"left": 10,
 				"top":25,
 				"growDirection" : "Right",
-				"width" : 150,
-				"height": 52,
+				"width" : 126,
+				"height": 45,
 				"items": [
 					"hasDreamNail",
 					"dreamNailUpgraded",

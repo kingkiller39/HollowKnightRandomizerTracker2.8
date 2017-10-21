@@ -89,15 +89,14 @@
 						
 						width = $('#setupPageWidth').val() - 4;
 						height = $('#setupPageHeight').val() - 4;
-						console.log(width);
-						console.log(height);
+
 						map = getDefault();
 						map.containers.charms.top = height - 180;
-						map.containers.charms.left = 10;
-						map.containers.skills.top = height - 42 - map.containers.spells.height;
-						map.containers.skills.left = width - map.containers.skills.width;
-						map.containers.spells.top = height - 42 ;
+						map.containers.charms.left = 4;
+						map.containers.spells.top = height - 42 - map.containers.skills.height;
 						map.containers.spells.left = width - map.containers.spells.width;
+						map.containers.skills.top = height - 42 ;
+						map.containers.skills.left = width - map.containers.skills.width;
 						map.containers.items.top = 0;
 						map.containers.items.left = width - map.containers.items.width;
 						map.containers.dreamers.top = 55;
@@ -205,7 +204,7 @@
 				$('#toggleSnapButton').on("click", function(e) {
 					var isSnap = !$('.container').draggable("option", "snap");
 					
-					$('.container').each(function(i,e) { 
+					$('.container, .misc-container').each(function(i,e) { 
 						$(e).draggable("option", "snap", isSnap); 
 						$(e).draggable("option", "grid", isSnap ? [20,20] : null);
 					});
@@ -435,15 +434,15 @@
 			
 			div.resizable({
 				handles: "n,e,s,w",
-				minWidth:164 * (container.scale/100),
-				minHeight:164 * (container.scale/100),
+				minWidth: (div.hasClass('container') ? 164 * (container.scale/100) : 20),
+				minHeight:(div.hasClass('container') ? 164 * (container.scale/100) : 20),
 				containment: $(document.body), 
 				stop: function(event, ui) {
-					var id = $(ui.element).attr('id');
-					if ($(ui.element).hasClass('container')) {
+					var id = $(ui.helper).attr('id');
+					if ($(ui.helper).hasClass('container')) {
 						map.containers[id].width = ui.size.width;
 						map.containers[id].height = ui.size.height;
-					}else if  ($(ui.element).hasClass('misc-container')) {
+					}else if  ($(ui.helper).hasClass('misc-container')) {
 						map.misc_containers[id].width = ui.size.width;
 						map.misc_containers[id].height = ui.size.height;
 					}
@@ -464,11 +463,10 @@
 				snap: true,
 				stop: function(event, ui) {
 					var id = $(ui.helper).attr('id');
-
-					if ($(ui.element).hasClass('container')) {
+					if ($(ui.helper).hasClass('container')) {
 						map.containers[id].left = ui.position.left;
 						map.containers[id].top = ui.position.top;
-					}else if  ($(ui.element).hasClass('misc-container')) {
+					}else if  ($(ui.helper).hasClass('misc-container')) {
 						map.misc_containers[id].left = ui.position.left;
 						map.misc_containers[id].top = ui.position.top;
 					}
