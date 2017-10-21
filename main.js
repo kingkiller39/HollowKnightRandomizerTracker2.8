@@ -216,8 +216,11 @@
 						width: 500,
 						title: "Export Config"
 					});
-
-					$('#tinyUrlText').val(toTiny(window.location.href.replace("editing=true",""), googleApikey));
+					
+					toTiny(window.location.href.replace("editing=true",""), googleApikey, function(value){
+						$('#tinyUrlText').val(value);
+					})
+					
 				});
 
 				$('#pageButtons').show();
@@ -902,10 +905,10 @@
 			return null;
 		}
 
-		function toTiny(url, apiKey) {
+		function toTiny(url, apiKey, callback) {
 
 			if (regexReplaceUrl.test(url)){ // only works if not local
-				return url;
+				callback(url);
 			}
 
 			$.ajax({
@@ -914,19 +917,19 @@
 				contentType: 'application/json; charset=utf-8',
 				data: JSON.stringify({ longUrl: url }),
 				success: function(response) {
-					return response.id;
+					callback(response.id);
 				}
 			 });
 		}
 
-		function fromTiny(url) {
+		function fromTiny(url, callback) {
 			$.ajax({
 				url: 'https://www.googleapis.com/urlshortener/v1/url',
 				type: 'GET',
 				contentType: 'application/json; charset=utf-8',
 				data: JSON.stringify({ shortUrl: url }),
 				success: function(response) {
-					return response.longUrl;
+					callback(response.longUrl);
 				}
 			 });
 		}
