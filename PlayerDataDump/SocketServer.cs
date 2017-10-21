@@ -24,7 +24,7 @@ namespace PlayerDataDump
                 case "random":
                     if (File.Exists(Application.persistentDataPath + "/rnd.js"))
                     {
-                        Send(getRandom());
+                        Send(GetRandom());
                     }
                     else
                     {
@@ -38,7 +38,10 @@ namespace PlayerDataDump
                     Send(String.Format("{{ \"version\":\"{0}\" }}", PlayerDataDump.version));
                     break;
                 case "json":
-                    Send(getJson());
+                    Send(GetJson());
+                    break;
+                case "relics":
+                    Send(GetRelics());
                     break;
                 default:
                     if (e.Data.Contains('|'))
@@ -56,7 +59,7 @@ namespace PlayerDataDump
                     }
                     else
                     {
-                        Send("random,mods,version,json,bool|{var},int|{var}");
+                        Send("random,mods,version,json,bool|{var},int|{var}|relics");
                     }
                     break;
             }
@@ -71,12 +74,12 @@ namespace PlayerDataDump
         {
             base.OnClose(e);
 
-            ModHooks.Instance.NewGameHook -= this.newGame;
-            ModHooks.Instance.SavegameLoadHook -= this.loadSave;
-            ModHooks.Instance.SetPlayerBoolHook -= this.echoBool;
-            ModHooks.Instance.SetPlayerIntHook -= this.echoInt;
+            ModHooks.Instance.NewGameHook -= this.NewGame;
+            ModHooks.Instance.SavegameLoadHook -= this.LoadSave;
+            ModHooks.Instance.SetPlayerBoolHook -= this.EchoBool;
+            ModHooks.Instance.SetPlayerIntHook -= this.EchoInt;
 
-            ModHooks.Instance.ApplicationQuitHook -= this.onQuit;
+            ModHooks.Instance.ApplicationQuitHook -= this.OnQuit;
 
             ModHooks.ModLog("[PlayerDataDump] CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
         }
@@ -88,15 +91,15 @@ namespace PlayerDataDump
 
         public void sendMessage(string var, string value)
         {
-            Send(String.Format("{{ {0} : {1}, {2} : {3} }}", "\"var\"", '"' + var + '"', "\"value\"", '"' + value + '"'));
+            Send(new Row(var, value).ToJsonElementPair);
         }
 
-        public void loadSave(int slot)
+        public void LoadSave(int slot)
         {
             sendMessage("SaveLoaded", "true");
         }
 
-        public void echoBool(string var, bool value)
+        public void EchoBool(string var, bool value)
         {
             if (var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
             {
@@ -105,7 +108,7 @@ namespace PlayerDataDump
         }
 
 
-        public void echoInt(string var, int value)
+        public void EchoInt(string var, int value)
         {
             if (var.EndsWith("Level") || var == "simpleKeys" || var == "nailDamage" || var == "maxHealth" || var == "MPReserveMax" || var.StartsWith("trinket") || var == "ore" || var == "rancidEggs" || var == "grubsCollected")
             {
@@ -113,11 +116,11 @@ namespace PlayerDataDump
             }
         }
 
-        public static string getJson()
+        public static string GetJson()
         {
             PlayerData playerData = PlayerData.instance;
             String json = JsonUtility.ToJson(playerData);
-
+            
             int randomFireballLevel = ModHooks.Instance.GetPlayerInt("_fireballLevel");
             int randomQuakeLevel = ModHooks.Instance.GetPlayerInt("_quakeLevel");
             int randomScreamLevel = ModHooks.Instance.GetPlayerInt("_screamLevel");
@@ -134,30 +137,63 @@ namespace PlayerDataDump
             return json;
         }
 
-        public static string getRandom()
+        public static string GetRandom()
         {
             String path = Application.persistentDataPath + "/rnd.js";
             String data = File.ReadAllText(path);
             return data;
         }
 
-        public void newGame()
+        public static string GetRelics()
         {
-            Send("{"
-    + "\"var\":\"NewSave\","
-    + "\"value\":\"true\""
-    + "}"
-    );
+            List<Row> relics = new List<Row>
+            {
+                new Row(nameof(PlayerData.instance.trinket1), PlayerData.instance.trinket1),
+                new Row(nameof(PlayerData.instance.trinket2), PlayerData.instance.trinket2),
+                new Row(nameof(PlayerData.instance.trinket3), PlayerData.instance.trinket3),
+                new Row(nameof(PlayerData.instance.trinket4), PlayerData.instance.trinket4)
+            };
+
+            return ToJson(relics);
+        }
+
+        public void NewGame()
+        {
+            sendMessage("NewSave", "true");
         }
 
 
-        public void onQuit()
+        public void OnQuit()
         {
-            Send("{"
-                + "\"var\":\"GameExiting\","
-                + "\"value\":\"true\""
-                + "}"
-                );
+            sendMessage("GameExiting", "true");
         }
+
+        public struct Row
+        {
+            public string var { get; set; }
+            public object value { get; set; }
+
+            public Row(string _var, object _value)
+            {
+                var = _var;
+                value = _value;
+            }
+
+            public string ToJsonElementPair => " { \"var\" : \"" + var + "\",  \"value\" :  \"" + value + "\" }";
+            public string ToJsonElement => $"\"{var}\" : \"{value}\"";
+        }
+
+        //I know there is a jsonhelper, but for the life of me, I could not get the serialization to work.
+        private static string ToJson(IEnumerable<Row> data)
+        {
+            StringBuilder ret = new StringBuilder();
+            ret.Append("{");
+            ret.Append(string.Join(",", data.Select(x => x.ToJsonElement).ToArray()));
+            ret.Append("}");
+            return ret.ToString();
+        }
+
     }
+
+
 }

@@ -17,7 +17,7 @@ namespace PlayerDataDump
     public class PlayerDataDump : Mod
     {
         public WebSocketServer wss = new WebSocketServer(11420);
-        public static String version = "19/10/17.a";
+        public static String version = "21/10/17.b";
         public static String current;
 
         public static string GetCurrentMods()
@@ -66,12 +66,12 @@ namespace PlayerDataDump
                     IgnoreExtensions = true
                   };
 
-                  ModHooks.Instance.NewGameHook += ss.newGame;
-                  ModHooks.Instance.SavegameLoadHook += ss.loadSave;
-                  ModHooks.Instance.SetPlayerBoolHook += ss.echoBool;
-                  ModHooks.Instance.SetPlayerIntHook += ss.echoInt;
+                  ModHooks.Instance.NewGameHook += ss.NewGame;
+                  ModHooks.Instance.SavegameLoadHook += ss.LoadSave;
+                  ModHooks.Instance.SetPlayerBoolHook += ss.EchoBool;
+                  ModHooks.Instance.SetPlayerIntHook += ss.EchoInt;
 
-                  ModHooks.Instance.ApplicationQuitHook += ss.onQuit;
+                  ModHooks.Instance.ApplicationQuitHook += ss.OnQuit;
 
                   return ss;
               }

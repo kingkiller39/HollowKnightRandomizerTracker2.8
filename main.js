@@ -692,22 +692,33 @@
 						case "screamLevel2":
 							data["screamLevel"]++;
 							break;
+						case "trinket1":
+						case "trinket2":
+						case "trinket3":
+						case "trinket4":
+							send("relics");
+							return;
 						default:
 							data[name] = value;
 							break;
 					}
 					
 				}
-				//Currently the individual events don't map properly for randomizer, asking for full dump instead until we have a auto-mapping.
+				
 			}else{
 				if (lastCommand == "random")
 				{
 					randomMap = minData;
 					send("json");
 					return;
+				}else if(lastCommand == "relics") {
+					console.log(minData);
+					$.each(minData, function(i, e) {
+						data[i] = e;
+					});
+				}else{
+					data = minData;
 				}
-					
-				data = minData;
 			}
 			
 			$.each(map.containers, function(i, container) {
@@ -803,7 +814,6 @@
 			});
 
 			$.each(map.misc_containers, function(name, item) {
-				console.log(item);
 				if (item.enabled || isEditing) {
 					var dataSource;
 					switch (item.dataSource) {
@@ -834,7 +844,6 @@
 			}
 			
 			
-				
 			
 			//updateUrlConfig();
 		}
