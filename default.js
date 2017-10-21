@@ -411,7 +411,14 @@ function getEntities() {
 			"name": "", "type":"item",
 			"multiple": true,
 			"order": 15
+<<<<<<< HEAD:default.js
 		},
+=======
+		}
+	},
+
+	"misc": {
+>>>>>>> master:map.json
 		"maskBrokenHegemol": {
 			"sprite": "beast_mask_break002.png",
 			"enabled": true,
