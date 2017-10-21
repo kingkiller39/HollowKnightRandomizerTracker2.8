@@ -527,7 +527,9 @@ function getDefault() {
 				top: 10,
 				width: 200,
 				height:20,
-				scale: 100
+				scale: 100,
+				color: "#FFFFFF",
+				fontSize: 16
 			},
 			"mode" : {
 				enabled: true,
@@ -538,7 +540,9 @@ function getDefault() {
 				top: 30,
 				width: 100,
 				height:20,
-				scale: 100
+				scale: 100,
+				color: "#FFFFFF",
+				fontSize: 16
 			}
 		},
 		"containers" : {

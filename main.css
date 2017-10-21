@@ -13,7 +13,7 @@
 	border-radius : 5px
 }
 
-	.editingDiv > .divMoveHandleBottom, .editingDiv > .divMoveHandleTop {
+	.editingDiv > .divMoveHandleBottom, .editingDiv > .divMoveHandleTop, .misc-container > .divMoveHandleBottom, .misc-container > .divMoveHandleTop {
 	display:none;  
 	}
 
@@ -194,4 +194,18 @@ div.counter {
 	border :1px solid #FFFFFF;
 	border-radius :5px;
 	width : 150px
+}
+
+label { 
+	width: 200px;
+	display: inline-block;
+}
+
+ul li {
+	margin-bottom:3px;
+}
+
+.disabled {
+	border: 1px solid #FF0000;
+	color: #FF0000 !important;
 }

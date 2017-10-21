@@ -138,6 +138,11 @@
 					width:500,
 					title: "Settings"
 				});
+
+				$('#miscSettingsDialog').show().dialog({
+					width:500,
+					title: "Settings"
+				}).dialog("close");
 				
 				$('#pageSettingsDialog').show().dialog({
 					width:500,
@@ -149,16 +154,29 @@
 				$(document.body).css({"background-color" : '#000000', "border" :"2px solid #00FF00"});
 
 				$('#containerSettingDialog').dialog("close");
-					$(document.body).contextMenu({
-								selector: '.container:not([id=disabled])', 
-								callback: function(key, options) {
-									loadSettings(options.$trigger[0].id);
-									$('#containerSettingDialog').dialog("open");
-								},
-								items: {
-									"settings": {name: "settings", icon: "settings"}
-								}
-							});
+				$(document.body).contextMenu({
+					selector: '.container:not([id=disabled])', 
+					callback: function(key, options) {
+						loadSettings(options.$trigger[0].id);
+						$('#miscSettingsDialoge').dialog('close');
+						$('#containerSettingDialog').dialog("open");
+					},
+					items: {
+						"settings": {name: "settings", icon: "settings"}
+					}
+				});
+
+				$(document.body).contextMenu({
+					selector: '.misc-container', 
+					callback: function(key, options) {
+						loadMiscSettings(options.$trigger[0].id);
+						$('#containerSettingDialog').dialog("close");
+						$('#miscSettingsDialog').dialog("open");
+					},
+					items: {
+						"settings": {name: "settings", icon: "settings"}
+					}
+				});
 				
 				$('#previewModeButton').on("click", function(e) {
 					$('.container, .misc-container').toggleClass('editingDiv');
@@ -166,7 +184,7 @@
 						$('.pageButton').show();
 						$(e.target).html("PREVIEW MODE");
 						$(document.body).css('background-image', 'unset');
-						$('#disabled').show();
+						$('.disabled').show();
 					}else{
 						$('.pageButton').hide();
 						$(e.target).show();
@@ -176,7 +194,7 @@
 							'background-repeat':'no-repeat',
 							'background-size': urlParams.width + 'px '+ urlParams.height + 'px'
 						});
-						$('#disabled').hide();
+						$('.disabled').hide();
 					}
 				});
 				
@@ -281,6 +299,36 @@
 						updateUrlConfig();
 					}
 				});
+				
+				$('#miscFontSize').on('change', function() {
+					var value = $('#miscFontSize').val();
+					map.misc_containers[currentId].fontSize = value;
+
+					if (isNumber(value)) {
+						$('#' + currentId).css("font-size", value + "px");
+						updateUrlConfig();
+					}
+				});
+
+				$('#miscFontColor').on('change', function() {
+					var value = $('#miscFontColor').val();
+					map.misc_containers[currentId].color = value;
+					
+					$('#' + currentId).css("color", value);
+					updateUrlConfig();
+				});
+
+				$('#miscEnabled').on('change', function() {
+					map.misc_containers[currentId].enabled = $('#miscEnabled').prop("checked");
+					
+					if (map.misc_containers[currentId].enabled) 
+						$('#' + currentId).removeClass('disabled');
+					else
+						$('#' + currentId).addClass('disabled');
+					
+					updateUrlConfig();
+				});
+
 			}
 		
 			$.each(map.containers, function(i, container) {
@@ -307,7 +355,7 @@
 				div.addClass('itemDivGrow' + container.growDirection);
 				
 				if (i == "disabled") {
-					div.css({ border : "#FF0000 1px solid", color: "#FF0000"});
+					div.addClass('disabled');
 					div.append($("<span></span>").html("HIDDEN/DISABLED"));
 				}
 				
@@ -352,18 +400,21 @@
 			
 
 			$.each(map.misc_containers, function(i, e) {
-				if (e.enabled) {
-					
+				if (e.enabled || isEditing) {
 					var div = $('<div></div>').attr('id', i).addClass('misc-container').css({
 						width: e.width + 'px',
 						height: e.height + 'px',
 						top: e.top + 'px',
 						left: e.left + 'px',
-						position: 'absolute'
+						position: 'absolute',
+						'font-size': e.fontSize + "px",
+						color: e.color
 					});
 					if (isEditing)
 						makeDivMovable(div, e);
 
+					if (!e.enabled)
+						div.addClass('disabled');
 					$('body').append(div);
 				}
 			});
@@ -511,6 +562,21 @@
 				
 			if ("growDirection" in container) 
 				$('#growDirection').val(container.growDirection);
+		}
+
+		function loadMiscSettings(id) {
+			currentId = id;
+			var container = map.misc_containers[id];
+			if ("color" in container) 
+				$('#miscFontColor').val(container.color);
+			
+			if ("enabled" in container)
+				$('#miscEnabled').prop("checked", container.enabled);
+				
+			if ("fontSize" in container) 
+				$('#miscFontSize').val(container.fontSize);
+				
+
 		}
 		
 		function updateContainerItemOrder(event, ui) {
@@ -740,7 +806,7 @@
 
 			$.each(map.misc_containers, function(name, item) {
 				console.log(item);
-				if (item.enabled) {
+				if (item.enabled || isEditing) {
 					var dataSource;
 					switch (item.dataSource) {
 						case "randomMap":
