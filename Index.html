@@ -1,547 +1,84 @@
 <html>
-<head>
-<script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script>
-  <script type="text/javascript" src="localMap.js"></script>
-  <script type="text/javascript">
-  
-  $( document ).ready(function() {
-		var map;
-		var playerData;
-		var ws;	
-		console.log('hi2');
-		if (getParameterByName('isLocal') == "true") {
-			console.log('hi');
-			localLoad(init);
-		}else{
-			//Initialize icons
-			$.getJSON("map.json")
-				.done(init)
-				.fail(function(xhr, status, error) {
-					console.log(status);
-					console.log(error);
-				});
-		}
-		function init(data) {
-							
-				map = data;
-					$.each(getSubSortKeys(map["charms"]), function(i,e) {
-						var charm = map["charms"][e];
-						if (!charm.enabled)
-							return;
-						
-						var div = $("<div></div>").addClass('hideIfSet');
-						var img = $('<img></img>').attr({ 'src': "images/" + charm.sprite, 'id': 'charm_'+e });
-						
-						if (i % 9 == 0) //This just matches what's in the game's inventory, you don't *have* to break on 9, but why confuse folks?
-							div.css({"clear":"both"});
-						div.append(img);
-						$('#charms').append(div);
-					});
-					$.each(getSubSortKeys(map.spells), function(i,e) {
-						var spell = map.spells[e];
-						
-						if (!spell.enabled)
-							return;
-							
-						var div = $("<div></div>").addClass('hideIfSet');
-						var img = $('<img></img>').attr({ 'src': "images/" + spell.levelSprites[0], 'id': 'spell_'+e });
+  <head>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"></script>
+      <script
+      src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
+      integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
+      crossorigin="anonymous"></script>
+      
+      <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+      
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.2/jquery.contextMenu.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.2/jquery.ui.position.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.2/jquery.contextMenu.min.css">
+      
+      
+      
+      <script type="text/javascript" src="lz-string.min.js"></script>
+      <script type="text/javascript" src="default.js"></script>
+      
+      <link rel="stylesheet" href="main.css">
+      <script type="text/javascript" src="main.js"></script>
 
-						div.append(img);
-						$('#spells').append(div);
-					});
-					$.each(getSubSortKeys(map.skills), function(i,e) {
-						var skill = map.skills[e];
-						if (!skill.enabled)
-							return;
-							
-						var div = $("<div></div>").addClass('hideIfSet');
-						var img = $('<img></img>').attr({ 'src': "images/" + skill.sprite, 'id': 'skill_'+e });
-																		
-						div.append(img);
-						$('#skills').append(div);
-					});
-					
-					$.each(getSubSortKeys(map.items), function(i,e) {
-						var item = map.items[e];
-						if (!item.enabled)
-							return;
-							
-						var div = $("<div></div>").addClass('hideIfSet');
-						var img = $('<img></img>').attr({ 'src': "images/" + item.sprite, 'id': 'item_'+e });
-						div.append(img);
-						
-						if ("multiple" in item && item.multiple) {
-							var countDiv = $('<div></div>').attr({ 'id':'item_' + e + '_count'});
-							countDiv.addClass('counter');
-							div.append(countDiv);
-						}
-						
-						$('#items').append(div);
-					});
-					
-					$.each(getSubSortKeys(map.misc), function(i,e) {
-						var misc = map.misc[e];
-						if (!misc.enabled)
-							return;
-							
-						var div = $("<div></div>").addClass('hideIfSet');
-						var img = $('<img></img>').attr({ 'src': "images/" + misc.sprite, 'id': 'misc_'+e });
-																		
-						div.append(img);
-						$('#misc').append(div);
-					});
-					
-					connect();
-		}
-		
-		function connect() {
-			console.log("Connecting");
-			try {
-				var url = "localhost";
-				var overrideUrl = getParameterByName("url");
-
-				if (overrideUrl != undefined  && overrideUrl != null)
-					url = overrideUrl;
-					
-				ws = new WebSocket("ws://" + url + ":11420/playerData");
-				ws.onerror = function (error) {
-					console.log(error);
-				}
-				ws.onopen = getPlayerData;
-				
-				ws.onmessage = function (evt) 
-				{ 
-					var received_msg = evt.data;
-					
-					var json = JSON.parse(received_msg);
-					updatePlayerData(json);
-				}
-				ws.onclose = function(){
-					// Try to reconnect in 5 seconds
-					setTimeout(function(){connect()}, 5000);
-				};
-			}catch(e) {
-				console.log(e);
-			}
-			
-		}
-				
-		function getPlayerData() {
-			console.log("Refreshing data");
-			ws.send("json");
-		}
-		
-		function updatePlayerData(minData) {
-			
-			if ("var" in minData) {
-			console.log(minData);
-				//data[minData.var] = minData.value;
-				//Currently the individual events don't map properly for randomizer, asking for full dump instead until we have a auto-mapping.
-				ws.send("json");
-				return;
-			}else{
-			
-				data = minData;
-				console.log(data);
-			}
-			
-			$.each(map.charms, function(i,e) {
-				if (!e.enabled)
-					return;
-				if (i in data) {
-					setSelcted(data[i], "#charm_" + i);
-					
-					if (data[i.replace('got', 'equipped')] && !$('#charm_'+i).hasClass('equipped') )
-						$('#charm_'+i).addClass('equipped');
-					else if (!data[i.replace('got', 'equipped')] && $('#charm_'+i).hasClass('equipped'))
-						$('#charm_'+i).removeClass('equipped')
-						
-					var brokenId = i.replace("got","broken");
-					if (brokenId in data) {
-						if (data[brokenId]) {
-							$('#charm_' + i).attr('src', "images/" + e.brokenSprite);
-						}else{
-							$('#charm_' + i).attr('src', "images/" + e.sprite);
-						}
-					}
-					
-				}
-			});
-			
-			$.each(map.spells, function(i,e) {
-				if (!e.enabled)
-					return;
-				if (i in data) {
-					setSelcted(data[i] > 0, "#spell_" + i);
-					if (data[i] == 2 && $("#spell_" + i).attr("src") != e.levelSprites[1])
-						$("#spell_" + i).attr("src", "images/" + e.levelSprites[1]);
-					else if (data[i] != 2 && $("#spell_" + i).attr("src") == e.levelSprites[1])
-						$("#spell_" + i).attr("src", "images/" + e.levelSprites[0]);
-				}
-			});
-			
-			$.each(map.skills, function(i,e) {
-				if (!e.enabled)
-					return;
-				if (i in data) {
-					setSelcted(data[i], "#skill_" + i);
-				}
-			});
-			
-			$.each(map.items, function(i,e) {
-				if (!e.enabled)
-					return;
-					
-				if (i in data) {
-					if (! ("multiple" in e))
-						setSelcted(data[i], "#item_" + i);
-					else
-					{
-						setMultipleSelected(data[i] > 0, "#item_" + i);
-						if (data[i] > 0) {
-							$('#item_' + i + '_count').html(data[i]).show();
-						}else{
-							$('#item_' + i + '_count').hide();
-						}
-					}
-				}
-			});
-			
-			$.each(map.misc, function(i,e) {
-				if (!e.enabled)
-					return;
-				if (i in data) {
-					setSelcted(data[i], "#misc_" + i);
-				}
-			});
-			
-			if ($('#misc_hasDreamNail').hasClass("selected") && $('#misc_dreamNailUpgraded').hasClass("selected"))
-				$('#misc_hasDreamNail').removeClass("selected").parent().hide();
-			else if ($('#misc_hasDreamNail').hasClass("selected") && !$('#misc_dreamNailUpgraded').hasClass("selected"))
-				$('#misc_dreamNailUpgraded').removeClass("selected").parent().hide();
-			else
-				$('#misc_dreamNailUpgraded').removeClass("selected").parent().hide();
-			
-			//setTimeout(getPlayerData, 2000);
-		}
-		
-		function setSelcted(has, id) {
-			if (has && !$(id).hasClass('selected')) 
-				$(id).addClass('selected').parent().removeClass('hideIfSet');
-			else if (!has && $(id).hasClass('selected'))
-				$(id).removeClass('selected').parent().addClass('hideIfSet');
-		}
-		
-		function setMultipleSelected(has, id) {
-			if (has && !$(id).hasClass('multiple')) 
-				$(id).addClass('multiple').parent().removeClass('hideIfSet');
-			else if (!has && $(id).hasClass('multiple'))
-				$(id).removeClass('multiple').parent().addClass('hideIfSet');
-		}
-		
-		function getSubSortKeys(list) {
-			return Object.keys(list).sort(function(a,b){
-				if (list[a].order < list[b].order)
-					return -1;
-				if (list[a].order > list[b].order)
-					return 1;
-				return 0;
-			});
-		}
-		
-		function getParameterByName(name, url) {
-			if (!url) url = window.location.href;
-			name = name.replace(/[\[\]]/g, "\\$&");
-			var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-				results = regex.exec(url);
-			if (!results) return null;
-			if (!results[2]) return '';
-			return decodeURIComponent(results[2].replace(/\+/g, " "));
-		}
-});
-  </script>
-  <style>
-    
-	.hideIfSet {
-		display:none;
-	}
-	
-	.hideIfSet img{
-		display:none;
-	}
-	
-	body.sm > #charms img {
-		zoom: 25%;
-	}
-	body.med > #charms img {
-		zoom: 50%;
-	}
-	body.lg > #charms img {
-		zoom: 75%;
-	}
-	
-	body.sm > #charms div {
-		width: 43px;
-		height:43px;
-	}
-	body.med > #charms div {
-		width: 82px;
-		height:82px;
-	}
-	body.lg > #charms div {
-		width: 123px;
-		height:123px;
-	}
-	
-	body.sm > #spells img {
-		zoom: 33%;
-		padding: 5px;
-	}
-	body.med > #spells img {
-		zoom: 50%;
-		padding: 5px;
-	}
-	body.lg > #spells img {
-		zoom: 66%;
-		padding: 5px;
-	}
-	
-	body.sm > #spells div {
-		margin-left:11px;
-		width: 41px;
-		height:41px;
-	}
-	body.med > #spells div {
-		width: 82px;
-		height:82px;
-	}
-	body.lg > #spells div {
-		width: 123px;
-		height:123px;
-	}
-	
-	body.sm > #skills img {
-		zoom: 33%;
-		padding: 5px;
-	}
-	body.med > #skills img {
-		zoom: 50%;
-		padding: 5px;
-	}
-	body.lg > #skills img {
-		zoom: 66%;
-		padding: 5px;
-	}
-	
-	body.sm > #skills div {
-		margin-left:11px;
-		width: 41px;
-		height:41px;
-	}
-	body.med > #skills div {
-		width: 82px;
-		height:82px;
-	}
-	body.lg > #skills div {
-		width: 123px;
-		height:123px;
-	}
-	
-	body.sm > #items img {
-		zoom: 33%;
-		padding: 5px;
-	}
-	body.med > #items img {
-		zoom: 50%;
-		padding: 5px;
-	}
-	body.lg > #items img {
-		zoom: 66%;
-		padding: 5px;
-	}
-	
-	body.sm > #items div {
-		margin-left:11px;
-		width: 41px;
-		height:41px;
-	}
-	body.med > #items div {
-		width: 82px;
-		height:82px;
-	}
-	body.lg > #items div {
-		width: 123px;
-		height:123px;
-	}
-
-	body.sm > #misc img {
-		zoom: 25%;
-	}
-	body.med > #misc img {
-		zoom: 50%;
-	}
-	body.lg > #misc img {
-		zoom: 75%;
-	}
-	
-	body.sm > #misc div {
-		width: 43px;
-		height:43px;
-	}
-	body.med > #misc div {
-		width: 82px;
-		height:82px;
-	}
-	body.lg > #misc div {
-		width: 123px;
-		height:123px;
-	}
-	
-	#charms div {
-		background: url(images/slotBGsm.png) no-repeat;
-		background-position: center;
-		display:block;
-	}
-	
-	#charms img {
-		display:none;
-	}
-	
-	#spells div, #skills div, #misc div {
-		display:block;
-	}
-	
-	#spells img, #skills img, #misc img {
-		-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
-		filter: grayscale(100%);
-		position: relative;
-		top: 50%;
-		transform: translateY(-50%);
-		display:block;
-	}
-	
-	#spells img, #skills img, #items img, #misc img {
-		-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
-		filter: grayscale(100%);
-		position: relative;
-		top: 50%;
-		transform: translateY(-50%);
-		
-	}
-	#charms img.selected {
-		display:block;
-	}
-	
-	#spells img.selected, #skills img.selected, #items img.selected, #misc img.selected {
-		-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
-		filter: grayscale(0%);
-		border-radius: 50%;
-		box-shadow: 0px 0px 40px 10px #07ff6e;
-		display:block;
-	}
-	
-	#charms img.equipped, #spells img.equipped, #skills img.equipped {
-		border-radius: 50%;
-		box-shadow: 0px 0px 40px 10px #07ff6e;
-	}
-
-	#charms {
-		position:absolute;
-		bottom:10px;
-		left:10px;
-	}
-	
-	#charms div {
-		width: 164px;
-		height:164px;
-		vertical-align: middle;
-		float:left;
-
-	}
-	
-	#spells div {
-		float: left;
-		margin-left: 25px;
-		vertical-align: middle;
-	}
-	
-	#spells {
-		position:absolute;
-		bottom:75px;
-		right:10px;
-	}
-	
-	#skills div {
-		width: 164px;
-		height:164px;
-		vertical-align: middle;
-		float:left;
-
-	}
-	
-	#skills {
-		position:absolute;
-		bottom:10px;
-		right:10px;
-	}
-	
-	#items > div {
-		width: 164px;
-		height:164px;
-		vertical-align: middle;
-		float:left;
-		position:relative;
-	}
-	
-	#items {
-		position:absolute;
-		top:10px;
-		right:10px;
-	}
-	
-	#items img.multiple {
-		filter: grayscale(0%);
-	}
-	
-	#misc {
-		position:absolute;
-		top: 75px;
-		right: 10px;
-	}
-	
-	#misc > div {
-		width: 164px;
-		height:164px;
-		vertical-align: middle;
-		float:left;
-		position:relative;
-	}
-	
-	#items div.counter {
-		width: 19px !important;
-		height: 19px !important;
-		border-radius: 50%;
-		box-shadow: 0px 0px 5px 2px #FFFFFF;
-		position: absolute;
-		top: 25px;
-		left: 20px;
-		background-color: #000000;
-		color: #FFFFFF;
-		text-align: center;
-		vertical-align: middle;
-		display:none;
-	}
-
-  </style>
   </head>
-  <body class="sm">
-	<div id="charms"></div>
-	<div id="spells"></div>
-	<div id="skills"></div>
-	<div id="items"></div>
-	<div id="misc"></div>
+  <body>
+    <div style="display:none" id="pageButtons">
+      <div id="previewModeButton" class="pageButton">Preview Mode</div>
+      <div id="pageSettingsButton" class="pageButton">Page Settings</div>
+      <div id="toggleSnapButton" class="pageButton" style="color: #00FF00;">Toggle Snap</div>
+      <div id="getTinyUrl" class="pageButton">Get Config Url</div>
+    </div>
+    <div style="display:none" id="tinyUrlDiv">
+      This is your overlay, copy this URL and paste it into the Browser Source URL in OBS:
+      <input type="text" id="tinyUrlText" style="width:400px" /><br />
+
+      <input type="button" id="copyUrl" value="Copy to Clipboard" /><br />
+
+    </div>
+    <div style="display:none" id="containerSettingDialog">
+      <ul style="list-style-type:none">
+        <li><label for="scale">Scale:</label><input type="text" id="scale" /></li>
+        <li><label for="hideWhenMissing">Hide Icon When Missing:</label><input type="checkbox" id="hideWhenMissing" /></li>
+        <li><label for="flourish">Flourish:</label><select id="flourish">
+          <option value="none">None</option>
+          <option value="topLeft">Top Left</option>
+          <option value="topRight">Top Right</option>
+        </select></li>
+        <li><label for="growDirection">Grow From:</label><select id="growDirection">
+          <option value="Left">Left To Right</option>
+          <option value="Right">Right To Left</option>
+        </select></li>
+      </ul>
+    </div>
+    <div style="display:none" id="pageSettingsDialog">
+      <ul style="list-style-type:none">
+        <li><label for="pageWidth">Page Width:</label><input type="text" id="pageWidth" /></li>
+        <li><label for="pageHeight">Page Height:</label><input type="text" id="pageHeight" /></li>
+      </ul>
+    </div>
+    <div style="display:none" id="initialSettingsDialog">
+      <p>
+        Hey There!  Looks like you've never setup the Hollow Knight OBS Overlay before (or this is the first time since the big 2.0 release of the overlay).  To get started, lets set a few things up.  If you're seeing this message in OBS, take the URL for this page and go over to Chrome/FireFox/IE and go through the setup. Once done you'll be given a new URL for OBS that contains your setup.
+        <br />  <br />  
+        For Page Width and Height, this should be the size, in pixels, that you normally capture HK with in OBS.  Common values are 1920x1080 & 1080x720.  
+        <br /> <br />  
+        Next you'll be given the ability to move stuff around the page.  The green border signifies the area that you'll be displaying in OBS.  Icons can be moved from container to container or reordered within the container.  Icons moved into the Red/Disabled container will be hidden even if you pick them up.
+      </p>
+      <ul style="list-style-type:none">
+        <li><label for="setupPageWidth">Page Width:</label><input type="text" id="setupPageWidth" value="1920" /></li>
+        <li><label for="setupPageHeight">Page Height:</label><input type="text" id="setupPageHeight" value="1080" /></li>
+      </ul>
+    </div>
+    <div style="display:none" id="miscSettingsDialog">
+      <ul style="list-style-type:none;">
+      <li><label for="miscEnabled">Enabled:</label><input type="checkbox" id="miscEnabled" /></li>
+      <li><label for="miscFontSize">Font Size:</label><input type="text" id="miscFontSize" /></li>
+      <li><label for="miscFontColor">Color:</label><input type="text" id="miscFontColor" /></li>
+      </ul>
+    </div>
   </body>
-  </html>
+</html>
+  
