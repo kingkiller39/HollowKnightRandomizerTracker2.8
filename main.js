@@ -216,7 +216,7 @@
 						width: 500,
 						title: "Export Config"
 					});
-					
+
 					toTiny(window.location.href.replace("editing=true",""), googleApikey, function(value){
 						$('#tinyUrlText').val(value);
 					})
@@ -854,7 +854,8 @@
 		function updateVisible() {
 			$('.hideIfSet > div.itemDiv:not(:has(>.selected)):not(:has(>.multiple))').hide();
 			$('.container:not(.hideIfSet) div.itemDiv').css("display", "block");
-			$('.container.hideIfSet div.itemDiv:has(>.selected):has(>.multiple)').css("display", "block");
+			$('.container.hideIfSet div.itemDiv:has(>.selected)').css("display", "block");
+			$('.container.hideIfSet div.itemDiv:has(>.multiple)').css("display", "block");
 		}
 		
 		function updateUrlConfig() {
