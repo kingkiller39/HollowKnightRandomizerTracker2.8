@@ -239,7 +239,10 @@
 				$('#scale').on('change', function() {
 					map.containers[currentId].scale = $('#scale').val();
 					$('#' + currentId + ' .itemDiv img').each(function(i,e) {
-						$(e).css('zoom', $('#scale').val() + "%");
+						var scale = $('#scale').val();
+						$(e).css('zoom', scale + "%");
+						$(e).parent().css("width", (1 + (156 * (scale/100))) + "px");
+						$(e).parent().css("height", (1 + (156 * (scale/100))) + "px");
 					});
 					updateUrlConfig();
 				});
@@ -495,6 +498,8 @@
 					img.attr('src', "images/" + item.sprite);
 					itemDiv.addClass('charmDiv');
 					itemDiv.removeClass("hideIfSet");
+					itemDiv.css("width", (1 + (156 * (container.scale/100))) + "px");
+					itemDiv.css("height", (1 + (156 * (container.scale/100))) + "px");
 					break;
 					
 				case "spell":
