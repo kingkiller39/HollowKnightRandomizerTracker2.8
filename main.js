@@ -522,6 +522,15 @@
 				case "generic":
 					img.attr('src', "images/" + item.sprite);
 					break;	
+				case "charmNotch":
+					img.attr('src', "images/" + item.sprite);
+					var countDiv = $('<div></div>').attr({ 'id': name + '_Filledcount'});
+					countDiv.addClass('charmSlotsFilled').css("display", "block");
+					itemDiv.append(countDiv);
+					countDiv = $('<div></div>').attr({ 'id': name + '_count'});
+					countDiv.addClass('counter').css("display", "block");
+					itemDiv.append(countDiv);
+					break;
 				default:
 					break;
 			}
@@ -811,7 +820,18 @@
 
 								
 								break;
-								
+							case "charmNotch": 
+								if (data[name] > 0) {
+									setMultipleSelected(data[name] > 0, id);
+									$(id + '_Filledcount').html(data.charmSlotsFilled);
+									$(id + '_count').html(data.charmSlots);
+									if (data.charmSlots < data.charmSlotsFilled)
+										$(id + '_Filledcount').css('color', "#FF0000");
+									else
+										$(id + '_Filledcount').css('color', "#FFFFFF");
+
+								}
+							break;
 							case "generic":
 								setSelected(data[name], id);
 								

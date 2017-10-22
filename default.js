@@ -507,6 +507,13 @@ function getEntities() {
 			"enabled": true,
 			"name": "Teatcher Mask", "type":"generic",
 			"order": 5
+		},
+		"charmSlots" :{
+			"sprite": "Notch.png",
+			"enabled": true,
+			"name": "Charm Notch",
+			"type":"charmNotch",
+			"order": 10
 		}
 	};
 }
@@ -677,7 +684,8 @@ function getDefault() {
 				"items": [
 					"hasDreamNail",
 					"dreamNailUpgraded",
-					"hasDreamGate"
+					"hasDreamGate",
+					"charmSlots"
 				]	
 			},
 			"disabled": {

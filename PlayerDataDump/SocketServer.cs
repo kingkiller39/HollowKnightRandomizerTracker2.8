@@ -12,6 +12,9 @@ namespace PlayerDataDump
 {
     class SocketServer : WebSocketBehavior
     {
+        
+        private static HashSet<string> intKeysToSend = new HashSet<string> {"simpleKeys", "nailDamage", "maxHealth", "MPReserveMax", "ore", "rancidEggs", "grubsCollected", "charmSlotsFilled", "charmSlots" };
+
         public void Broadcast(String s)
         {
             Sessions.Broadcast(s);
@@ -110,7 +113,7 @@ namespace PlayerDataDump
 
         public void EchoInt(string var, int value)
         {
-            if (var.EndsWith("Level") || var == "simpleKeys" || var == "nailDamage" || var == "maxHealth" || var == "MPReserveMax" || var.StartsWith("trinket") || var == "ore" || var == "rancidEggs" || var == "grubsCollected")
+            if (intKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") )
             {
                 sendMessage(var, value.ToString());
             }

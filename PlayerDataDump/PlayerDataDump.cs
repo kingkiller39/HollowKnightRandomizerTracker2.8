@@ -17,7 +17,7 @@ namespace PlayerDataDump
     public class PlayerDataDump : Mod
     {
         public WebSocketServer wss = new WebSocketServer(11420);
-        public static String version = "21/10/17.b";
+        public static String version = "22/10/17.b";
         public static String current;
 
         public static string GetCurrentMods()
