@@ -30,12 +30,23 @@
       <div id="pageSettingsButton" class="pageButton">Page Settings</div>
       <div id="toggleSnapButton" class="pageButton" style="color: #00FF00;">Toggle Snap</div>
       <div id="getTinyUrl" class="pageButton">Get Config Url</div>
+      <div id="profiles" class="pageButton">
+        <span>Profile:</span>
+        <div id="profile1">1</div>
+        <div id="profile2">2</div>
+        <div id="profile3">3</div>
+      </div>
     </div>
     <div style="display:none" id="tinyUrlDiv">
-      This is your overlay, copy this URL and paste it into the Browser Source URL in OBS:
+      This is your overlay, copy this URL and paste it into the Browser Source URL in OBS.  It will not change.
+      <input type="text" id="urlText" style="width:400px" /><br />
+
+      <input type="button" id="copyUrl" value="Copy URL to Clipboard" /><br /><br />
+      
+      Someone want your layout setup?  Send them this:
       <input type="text" id="tinyUrlText" style="width:400px" /><br />
 
-      <input type="button" id="copyUrl" value="Copy to Clipboard" /><br />
+      <input type="button" id="copyTinyUrl" value="Copy Export URL to Clipboard" /><br />
 
     </div>
     <div style="display:none" id="containerSettingDialog">
@@ -78,6 +89,19 @@
       <li><label for="miscFontSize">Font Size:</label><input type="text" id="miscFontSize" /></li>
       <li><label for="miscFontColor">Color:</label><input type="text" id="miscFontColor" /></li>
       </ul>
+    </div>
+    <div style="display:none" id="importDialog">
+      <p>
+        Looks like you're loading in a config from the URL.  This might be because you've just added the profile feature in Overlay 2.1.  If so, just select profile 1.<br />
+
+        If you're importing a layout from another runner, but don't want to overwrite your current layout, pick a profile you haven't used before.
+
+        <select id="importProfileSelect">
+          <option value="1">Profile 1</option>
+          <option value="2">Profile 2</option>
+          <option value="3">Profile 3</option>
+        </select>
+      </p>
     </div>
   </body>
 </html>

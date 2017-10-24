@@ -72,10 +72,17 @@ namespace PlayerDataDump
                   ModHooks.Instance.SetPlayerIntHook += ss.EchoInt;
 
                   ModHooks.Instance.ApplicationQuitHook += ss.OnQuit;
-
                   return ss;
               }
             );
+            wss.AddWebSocketService<ProfileStorageServer>("/ProfileStorage", () => {
+                ProfileStorageServer ss = new ProfileStorageServer() {
+                    IgnoreExtensions = true
+                    };
+                    return ss;
+                }
+            );
+
             wss.Start();
 
             ModHooks.ModLog("Initialized PlayerDataDump");
