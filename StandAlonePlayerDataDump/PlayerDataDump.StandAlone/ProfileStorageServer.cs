@@ -6,13 +6,9 @@ using WebSocketSharp.Server;
 
 namespace PlayerDataDump.StandAlone
 {
-    class ProfileStorageServer : WebSocketBehavior
+    internal class ProfileStorageServer : WebSocketBehavior
     {
         private string _path;
-
-        public ProfileStorageServer()
-        {
-        }
 
         public void Init(string path)
         {
@@ -34,15 +30,15 @@ namespace PlayerDataDump.StandAlone
                 string[] temp = e.Data.Split('|');
                 if (int.TryParse(temp[1], out int profileId))
                 {
-                    Send(profileId + "|" + getProfile(profileId));
+                    Send(profileId + "|" + GetProfile(profileId));
                 }
             }else if (e.Data.StartsWith("save"))
             {
                 string[] temp = e.Data.Split('|');
                 if (int.TryParse(temp[1], out int profileId))
                 {
-                    saveProfile(profileId, temp[2]);
-                    Broadcast(profileId + "|" + getProfile(profileId));
+                    SaveProfile(profileId, temp[2]);
+                    Broadcast(profileId + "|" + GetProfile(profileId));
                 }
             }else
             {
@@ -50,21 +46,18 @@ namespace PlayerDataDump.StandAlone
             }
         }
 
-        private string getProfile(int i)
+        private string GetProfile(int i)
         {
-            String path = _path + $"/OverlayProfile.{i}.js";
-            if (File.Exists(path))
-            {
-                string data = File.ReadAllText(path);
-                return Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
-            }
+            string path = _path + $"/OverlayProfile.{i}.js";
+            if (!File.Exists(path)) return "undefined";
 
-            return "undefined";
+            string data = File.ReadAllText(path);
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
         }
 
-        private void saveProfile(int profileId, string base64EncodedJson)
+        private void SaveProfile(int profileId, string base64EncodedJson)
         {
-            String path = _path + $"/OverlayProfile.{profileId}.js";
+            string path = _path + $"/OverlayProfile.{profileId}.js";
             byte[] data = Convert.FromBase64String(base64EncodedJson);
             string decodedString = Encoding.UTF8.GetString(data);
 

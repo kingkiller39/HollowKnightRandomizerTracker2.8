@@ -1,12 +1,6 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace PlayerDataDump.StandAlone
 {
@@ -21,7 +15,7 @@ namespace PlayerDataDump.StandAlone
             PlayerData.instance = JsonConvert.DeserializeObject<SaveGameData>(Decrypt(toDecrypt)).playerData;
         }
 
-        private string Decrypt(string data)
+        private static string Decrypt(string data)
         {
             return StringEncrypt.DecryptData(data);
         }

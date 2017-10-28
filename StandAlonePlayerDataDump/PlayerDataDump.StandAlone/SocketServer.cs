@@ -9,17 +9,12 @@ using WebSocketSharp.Server;
 
 namespace PlayerDataDump.StandAlone
 {
-    class SocketServer : WebSocketBehavior
+    internal class SocketServer : WebSocketBehavior
     {
         private string _path;
         private SaveGameManager _saveGameManager;
         private JsonSerializerSettings _jsonSerializerSettings;
         private FileSystemWatcher _fileSystemWatcher;
-        private DateTime _lastEventTime;
-
-        public SocketServer() {
-
-        }
 
         public void Init(string path)
         {
@@ -41,7 +36,6 @@ namespace PlayerDataDump.StandAlone
 
             _fileSystemWatcher.Changed += FileSystemWatcher_Update;
             _fileSystemWatcher.Created += FileSystemWatcher_Update;
-            _lastEventTime = DateTime.Now;
 
             if(File.Exists(_path + "/user1.dat"))
             {
@@ -52,16 +46,15 @@ namespace PlayerDataDump.StandAlone
 
         private void FileSystemWatcher_Update(object sender, FileSystemEventArgs e)
         {
-            if (State == WebSocketState.Open)
-            {
-                _saveGameManager.Load(e.FullPath);
-                Send(GetJson());
-            }
+            if (State != WebSocketState.Open) return;
+
+            _saveGameManager.Load(e.FullPath);
+            Send(GetJson());
         }
 
         // private static HashSet<string> intKeysToSend = new HashSet<string> {"simpleKeys", "nailDamage", "maxHealth", "MPReserveMax", "ore", "rancidEggs", "grubsCollected", "charmSlotsFilled", "charmSlots" };
 
-        public void Broadcast(String s)
+        public void Broadcast(string s)
         {
             if (State == WebSocketState.Open)
             {
@@ -80,7 +73,7 @@ namespace PlayerDataDump.StandAlone
                     Send("{}");
                     break;
                 case "version":
-                    Send(String.Format("{{ \"version\":\"{0}\" }}", PlayerDataDump.version));
+                    Send(string.Format("{{ \"version\":\"{0}\" }}", PlayerDataDump.Version));
                     break;
                 case "json":
                     Send(GetJson());
@@ -94,12 +87,12 @@ namespace PlayerDataDump.StandAlone
                         if (e.Data.Split('|')[0] == "bool")
                         {
                             string b = PlayerData.instance.GetBool(e.Data.Split('|')[1]).ToString();
-                            sendMessage(e.Data.Split('|')[1], b);
+                            SendMessage(e.Data.Split('|')[1], b);
                         }
                         if (e.Data.Split('|')[0] == "int")
                         {
                             string i = PlayerData.instance.GetInt(e.Data.Split('|')[1]).ToString();
-                            sendMessage(e.Data.Split('|')[1], i);
+                            SendMessage(e.Data.Split('|')[1], i);
                         }
                     }
                     else
@@ -127,28 +120,10 @@ namespace PlayerDataDump.StandAlone
             Console.WriteLine("[PlayerDataDump] OPEN");
         }
 
-        public void sendMessage(string var, string value)
+        public void SendMessage(string var, string value)
         {
             Send(new Row(var, value).ToJsonElementPair);
         }
-
-        
-        //public void EchoBool(string var, bool value)
-        //{
-        //    if (var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
-        //    {
-        //        sendMessage(var, value.ToString());
-        //    }
-        //}
-
-
-        //public void EchoInt(string var, int value)
-        //{
-        //    if (intKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") )
-        //    {
-        //        sendMessage(var, value.ToString());
-        //    }
-        //}
 
         public string GetJson()
         {
@@ -171,13 +146,15 @@ namespace PlayerDataDump.StandAlone
      
         public struct Row
         {
+            // ReSharper disable once InconsistentNaming
             public string var { get; set; }
+            // ReSharper disable once InconsistentNaming
             public object value { get; set; }
 
-            public Row(string _var, object _value)
+            public Row(string var, object value)
             {
-                var = _var;
-                value = _value;
+                this.var = var;
+                this.value = value;
             }
 
             public string ToJsonElementPair => " { \"var\" : \"" + var + "\",  \"value\" :  \"" + value + "\" }";

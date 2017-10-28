@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WebSocketSharp;
@@ -10,12 +9,17 @@ using System.IO;
 
 namespace PlayerDataDump
 {
-    class SocketServer : WebSocketBehavior
+    internal class SocketServer : WebSocketBehavior
     {
-        
-        private static HashSet<string> intKeysToSend = new HashSet<string> {"simpleKeys", "nailDamage", "maxHealth", "MPReserveMax", "ore", "rancidEggs", "grubsCollected", "charmSlotsFilled", "charmSlots" };
 
-        public void Broadcast(String s)
+        public SocketServer()
+        {
+            IgnoreExtensions = true;
+        }
+
+        private static readonly HashSet<string> IntKeysToSend = new HashSet<string> {"simpleKeys", "nailDamage", "maxHealth", "MPReserveMax", "ore", "rancidEggs", "grubsCollected", "charmSlotsFilled", "charmSlots" };
+
+        public void Broadcast(string s)
         {
             Sessions.Broadcast(s);
         }
@@ -38,7 +42,7 @@ namespace PlayerDataDump
                     Send(PlayerDataDump.GetCurrentMods());
                     break;
                 case "version":
-                    Send(String.Format("{{ \"version\":\"{0}\" }}", PlayerDataDump.version));
+                    Send(string.Format("{{ \"version\":\"{0}\" }}", PlayerDataDump.Version));
                     break;
                 case "json":
                     Send(GetJson());
@@ -52,12 +56,12 @@ namespace PlayerDataDump
                         if (e.Data.Split('|')[0] == "bool")
                         {
                             string b = ModHooks.Instance.GetPlayerBool(e.Data.Split('|')[1]).ToString();
-                            sendMessage(e.Data.Split('|')[1], b);
+                            SendMessage(e.Data.Split('|')[1], b);
                         }
                         if (e.Data.Split('|')[0] == "int")
                         {
                             string i = ModHooks.Instance.GetPlayerInt(e.Data.Split('|')[1]).ToString();
-                            sendMessage(e.Data.Split('|')[1], i);
+                            SendMessage(e.Data.Split('|')[1], i);
                         }
                     }
                     else
@@ -77,12 +81,12 @@ namespace PlayerDataDump
         {
             base.OnClose(e);
 
-            ModHooks.Instance.NewGameHook -= this.NewGame;
-            ModHooks.Instance.SavegameLoadHook -= this.LoadSave;
-            ModHooks.Instance.SetPlayerBoolHook -= this.EchoBool;
-            ModHooks.Instance.SetPlayerIntHook -= this.EchoInt;
+            ModHooks.Instance.NewGameHook -= NewGame;
+            ModHooks.Instance.SavegameLoadHook -= LoadSave;
+            ModHooks.Instance.SetPlayerBoolHook -= EchoBool;
+            ModHooks.Instance.SetPlayerIntHook -= EchoInt;
 
-            ModHooks.Instance.ApplicationQuitHook -= this.OnQuit;
+            ModHooks.Instance.ApplicationQuitHook -= OnQuit;
 
             ModHooks.ModLog("[PlayerDataDump] CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
         }
@@ -92,37 +96,37 @@ namespace PlayerDataDump
             ModHooks.ModLog("[PlayerDataDump] OPEN");
         }
 
-        public void sendMessage(string var, string value)
+        public void SendMessage(string var, string value)
         {
             Send(new Row(var, value).ToJsonElementPair);
         }
 
         public void LoadSave(int slot)
         {
-            sendMessage("SaveLoaded", "true");
+            SendMessage("SaveLoaded", "true");
         }
 
         public void EchoBool(string var, bool value)
         {
             if (var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
             {
-                sendMessage(var, value.ToString());
+                SendMessage(var, value.ToString());
             }
         }
 
 
         public void EchoInt(string var, int value)
         {
-            if (intKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") )
+            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") )
             {
-                sendMessage(var, value.ToString());
+                SendMessage(var, value.ToString());
             }
         }
 
         public static string GetJson()
         {
             PlayerData playerData = PlayerData.instance;
-            String json = JsonUtility.ToJson(playerData);
+            string json = JsonUtility.ToJson(playerData);
             
             int randomFireballLevel = ModHooks.Instance.GetPlayerInt("_fireballLevel");
             int randomQuakeLevel = ModHooks.Instance.GetPlayerInt("_quakeLevel");
@@ -142,8 +146,8 @@ namespace PlayerDataDump
 
         public static string GetRandom()
         {
-            String path = Application.persistentDataPath + "/rnd.js";
-            String data = File.ReadAllText(path);
+            string path = Application.persistentDataPath + "/rnd.js";
+            string data = File.ReadAllText(path);
             return data;
         }
 
@@ -162,24 +166,26 @@ namespace PlayerDataDump
 
         public void NewGame()
         {
-            sendMessage("NewSave", "true");
+            SendMessage("NewSave", "true");
         }
 
 
         public void OnQuit()
         {
-            sendMessage("GameExiting", "true");
+            SendMessage("GameExiting", "true");
         }
 
         public struct Row
         {
+            // ReSharper disable once InconsistentNaming
             public string var { get; set; }
+            // ReSharper disable once InconsistentNaming
             public object value { get; set; }
 
-            public Row(string _var, object _value)
+            public Row(string var, object value)
             {
-                var = _var;
-                value = _value;
+                this.var = var;
+                this.value = value;
             }
 
             public string ToJsonElementPair => " { \"var\" : \"" + var + "\",  \"value\" :  \"" + value + "\" }";

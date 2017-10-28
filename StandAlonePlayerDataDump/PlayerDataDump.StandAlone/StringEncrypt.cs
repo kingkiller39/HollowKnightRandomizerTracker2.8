@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PlayerDataDump.StandAlone
 {
@@ -16,7 +13,7 @@ namespace PlayerDataDump.StandAlone
             byte[] bytes = Encoding.UTF8.GetBytes(toEncrypt);
             ICryptoTransform cryptoTransform = new RijndaelManaged
             {
-                Key = StringEncrypt.keyArray,
+                Key = keyArray,
                 Mode = CipherMode.ECB,
                 Padding = PaddingMode.PKCS7
             }.CreateEncryptor();
@@ -30,7 +27,7 @@ namespace PlayerDataDump.StandAlone
             byte[] array = Convert.FromBase64String(toDecrypt);
             ICryptoTransform cryptoTransform = new RijndaelManaged
             {
-                Key = StringEncrypt.keyArray,
+                Key = keyArray,
                 Mode = CipherMode.ECB,
                 Padding = PaddingMode.PKCS7
             }.CreateDecryptor();

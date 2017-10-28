@@ -1,8 +1,6 @@
 ﻿using Modding;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 using WebSocketSharp;
@@ -10,9 +8,13 @@ using WebSocketSharp.Server;
 
 namespace PlayerDataDump
 {
-    class ProfileStorageServer : WebSocketBehavior
+    internal class ProfileStorageServer : WebSocketBehavior
     {
-        public void Broadcast(String s)
+        public ProfileStorageServer()
+        {
+            IgnoreExtensions = true;
+        }
+        public void Broadcast(string s)
         {
             Sessions.Broadcast(s);
         }
@@ -26,15 +28,15 @@ namespace PlayerDataDump
                 string[] temp = e.Data.Split('|');
                 if (int.TryParse(temp[1], out int profileId))
                 {
-                    Send(profileId + "|" + getProfile(profileId));
+                    Send(profileId + "|" + GetProfile(profileId));
                 }
             }else if (e.Data.StartsWith("save"))
             {
                 string[] temp = e.Data.Split('|');
                 if (int.TryParse(temp[1], out int profileId))
                 {
-                    saveProfile(profileId, temp[2]);
-                    Broadcast(profileId + "|" + getProfile(profileId));
+                    SaveProfile(profileId, temp[2]);
+                    Broadcast(profileId + "|" + GetProfile(profileId));
                 }
             }else
             {
@@ -42,21 +44,18 @@ namespace PlayerDataDump
             }
         }
 
-        private string getProfile(int i)
+        private static string GetProfile(int i)
         {
-            String path = Application.persistentDataPath + $"/OverlayProfile.{i}.js";
-            if (File.Exists(path))
-            {
-                string data = File.ReadAllText(path);
-                return Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
-            }
+            string path = Application.persistentDataPath + $"/OverlayProfile.{i}.js";
+            if (!File.Exists(path)) return "undefined";
 
-            return "undefined";
+            string data = File.ReadAllText(path);
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
         }
 
-        private void saveProfile(int profileId, string base64EncodedJson)
+        private static void SaveProfile(int profileId, string base64EncodedJson)
         {
-            String path = Application.persistentDataPath + $"/OverlayProfile.{profileId}.js";
+            string path = Application.persistentDataPath + $"/OverlayProfile.{profileId}.js";
             byte[] data = Convert.FromBase64String(base64EncodedJson);
             string decodedString = Encoding.UTF8.GetString(data);
 
