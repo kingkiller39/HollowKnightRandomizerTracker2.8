@@ -1061,7 +1061,7 @@ $( document ).ready(function() {
 		  //config = LZString.compressToEncodedURIComponent(JSON.stringify(map));
 		  
 		  //urlParams["config"] = config;
-		  urlParams["profileId"] = profileId;
+		  urlParams["profile"] = profileId;
 		  window.history.pushState(profileId, "", "Index.html?" + $.param(urlParams) );
 
 		  if (map != undefined && wsprofile.readyState === wsprofile.OPEN)
