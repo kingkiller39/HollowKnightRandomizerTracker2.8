@@ -52,15 +52,21 @@ namespace PlayerDataDump.StandAlone
 
         private void FileSystemWatcher_Update(object sender, FileSystemEventArgs e)
         {
-            _saveGameManager.Load(e.FullPath);
-            Send(GetJson());
+            if (State == WebSocketState.Open)
+            {
+                _saveGameManager.Load(e.FullPath);
+                Send(GetJson());
+            }
         }
 
         // private static HashSet<string> intKeysToSend = new HashSet<string> {"simpleKeys", "nailDamage", "maxHealth", "MPReserveMax", "ore", "rancidEggs", "grubsCollected", "charmSlotsFilled", "charmSlots" };
 
         public void Broadcast(String s)
         {
-            Sessions.Broadcast(s);
+            if (State == WebSocketState.Open)
+            {
+                Sessions.Broadcast(s);
+            }
         }
 
         protected override void OnMessage(MessageEventArgs e)

@@ -118,7 +118,7 @@ $( document ).ready(function() {
 					  height = $('#setupPageHeight').val() - 4;
 
 					  map = getDefault();
-					  map.containers.charms.top = height - 180;
+					  map.containers.charms.top = height - 161;
 					  map.containers.charms.left = 4;
 					  map.containers.spells.top = height - 42 - map.containers.skills.height;
 					  map.containers.spells.left = width - map.containers.spells.width;
@@ -126,9 +126,9 @@ $( document ).ready(function() {
 					  map.containers.skills.left = width - map.containers.skills.width;
 					  map.containers.items.top = 0;
 					  map.containers.items.left = width - map.containers.items.width;
-					  map.containers.dreamers.top = 55;
+					  map.containers.dreamers.top = 48;
 					  map.containers.dreamers.left = width - map.containers.dreamers.width;
-					  map.containers.misc.top = 55;
+					  map.containers.misc.top = 48;
 					  map.containers.misc.left = width - (map.containers.dreamers.width + map.containers.misc.width);
 					  map.containers.disabled.top = 178;
 					  map.containers.disabled.left = 508;
@@ -140,8 +140,11 @@ $( document ).ready(function() {
 					  if (profileId == undefined)
 						  profileId = 1;
 
-					  init();
-					  updateUrlConfig();
+					  init(function() {
+							
+							updateUrlConfig();
+					  });
+					  
 					  $(this).remove();
 				  }
 			  }
@@ -176,6 +179,7 @@ $( document ).ready(function() {
 	  function init(callback) {
 
 		  if(isEditing) {
+			  
 			  $('#profiles div').css("color", "#FFFFFF");
 			  $('#profile' + profileId).css("color", "#00FF00");
 			  $('#containerSettingDialog').show().dialog({
@@ -409,7 +413,7 @@ $( document ).ready(function() {
 		  }
 	  
 		  loadDivs();
-
+		  $('.container, .misc-container').hide();
 		  connect();
 		  connectToProfile(callback);
 	  }
@@ -550,7 +554,7 @@ $( document ).ready(function() {
 			  handle: ".divMoveHandleBottom, .divMoveHandleTop",
 			  scroll: false,
 			  grid: [ 20, 20 ],
-			  snap: true,
+			  snap: "body, .container, .misc-container",
 			  stop: function(event, ui) {
 				  var id = $(ui.helper).attr('id');
 				  if ($(ui.helper).hasClass('container')) {
@@ -713,7 +717,11 @@ $( document ).ready(function() {
 			  ws.onerror = function (error) {
 				  console.log(error);
 			  }
-			  ws.onopen = getPlayerData;
+			  ws.onopen = function() {
+				  $('#connectionStatus').html("Connected").css("color", "#00FF00");
+				  $('.container, .misc-container').show();
+				  getPlayerData();
+			  }
 			  
 			  ws.onmessage = function (evt) 
 			  { 
@@ -728,6 +736,8 @@ $( document ).ready(function() {
 				  updatePlayerData(json);
 			  }
 			  ws.onclose = function(){
+				$('#connectionStatus').html("Not Connected").css("color", "#FF0000");
+				$('.container, .misc-container').hide();
 				  // Try to reconnect in 5 seconds
 				  setTimeout(function(){connect()}, 5000);
 			  };
@@ -920,23 +930,41 @@ $( document ).ready(function() {
 									  img.addClass('equipped');
 								  else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped'))
 									  img.removeClass('equipped');
-								  var brokenId = name.replace("got","broken");
-								  if (brokenId in data) {
-									  if (data[brokenId]) {
-										  img.attr('src', "images/" + item.brokenSprite);
-									  }else{
-										  img.attr('src', "images/" + item.sprite);
-									  }
+								
+								  
+
+								//Dealing with the new Levelup of the grimm charm, though generic enough to handle others if they did it.
+								if ("charmLevelSprites" in item) {
+									if (item.charmLevel in data && data[item.charmLevel]-1 <= item.charmLevelSprites.length){
+										img.attr('src', "images/" + item.charmLevelSprites[data[item.charmLevel]-1]);
+									}
+								}
+								//Deal with broken fragile items
+								if ("brokenCheck" in item && item.brokenCheck in data) {
+									if (data[item.brokenCheck]) {
+										img.attr('src', "images/" + item.brokenSprite);
+									}else{
+										img.attr('src', "images/" + item.sprite);
+									}
+								}
+
+								  // Dealing with upgrading the 3 fragile charms to unbreakable charms
+								  if ("unbreakableSprite" in item){
+										if (item.unbreakableCheck in data){
+											if (data[item.unbreakableCheck])
+												img.attr('src', "images/" + item.unbreakableSprite);
+										}
 								  }
+
+
 							  }
 							  break;
 							  
 						  case "spell":
 							  setSelected(data[name] > 0, id);
-							  if (data[name] == 2 && img.attr("src") != item.levelSprites[1])
-								  img.attr("src", "images/" + item.levelSprites[1]);
-							  else if (data[name] != 2 && img.attr("src") == item.levelSprites[1])
-								  img.attr("src", "images/" + item.levelSprites[0]);
+							  if ("levelSprites" in item && data[name]-1 > 0 && data[name]-1 <= item.levelSprites.length){
+								  img.attr("src", "images/" + item.levelSprites[data[name]-1]);
+							  }
 							  break;
 						  
 						  case "skill":
@@ -1033,7 +1061,7 @@ $( document ).ready(function() {
 		  //config = LZString.compressToEncodedURIComponent(JSON.stringify(map));
 		  
 		  //urlParams["config"] = config;
-		  
+		  urlParams["profileId"] = profileId;
 		  window.history.pushState(profileId, "", "Index.html?" + $.param(urlParams) );
 
 		  if (map != undefined && wsprofile.readyState === wsprofile.OPEN)
