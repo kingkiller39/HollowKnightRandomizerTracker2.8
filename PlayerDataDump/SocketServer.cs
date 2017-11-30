@@ -42,7 +42,7 @@ namespace PlayerDataDump
                     Send(PlayerDataDump.GetCurrentMods());
                     break;
                 case "version":
-                    Send(string.Format("{{ \"version\":\"{0}\" }}", PlayerDataDump.Version));
+                    Send(string.Format("{{ \"version\":\"{0}\" }}", PlayerDataDump.Instance.GetVersion()));
                     break;
                 case "json":
                     Send(GetJson());
@@ -55,12 +55,12 @@ namespace PlayerDataDump
                     {
                         if (e.Data.Split('|')[0] == "bool")
                         {
-                            string b = ModHooks.Instance.GetPlayerBool(e.Data.Split('|')[1]).ToString();
+                            string b = PlayerData.instance.GetBool(e.Data.Split('|')[1]).ToString();
                             SendMessage(e.Data.Split('|')[1], b);
                         }
                         if (e.Data.Split('|')[0] == "int")
                         {
-                            string i = ModHooks.Instance.GetPlayerInt(e.Data.Split('|')[1]).ToString();
+                            string i = PlayerData.instance.GetInt(e.Data.Split('|')[1]).ToString();
                             SendMessage(e.Data.Split('|')[1], i);
                         }
                     }
@@ -74,7 +74,7 @@ namespace PlayerDataDump
 
         protected override void OnError(WebSocketSharp.ErrorEventArgs e)
         {
-            ModHooks.ModLog("[PlayerDataDump] ERROR: " + e.Message);
+            PlayerDataDump.Instance.LogError(e.Message);
         }
 
         protected override void OnClose(CloseEventArgs e)
@@ -88,12 +88,12 @@ namespace PlayerDataDump
 
             ModHooks.Instance.ApplicationQuitHook -= OnQuit;
 
-            ModHooks.ModLog("[PlayerDataDump] CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
+            PlayerDataDump.Instance.Log("CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
         }
 
         protected override void OnOpen()
         {
-            ModHooks.ModLog("[PlayerDataDump] OPEN");
+            PlayerDataDump.Instance.Log("OPEN");
         }
 
         public void SendMessage(string var, string value)
@@ -128,9 +128,9 @@ namespace PlayerDataDump
             PlayerData playerData = PlayerData.instance;
             string json = JsonUtility.ToJson(playerData);
             
-            int randomFireballLevel = ModHooks.Instance.GetPlayerInt("_fireballLevel");
-            int randomQuakeLevel = ModHooks.Instance.GetPlayerInt("_quakeLevel");
-            int randomScreamLevel = ModHooks.Instance.GetPlayerInt("_screamLevel");
+            int randomFireballLevel = PlayerData.instance.GetInt("_fireballLevel");
+            int randomQuakeLevel = PlayerData.instance.GetInt("_quakeLevel");
+            int randomScreamLevel = PlayerData.instance.GetInt("_screamLevel");
 
             if (randomFireballLevel >= 0)
             {

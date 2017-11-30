@@ -1,5 +1,4 @@
-﻿using Modding;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -21,7 +20,7 @@ namespace PlayerDataDump
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            ModHooks.ModLog("[PlayerDataDump.ProfileStorage] data:" + e.Data);
+            PlayerDataDump.Instance.Log("[ProfileStorage] data:" + e.Data);
 
             if (e.Data.StartsWith("load"))
             {
@@ -59,8 +58,8 @@ namespace PlayerDataDump
             byte[] data = Convert.FromBase64String(base64EncodedJson);
             string decodedString = Encoding.UTF8.GetString(data);
 
-            ModHooks.ModLog("[PlayerDataDump.ProfileStorage] Path::" + path);
-            ModHooks.ModLog("[PlayerDataDump.ProfileStorage] Decoded Data:" + decodedString);
+            PlayerDataDump.Instance.Log("[ProfileStorage] Path:" + path);
+            PlayerDataDump.Instance.Log("[ProfileStorage] Decoded Data:" + decodedString);
 
             File.WriteAllText(path, decodedString);
 
@@ -68,19 +67,19 @@ namespace PlayerDataDump
 
         protected override void OnError(WebSocketSharp.ErrorEventArgs e)
         {
-            ModHooks.ModLog("[PlayerDataDump.ProfileStorage] ERROR: " + e.Message);
+            PlayerDataDump.Instance.LogError("[ProfileStorage]:" + e.Message);
         }
 
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
 
-            ModHooks.ModLog("[PlayerDataDump.ProfileStorage] CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
+            PlayerDataDump.Instance.Log("[ProfileStorage] CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
         }
 
         protected override void OnOpen()
         {
-            ModHooks.ModLog("[PlayerDataDump.ProfileStorage] OPEN");
+            PlayerDataDump.Instance.Log("[ProfileStorage] OPEN");
         }
     }
 }
