@@ -586,7 +586,7 @@ function getDefault() {
 			"seed" : {
 				enabled : true,
 				text: "Seed: {0}",
-				dataSource: "randomMap",
+				dataSource: "data",
 				dataElement: "seed",
 				left: 300,
 				top: 10,
@@ -598,7 +598,7 @@ function getDefault() {
 			},
 			"mode" : {
 				enabled: true,
-				dataSource: "randomMap",
+				dataSource: "data",
 				dataElement: "mode",
 				text: "{0}",
 				left: 252,

@@ -2,7 +2,6 @@ var map;
 var ws;
 var data;
 var wsprofile;
-var randomMap;
 var lastCommand;
 var playerData;
 $( document ).ready(function() {
@@ -11,7 +10,6 @@ $( document ).ready(function() {
 	  var playerData;
 	  var ws;	
 	  var lastCommand;
-	  var randomMap;
 	  */
 
 	  var currentId;
@@ -811,15 +809,14 @@ $( document ).ready(function() {
 			  
 	  function getPlayerData() {
 		  console.log("Refreshing data");
-		  send("random");
+		  send("json");
 	  }
 	  
 	  function updatePlayerData(minData) {
 
 		  if (minData != undefined && "var" in minData) {
 			  if (minData.var == "SaveLoaded" || minData.var == "NewSave") {
-				  randomMap == undefined;
-				  send("random");
+				  send("json");
 				  return;
 			  }else{
 				  var name = minData.var;
@@ -840,12 +837,6 @@ $( document ).ready(function() {
 						  value = minData.value;
 						  break;
 				  }
-				  if ((name == "fireballLevel" || name == "quakeLevel" || name == "screamLevel") && randomMap != undefined && (name + value) in randomMap)
-					  name = randomMap[name + value];
-				  else if (randomMap != undefined && name in randomMap) 
-					  name = randomMap[name];
-				  
-				  
 				  
 				  switch (name) {
 					  case "fireballLevel1":
@@ -874,12 +865,7 @@ $( document ).ready(function() {
 			  }
 			  
 		  }else{
-			  if (lastCommand == "random")
-			  {
-				  randomMap = minData;
-				  send("json");
-				  return;
-			  }else if(lastCommand == "relics") {
+			  if(lastCommand == "relics") {
 				  console.log(minData);
 				  $.each(minData, function(i, e) {
 					  data[i] = e;
@@ -1017,12 +1003,12 @@ $( document ).ready(function() {
 			  if (item.enabled || isEditing) {
 				  var dataSource;
 				  switch (item.dataSource) {
-					  case "randomMap":
-						  dataSource = randomMap;
-						  break;
 					  case "playerData":
 						  dataSource = map;
 						  break;
+					  case "data":
+							 dataSource = data;
+							 break;
 				  }
 				  if (dataSource != undefined && item.dataElement in dataSource){
 					  $('#' + name + ' > div.content').remove();
