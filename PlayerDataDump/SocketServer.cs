@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Modding;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -29,35 +27,33 @@ namespace PlayerDataDump
             switch (e.Data)
             {
                 case "mods":
-                    Send(PlayerDataDump.GetCurrentMods());
+                    Send(JsonUtility.ToJson(ModHooks.Instance.LoadedModsWithVersions));
                     break;
                 case "version":
-                    Send(string.Format("{{ \"version\":\"{0}\" }}", PlayerDataDump.Instance.GetVersion()));
+                    Send($"{{ \"version\":\"{PlayerDataDump.Instance.GetVersion()}\" }}");
                     break;
                 case "json":
                     Send(GetJson());
                     GetRandom();
                     break;
-                case "relics":
-                    Send(GetRelics());
-                    break;
                 default:
                     if (e.Data.Contains('|'))
                     {
-                        if (e.Data.Split('|')[0] == "bool")
+                        switch (e.Data.Split('|')[0])
                         {
-                            string b = PlayerData.instance.GetBool(e.Data.Split('|')[1]).ToString();
-                            SendMessage(e.Data.Split('|')[1], b);
-                        }
-                        if (e.Data.Split('|')[0] == "int")
-                        {
-                            string i = PlayerData.instance.GetInt(e.Data.Split('|')[1]).ToString();
-                            SendMessage(e.Data.Split('|')[1], i);
+                            case "bool":
+                                string b = PlayerData.instance.GetBool(e.Data.Split('|')[1]).ToString();
+                                SendMessage(e.Data.Split('|')[1], b);
+                                break;
+                            case "int":
+                                string i = PlayerData.instance.GetInt(e.Data.Split('|')[1]).ToString();
+                                SendMessage(e.Data.Split('|')[1], i);
+                                break;
                         }
                     }
                     else
                     {
-                        Send("mods,version,json,bool|{var},int|{var}|relics");
+                        Send("mods,version,json,bool|{var},int|{var}");
                     }
                     break;
             }
@@ -167,18 +163,6 @@ namespace PlayerDataDump
             }
         }
 
-        public static string GetRelics()
-        {
-            List<Row> relics = new List<Row>
-            {
-                new Row(nameof(PlayerData.instance.trinket1), PlayerData.instance.trinket1),
-                new Row(nameof(PlayerData.instance.trinket2), PlayerData.instance.trinket2),
-                new Row(nameof(PlayerData.instance.trinket3), PlayerData.instance.trinket3),
-                new Row(nameof(PlayerData.instance.trinket4), PlayerData.instance.trinket4)
-            };
-
-            return ToJson(relics);
-        }
 
         public void NewGame()
         {
@@ -209,14 +193,5 @@ namespace PlayerDataDump
             public string ToJsonElement => $"\"{var}\" : \"{value}\"";
         }
 
-        //I know there is a jsonhelper, but for the life of me, I could not get the serialization to work.
-        private static string ToJson(IEnumerable<Row> data)
-        {
-            StringBuilder ret = new StringBuilder();
-            ret.Append("{");
-            ret.Append(string.Join(",", data.Select(x => x.ToJsonElement).ToArray()));
-            ret.Append("}");
-            return ret.ToString();
-        }
     }
 }
