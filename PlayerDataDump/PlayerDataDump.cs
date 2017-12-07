@@ -14,6 +14,7 @@ namespace PlayerDataDump
     /// </summary>
     public class PlayerDataDump : Mod
     {
+        public override int LoadPriority() => 9999;
         private readonly WebSocketServer _wss = new WebSocketServer(11420);
         internal static PlayerDataDump Instance;
 
@@ -66,8 +67,17 @@ namespace PlayerDataDump
             {
                 ModHooks.Instance.NewGameHook += ss.NewGame;
                 ModHooks.Instance.SavegameLoadHook += ss.LoadSave;
-                ModHooks.Instance.SetPlayerBoolHook += ss.EchoBool;
-                ModHooks.Instance.SetPlayerIntHook += ss.EchoInt;
+
+                try
+                {
+                    RandomizerMod.Randomizer.SetPlayerBoolHook += ss.EchoBool;
+                    RandomizerMod.Randomizer.SetPlayerIntHook += ss.EchoInt;
+                }
+                catch
+                {
+                    ModHooks.Instance.SetPlayerBoolHook += ss.EchoBool;
+                    ModHooks.Instance.SetPlayerIntHook += ss.EchoInt;
+                }
 
                 ModHooks.Instance.ApplicationQuitHook += ss.OnQuit;
             });

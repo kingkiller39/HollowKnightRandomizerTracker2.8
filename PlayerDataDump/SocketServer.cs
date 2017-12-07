@@ -1,17 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Modding;
 using WebSocketSharp;
 using WebSocketSharp.Server;
-using Modding;
 using UnityEngine;
-using System.IO;
 
 namespace PlayerDataDump
 {
     internal class SocketServer : WebSocketBehavior
     {
-
         public SocketServer()
         {
             IgnoreExtensions = true;
@@ -26,18 +24,10 @@ namespace PlayerDataDump
 
         protected override void OnMessage(MessageEventArgs e)
         {
+            if (State != WebSocketState.Open) return;
+
             switch (e.Data)
             {
-                case "random":
-                    if (File.Exists(Application.persistentDataPath + "/rnd.js"))
-                    {
-                        Send(GetRandom());
-                    }
-                    else
-                    {
-                        Send("undefined");
-                    }
-                        break;
                 case "mods":
                     Send(PlayerDataDump.GetCurrentMods());
                     break;
@@ -46,6 +36,7 @@ namespace PlayerDataDump
                     break;
                 case "json":
                     Send(GetJson());
+                    GetRandom();
                     break;
                 case "relics":
                     Send(GetRelics());
@@ -66,13 +57,13 @@ namespace PlayerDataDump
                     }
                     else
                     {
-                        Send("random,mods,version,json,bool|{var},int|{var}|relics");
+                        Send("mods,version,json,bool|{var},int|{var}|relics");
                     }
                     break;
             }
         }
 
-        protected override void OnError(WebSocketSharp.ErrorEventArgs e)
+        protected override void OnError(ErrorEventArgs e)
         {
             PlayerDataDump.Instance.LogError(e.Message);
         }
@@ -80,17 +71,27 @@ namespace PlayerDataDump
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
-
+            
             ModHooks.Instance.NewGameHook -= NewGame;
             ModHooks.Instance.SavegameLoadHook -= LoadSave;
-            ModHooks.Instance.SetPlayerBoolHook -= EchoBool;
-            ModHooks.Instance.SetPlayerIntHook -= EchoInt;
+            try
+            {
+                RandomizerMod.Randomizer.SetPlayerBoolHook -= EchoBool;
+                RandomizerMod.Randomizer.SetPlayerIntHook -= EchoInt;
+            }
+            catch 
+            {
+                ModHooks.Instance.SetPlayerBoolHook -= EchoBool;
+                ModHooks.Instance.SetPlayerIntHook -= EchoInt;
+            }
 
             ModHooks.Instance.ApplicationQuitHook -= OnQuit;
-
+            
             PlayerDataDump.Instance.Log("CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
         }
 
+        
+        
         protected override void OnOpen()
         {
             PlayerDataDump.Instance.Log("OPEN");
@@ -98,25 +99,31 @@ namespace PlayerDataDump
 
         public void SendMessage(string var, string value)
         {
+            if (State != WebSocketState.Open) return;
+
             Send(new Row(var, value).ToJsonElementPair);
         }
 
         public void LoadSave(int slot)
         {
+            GetRandom();
             SendMessage("SaveLoaded", "true");
         }
 
         public void EchoBool(string var, bool value)
         {
+            PlayerDataDump.Instance.LogDebug($"EchoBool: {var} = {value}");
+
             if (var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
             {
                 SendMessage(var, value.ToString());
             }
         }
 
-
-        public void EchoInt(string var, int value)
+       public void EchoInt(string var, int value)
         {
+            PlayerDataDump.Instance.LogDebug($"EchoInt: {var} = {value}");
+           
             if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") )
             {
                 SendMessage(var, value.ToString());
@@ -144,11 +151,20 @@ namespace PlayerDataDump
             return json;
         }
 
-        public static string GetRandom()
+        public void GetRandom()
         {
-            string path = Application.persistentDataPath + "/rnd.js";
-            string data = File.ReadAllText(path);
-            return data;
+            try
+            {
+                if (RandomizerMod.RandomizerMod.instance.Settings.randomizer)
+                {
+                    SendMessage("seed", RandomizerMod.RandomizerMod.instance.Settings.seed.ToString());
+                    SendMessage("mode", RandomizerMod.RandomizerMod.instance.Settings.hardMode ? "hard" : "easy");
+                }
+            }
+            catch
+            {
+                SendMessage("randomizer", "false");
+            }
         }
 
         public static string GetRelics()
@@ -166,6 +182,7 @@ namespace PlayerDataDump
 
         public void NewGame()
         {
+            GetRandom();
             SendMessage("NewSave", "true");
         }
 
@@ -201,8 +218,5 @@ namespace PlayerDataDump
             ret.Append("}");
             return ret.ToString();
         }
-
     }
-
-
 }
