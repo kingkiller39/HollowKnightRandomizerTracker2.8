@@ -42,9 +42,10 @@ $( document ).ready(function() {
 		  googleApikey = localKey;
 
 	  var profileId = getParameterByName("profile");
-
-
-		var regexReplaceUrl = new RegExp(/^(file:\/\/.*Index.html)/);
+	
+	  var makeNew = getParameterByName("makeNew");
+		
+	  var regexReplaceUrl = new RegExp(/^(file:\/\/.*Index.html)/);
 
 	  
 	  
@@ -88,7 +89,7 @@ $( document ).ready(function() {
 
 	  console.log(profileId);
 
-	  if (profileId != undefined){
+	  if (profileId != undefined && makeNew == null){
 		  if (isEditing) {
 			init(function() {
 				wsprofile.send("load|" + profileId);
@@ -837,40 +838,11 @@ $( document ).ready(function() {
 						  value = minData.value;
 						  break;
 				  }
-				  
-				  switch (name) {
-					  case "fireballLevel1":
-					  case "fireballLevel2":
-						  data["fireballLevel"]++;
-						  break;
-					  case "quakeLevel1":
-					  case "quakeLevel2":
-						  data["quakeLevel"]++;
-						  break;
-					  case "screamLevel1":
-					  case "screamLevel2":
-						  data["screamLevel"]++;
-						  break;
-					  case "trinket1":
-					  case "trinket2":
-					  case "trinket3":
-					  case "trinket4":
-						  send("relics");
-						  return;
-					  default:
-						  data[name] = value;
-						  break;
-				  }
-				  
+				  data[name] = value;
 			  }
 			  
 		  }else{
-			  if(lastCommand == "relics") {
-				  console.log(minData);
-				  $.each(minData, function(i, e) {
-					  data[i] = e;
-				  });
-			  }else if (minData != undefined){
+			  if (minData != undefined){
 				  data = minData;
 			  }
 		  }
@@ -1028,10 +1000,6 @@ $( document ).ready(function() {
 			  else
 				  $('#dreamNailUpgraded').removeClass("selected").parent().hide();
 		  }
-		  
-		  
-		  
-		  //updateUrlConfig();
 	  }
 	  
 	  function updateVisible() {
@@ -1044,17 +1012,11 @@ $( document ).ready(function() {
 	  function updateUrlConfig() {
 		  console.log("Updating url string");
 	  
-		  //config = LZString.compressToEncodedURIComponent(JSON.stringify(map));
-		  
-		  //urlParams["config"] = config;
 		  urlParams["profile"] = profileId;
 		  window.history.pushState(profileId, "", "Index.html?" + $.param(urlParams) );
 
 		  if (map != undefined && wsprofile.readyState === wsprofile.OPEN)
 		  	wsprofile.send("save|" + profileId + "|" + btoa(JSON.stringify(map, null, 2).replace("==", "%3D%3D")));
-
-		  //if (config.length > 1900)
-			//  alert("Developer Warning, config length is > 1900.  If you see this message let the developer know.");
 	  }
 	  
 	  function setSelected(has, id) {
