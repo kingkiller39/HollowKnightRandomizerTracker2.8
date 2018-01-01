@@ -44,7 +44,7 @@ namespace PlayerDataDump
                 
                 Version newVersion = new Version(helper.GetVersion());
                 LogDebug($"Comparing Versions: {newVersion} > {currentVersion}");
-                return newVersion.CompareTo(currentVersion) < 0;
+                return newVersion.CompareTo(currentVersion) <= 0;
             }
             catch (Exception ex)
             {
