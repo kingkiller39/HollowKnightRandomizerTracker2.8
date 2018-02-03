@@ -12,7 +12,7 @@ namespace PlayerDataDump
     /// <summary>
     /// Main mod class for PlayerDataDump.  Provides the server and version handling.
     /// </summary>
-    public class PlayerDataDump : Mod
+    public class PlayerDataDump : Mod, ITogglableMod
     {
         public override int LoadPriority() => 9999;
         private readonly WebSocketServer _wss = new WebSocketServer(11420);
@@ -35,8 +35,13 @@ namespace PlayerDataDump
         /// <returns>Returns the current version.  Includes additional text if the current version doesn't match the version of the site.</returns>
         public override string GetVersion() => FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(PlayerDataDump)).Location).FileVersion;
 
+        private bool? isCurrent;
+
         public override bool IsCurrent()
         {
+            if (isCurrent != null)
+                return isCurrent.Value;
+
             try
             {
                 GithubVersionHelper helper = new GithubVersionHelper("iamwyza/HollowKnightRandomizerTracker");
@@ -44,7 +49,9 @@ namespace PlayerDataDump
                 
                 Version newVersion = new Version(helper.GetVersion());
                 LogDebug($"Comparing Versions: {newVersion} > {currentVersion}");
-                return newVersion.CompareTo(currentVersion) <= 0;
+                isCurrent = newVersion.CompareTo(currentVersion) <= 0;
+
+                return isCurrent.Value;
             }
             catch (Exception ex)
             {
@@ -88,6 +95,16 @@ namespace PlayerDataDump
             _wss.Start();
 
             Log("Initialized PlayerDataDump");
+        }
+
+        /// <summary>
+        /// Called when the mod is disabled, stops the web socket server and removes the socket services.
+        /// </summary>
+        public void Unload()
+        {
+            _wss.Stop();
+            _wss.RemoveWebSocketService("/playerData");
+            _wss.RemoveWebSocketService("/ProfileStorage");
         }
     }
 }
