@@ -47,7 +47,7 @@ Thankfully Windows provides an excellent and easy workaround.
 
 ## Credits
 * @KayDeeTee - PlayerDataTracker Coding and general help with HK data structures.
-* @MyEyes (Seanpr) - Modding API used by PlayerDataTracker and general help with HK data structures.
+* @Seanpr - Modding API used by PlayerDataTracker and general help with HK data structures.
 * Mickley_3, ciplax, and RiskyCB for early testing and feedback.
 * Team Cherry - Without which, we would not have Hollow Knight
 
