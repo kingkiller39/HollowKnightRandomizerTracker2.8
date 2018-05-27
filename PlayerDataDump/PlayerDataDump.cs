@@ -75,16 +75,8 @@ namespace PlayerDataDump
                 ModHooks.Instance.NewGameHook += ss.NewGame;
                 ModHooks.Instance.SavegameLoadHook += ss.LoadSave;
 
-                try
-                {
-                    RandomizerMod.Randomizer.SetPlayerBoolHook += ss.EchoBool;
-                    RandomizerMod.Randomizer.SetPlayerIntHook += ss.EchoInt;
-                }
-                catch
-                {
-                    ModHooks.Instance.SetPlayerBoolHook += ss.EchoBool;
-                    ModHooks.Instance.SetPlayerIntHook += ss.EchoInt;
-                }
+                ModHooks.Instance.SetPlayerBoolHook += ss.EchoBool;
+                ModHooks.Instance.SetPlayerIntHook += ss.EchoInt;
 
                 ModHooks.Instance.ApplicationQuitHook += ss.OnQuit;
             });

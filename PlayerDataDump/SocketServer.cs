@@ -70,16 +70,8 @@ namespace PlayerDataDump
             
             ModHooks.Instance.NewGameHook -= NewGame;
             ModHooks.Instance.SavegameLoadHook -= LoadSave;
-            try
-            {
-                RandomizerMod.Randomizer.SetPlayerBoolHook -= EchoBool;
-                RandomizerMod.Randomizer.SetPlayerIntHook -= EchoInt;
-            }
-            catch 
-            {
-                ModHooks.Instance.SetPlayerBoolHook -= EchoBool;
-                ModHooks.Instance.SetPlayerIntHook -= EchoInt;
-            }
+            ModHooks.Instance.SetPlayerBoolHook -= EchoBool;
+            ModHooks.Instance.SetPlayerIntHook -= EchoInt;
 
             ModHooks.Instance.ApplicationQuitHook -= OnQuit;
             
@@ -153,8 +145,7 @@ namespace PlayerDataDump
             {
                 if (RandomizerMod.RandomizerMod.instance.Settings.randomizer)
                 {
-                    SendMessage("seed", RandomizerMod.RandomizerMod.instance.Settings.seed.ToString());
-                    SendMessage("mode", RandomizerMod.RandomizerMod.instance.Settings.hardMode ? "hard" : "easy");
+                 //   SendMessage("seed", RandomizerMod.RandomizerMod.instance.Settings.seed.ToString());
                 }
             }
             catch
