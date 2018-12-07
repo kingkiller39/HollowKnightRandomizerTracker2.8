@@ -106,6 +106,7 @@ namespace PlayerDataDump
             {
                 SendMessage(var, value.ToString());
             }
+            PlayerData.instance.SetBoolInternal(var, value);
         }
 
        public void EchoInt(string var, int value)
@@ -116,6 +117,7 @@ namespace PlayerDataDump
             {
                 SendMessage(var, value.ToString());
             }
+            PlayerData.instance.SetIntInternal(var, value);
         }
 
         public static string GetJson()
