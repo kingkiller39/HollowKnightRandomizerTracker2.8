@@ -124,19 +124,6 @@ namespace PlayerDataDump
         {
             PlayerData playerData = PlayerData.instance;
             string json = JsonUtility.ToJson(playerData);
-            
-            int randomFireballLevel = PlayerData.instance.GetInt("_fireballLevel");
-            int randomQuakeLevel = PlayerData.instance.GetInt("_quakeLevel");
-            int randomScreamLevel = PlayerData.instance.GetInt("_screamLevel");
-
-            if (randomFireballLevel >= 0)
-            {
-                PlayerData pd = JsonUtility.FromJson<PlayerData>(json);
-                pd.fireballLevel = randomFireballLevel;
-                pd.quakeLevel = randomQuakeLevel;
-                pd.screamLevel = randomScreamLevel;
-                json = JsonUtility.ToJson(pd);
-            }
 
             return json;
         }
@@ -145,9 +132,9 @@ namespace PlayerDataDump
         {
             try
             {
-                if (RandomizerMod.RandomizerMod.instance.Settings.randomizer)
+                if (RandomizerMod.RandomizerMod.Instance.Settings.Randomizer)
                 {
-                 //   SendMessage("seed", RandomizerMod.RandomizerMod.instance.Settings.seed.ToString());
+                    SendMessage("seed", RandomizerMod.RandomizerMod.Instance.Settings.Seed.ToString());
                 }
             }
             catch
