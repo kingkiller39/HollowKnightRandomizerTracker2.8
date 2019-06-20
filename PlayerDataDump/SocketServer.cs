@@ -101,6 +101,19 @@ namespace PlayerDataDump
         public void EchoBool(string var, bool value)
         {
             PlayerDataDump.Instance.LogDebug($"EchoBool: {var} = {value}");
+        
+            if (var == "RandomizerMod.Monomon")
+                {
+                    var= "maskBrokenMonomon";
+                }
+            if (var == "RandomizerMod.Lurien")
+                {
+                    var= "maskBrokenLurien";
+                }
+            if (var == "RandomizerMod.Herrah")
+                {
+                    var= "maskBrokenHegemol";
+                }
 
             if (var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
             {
