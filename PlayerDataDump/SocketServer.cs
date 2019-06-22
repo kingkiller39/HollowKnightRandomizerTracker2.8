@@ -115,7 +115,7 @@ namespace PlayerDataDump
                     var= "maskBrokenHegemol";
                 }
 
-            if (var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
+            if (var == "honedNail" || var.StartsWith("RandomizerMod.has") || var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
             {
                 SendMessage(var, value.ToString());
             }

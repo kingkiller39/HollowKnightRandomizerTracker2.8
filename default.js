@@ -422,9 +422,9 @@ function getEntities() {
 			"name": "", 
 			"type":"item"
 		},
-		"hasLoveKey": {
+		"RandomizerMod.hasLoveKey": {
 			"sprite": "inv_Love_Key - Copy.png",
-			"enabled": false,
+			"enabled": true,
 			"name": "", 
 			"type":"item"
 		},
@@ -573,7 +573,14 @@ function getEntities() {
 			"enabled": true,
 			"name": "Charm Notch",
 			"type":"charmNotch"
-		}
+        },
+        "honedNail": {
+            "sprite": "DreamNail1.png",
+            "enabled": true,
+            "name": "Nail",
+            "type": "item",
+            "multiple": true
+        }
 	};
 }
 function getDefault() {
@@ -729,7 +736,7 @@ function getDefault() {
 				"width" : 126,
 				"height": 45,
 				"growDirection" : "Left",
-				"items": [
+                "items": [
 					"maskBrokenHegemol",
 					"maskBrokenMonomon",
 					"maskBrokenLurien"
@@ -767,7 +774,8 @@ function getDefault() {
 					"slotCost.png",
 					"slotOff.png",
 					"slotOn.png",
-					"inv_dream_charm - Copy.png",
+                    "hasNail",
+                    "RandomizerMod.hasLoveKey",
 				]
 			}
 		}
