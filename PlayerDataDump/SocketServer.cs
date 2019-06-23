@@ -103,19 +103,22 @@ namespace PlayerDataDump
             PlayerDataDump.Instance.LogDebug($"EchoBool: {var} = {value}");
         
             if (var == "RandomizerMod.Monomon")
-                {
-                    var= "maskBrokenMonomon";
-                }
-            if (var == "RandomizerMod.Lurien")
-                {
-                    var= "maskBrokenLurien";
-                }
-            if (var == "RandomizerMod.Herrah")
-                {
-                    var= "maskBrokenHegemol";
-                }
-
-            if (var == "honedNail" || var.StartsWith("RandomizerMod.has") || var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
+            {
+                var= "maskBrokenMonomon";
+            }
+            else if (var == "RandomizerMod.Lurien")
+            {
+                var= "maskBrokenLurien";
+            }
+            else if (var == "RandomizerMod.Herrah")
+            {
+                var= "maskBrokenHegemol";
+            }
+            if (var.StartsWith("RandomizerMod"))
+            {
+                var = var.Remove(0, 14);
+            }
+            if (var.StartsWith("RandomizerMod.has") || var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
             {
                 SendMessage(var, value.ToString());
             }
@@ -126,7 +129,7 @@ namespace PlayerDataDump
         {
             PlayerDataDump.Instance.LogDebug($"EchoInt: {var} = {value}");
            
-            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") )
+            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") || var == "nailSmithUpgrades")
             {
                 SendMessage(var, value.ToString());
             }

@@ -422,11 +422,12 @@ function getEntities() {
 			"name": "", 
 			"type":"item"
 		},
-		"RandomizerMod.hasLoveKey": {
-			"sprite": "inv_Love_Key - Copy.png",
+		"hasLoveKey": {
+			"sprite": "inv_Love_Key.png",
 			"enabled": true,
 			"name": "", 
-			"type":"item"
+            "type": "item",
+            "useItemState": "openedLoveDoor"
 		},
 		"rancidEggs": {
 			"sprite": "inv_rancid_egg - Copy.png",
@@ -574,8 +575,8 @@ function getEntities() {
 			"name": "Charm Notch",
 			"type":"charmNotch"
         },
-        "honedNail": {
-            "sprite": "DreamNail1.png",
+        "nailSmithUpgrades": {
+            "sprite": "nail.png",
             "enabled": true,
             "name": "Nail",
             "type": "item",
@@ -726,7 +727,8 @@ function getDefault() {
 					"hasWaterwaysKey",
 					"hasKingsBrand",
 					"grubsCollected",
-					"hasLantern"
+                    "hasLantern",
+                    "nailSmithUpgrades"
 				]	
 			},
 			"dreamers" :{
@@ -773,9 +775,8 @@ function getDefault() {
 					"Inv_0028_spell_ring.png",
 					"slotCost.png",
 					"slotOff.png",
-					"slotOn.png",
-                    "hasNail",
-                    "RandomizerMod.hasLoveKey",
+					"slotOn.png"
+                   
 				]
 			}
 		}
