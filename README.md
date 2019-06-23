@@ -6,7 +6,7 @@ This is the UI side of a tracker for items in Hollow Knight as an overlay in OBS
 
 # Setup & Configuration
 
-* Start out by going to https://kingkiller39.github.io/HollowKnightRandomizerTracker/Index.html
+* Start out by going to https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/Index.html
   * Follow the directions on screen to specify the height and width of your OBS capture.
   * Adjust your layout as desired (Hitting F11 to go to full screen can be helpful if your resolution is the same as your capture resolution.  That is, if you capture at 1080p and your monitor is 1080p, for example)
     * Containers of Icons can be moved around the screen using the move handles (shown when hovering).
