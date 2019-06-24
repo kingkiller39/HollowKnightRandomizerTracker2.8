@@ -1,12 +1,12 @@
 # HollowKnightRandomizerTracker
 
-This is the UI side of a tracker for items in Hollow Knight as an overlay in OBS.  You'll need to install this for it to work: https://drive.google.com/open?id=0B1-JBoX3q-gVal9SQUh5dEJVTFU. (also requires Modding API: https://drive.google.com/open?id=0B_b9PFqx_PR9X1ZrWGFxUGdydTg) Big Thanks to @KDT for getting the Game Side working to get this data out.  This wouldn't work at all without it.  (and of course to Team Cherry for an amazing game)
+This is the UI side of a tracker for items in Hollow Knight as an overlay in OBS.  You'll need to install this for it to work: https://drive.google.com/open?id=1BBQzGg9t5DIrKAQ6y5Dn-sMMgnoBedT5. (also requires Modding API: https://drive.google.com/open?id=0B_b9PFqx_PR9X1ZrWGFxUGdydTg) Big Thanks to @KDT for getting the Game Side working to get this data out.  This wouldn't work at all without it.  (and of course to Team Cherry for an amazing game)
 
 ![Demo](https://github.com/iamwyza/HollowKnightRandomizerTracker/blob/master/demo.png "Demo")
 
 # Setup & Configuration
 
-* Start out by going to https://iamwyza.github.io/HollowKnightRandomizerTracker/Index.html
+* Start out by going to https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/Index.html
   * Follow the directions on screen to specify the height and width of your OBS capture.
   * Adjust your layout as desired (Hitting F11 to go to full screen can be helpful if your resolution is the same as your capture resolution.  That is, if you capture at 1080p and your monitor is 1080p, for example)
     * Containers of Icons can be moved around the screen using the move handles (shown when hovering).
@@ -46,6 +46,7 @@ Thankfully Windows provides an excellent and easy workaround.
 
 
 ## Credits
+* @iamwyza - Original creator of this tracker.
 * @KayDeeTee - PlayerDataTracker Coding and general help with HK data structures.
 * @Seanpr - Modding API used by PlayerDataTracker and general help with HK data structures.
 * Mickley_3, ciplax, and RiskyCB for early testing and feedback.
