@@ -260,13 +260,13 @@ function getEntities() {
 				"charmSprite40_5.png"
 			]
 		},
-		"hasUpwardSlash": {
+		"hasDashSlash": {
 			"sprite": "Inv_0021_inv_dash_strike_skill.png",
 			"enabled": true,
 			"name": "Dash Strike", 
 			"type":"skill"
 		},
-		"hasDashSlash": {
+		"hasUpwardSlash": {
 			"sprite": "Inv_0022_inv_uppercut_skill.png",
 			"enabled": true,
 			"name": "Great Slash", 
