@@ -129,7 +129,7 @@ namespace PlayerDataDump
         {
             PlayerDataDump.Instance.LogDebug($"EchoInt: {var} = {value}");
            
-            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") || var == "nailSmithUpgrades")
+            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") || var == "nailSmithUpgrades" || var == "rancidEggs")
             {
                 SendMessage(var, value.ToString());
             }

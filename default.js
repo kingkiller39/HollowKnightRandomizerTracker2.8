@@ -430,8 +430,8 @@ function getEntities() {
             "useItemState": "openedLoveDoor"
 		},
 		"rancidEggs": {
-			"sprite": "inv_rancid_egg - Copy.png",
-			"enabled": false,
+			"sprite": "inv_rancid_egg.png",
+			"enabled": true,
 			"name": "", 
 			"type":"item",
 			"multiple": true
@@ -706,7 +706,7 @@ function getDefault() {
 				"scale" : 25,
 				"left": 10,
 				"top":25,
-				"width" : 495,
+				"width" : 622,
 				"height": 45,
 				"growDirection" : "Right",
 				"items": [
