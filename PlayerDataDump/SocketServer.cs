@@ -128,8 +128,11 @@ namespace PlayerDataDump
        public void EchoInt(string var, int value)
         {
             PlayerDataDump.Instance.LogDebug($"EchoInt: {var} = {value}");
-           
-            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") || var == "nailSmithUpgrades" || var == "rancidEggs")
+            if ( var == "royalCharmState" && (value == 1 || value == 2 || value == 3 || value == 4 ))
+            {
+                EchoBool("gotCharm_36", true);
+            }
+            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") || var == "nailSmithUpgrades" || var == "rancidEggs" || var == "royalCharmState")
             {
                 SendMessage(var, value.ToString());
             }

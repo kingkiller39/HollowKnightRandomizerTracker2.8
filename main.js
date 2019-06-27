@@ -866,11 +866,11 @@ $( document ).ready(function() {
 							  {
 								  setSelected(data[name], id);
 
-								  if (data.gotKingFragment && !data.gotQueenFragment)
-									  $(id).attr('src', "images/Charm_KingSoul_Left.png");
-								  else if (!data.gotKingFragment && data.gotQueenFragment)
+                                  if (data.royalCharmState == 1)
 									  $(id).attr('src', "images/Charm_KingSoul_Right.png");
-								  else if (data.gotKingFragment && data.gotQueenFragment && !data.gotShadeCharm)
+                                  else if (!data.royalCharmState == 2)
+									  $(id).attr('src', "images/Charm_KingSoul_Left.png");
+                                  else if (data.royalCharmState == 3)
 									  $(id).attr('src', "images/Kingsoul.png");
 
 								  if (!$(id).hasClass('selected'))
