@@ -102,21 +102,25 @@ namespace PlayerDataDump
         {
             PlayerDataDump.Instance.LogDebug($"EchoBool: {var} = {value}");
         
-            if (var == "RandomizerMod.Monomon")
+            if (var == "RandomizerMod.Monomon" || var == "AreaRando.Monomon")
             {
                 var= "maskBrokenMonomon";
             }
-            else if (var == "RandomizerMod.Lurien")
+            else if (var == "RandomizerMod.Lurien" || var == "AreaRando.Lurien")
             {
                 var= "maskBrokenLurien";
             }
-            else if (var == "RandomizerMod.Herrah")
+            else if (var == "RandomizerMod.Herrah" || var == "AreaRando.Herrah")
             {
                 var= "maskBrokenHegemol";
             }
             if (var.StartsWith("RandomizerMod"))
             {
                 var = var.Remove(0, 14);
+            }
+            else if (var.StartsWith("AreaRando.Herrah"))
+            {
+                var = var.Remove(0, 10);
             }
             if (var.StartsWith("RandomizerMod.has") || var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed")
             {
