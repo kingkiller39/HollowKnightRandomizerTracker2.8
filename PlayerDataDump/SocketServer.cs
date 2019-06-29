@@ -118,7 +118,7 @@ namespace PlayerDataDump
             {
                 var = var.Remove(0, 14);
             }
-            else if (var.StartsWith("AreaRando.Herrah"))
+            else if (var.StartsWith("AreaRando"))
             {
                 var = var.Remove(0, 10);
             }
