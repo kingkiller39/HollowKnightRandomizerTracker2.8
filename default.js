@@ -418,7 +418,7 @@ function getEntities() {
 		},
 		"hasCityKey": {
 			"sprite": "inv_item_city_key - Copy.png",
-			"enabled": false,
+			"enabled": true,
 			"name": "", 
 			"type":"item"
 		},
