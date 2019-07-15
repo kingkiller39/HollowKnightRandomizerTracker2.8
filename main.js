@@ -873,7 +873,11 @@ $( document ).ready(function() {
 								  if (!$(id).hasClass('selected'))
 									  $(id).hide();
 								  else
-									  $(id).show();
+                                      $(id).show();
+                                  if (data[name.replace('got', 'equipped')] && !img.hasClass('equipped'))
+                                      img.addClass('equipped');
+                                  else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped'))
+                                      img.removeClass('equipped');
 							  }else{
 								  setSelected(data[name], id);
 								  if (!$(id).hasClass('selected'))
