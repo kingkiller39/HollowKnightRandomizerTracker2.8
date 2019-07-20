@@ -621,7 +621,7 @@ function getDefault() {
 		"containers" : {
 			"charms": {
 				"itemsPerRow": 9,
-				"scale" : 25,
+				"scale" : 40,
 				"width" : 400,
 				"height" : 160,
 				"left": 10,
@@ -673,7 +673,7 @@ function getDefault() {
 			},
 			"skills": {
 				"growDirection" : "Right",
-				"scale" : 25,
+				"scale" : 40,
 				"left": 10,
 				"top":25,
 				"width" : 330,
@@ -691,7 +691,7 @@ function getDefault() {
 			},
 			"spells" : {
 				"flourish" :"topLeft",
-				"scale" : 25,
+				"scale" : 40,
 				"left": 10,
 				"top":25,
 				"width" : 330,
@@ -703,7 +703,7 @@ function getDefault() {
 				]			
 			},
 			"items" : {
-				"scale" : 25,
+				"scale" : 40,
 				"left": 10,
 				"top":25,
 				"width" : 622,
@@ -732,7 +732,7 @@ function getDefault() {
 				]	
 			},
 			"dreamers" :{
-				"scale" : 25,
+				"scale" : 40,
 				"left": 10,
 				"top":25,
 				"width" : 126,
@@ -745,7 +745,7 @@ function getDefault() {
 				]	
 			},
 			"misc": {
-				"scale" : 25,
+				"scale" : 40,
 				"left": 10,
 				"top":25,
 				"growDirection" : "Right",
@@ -760,7 +760,7 @@ function getDefault() {
 				]	
 			},
 			"disabled": {
-				"scale" : 25,
+				"scale" : 40,
 				"left": 10,
 				"top":25,
 				"width": 400,

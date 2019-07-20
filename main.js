@@ -36,7 +36,7 @@ $( document ).ready(function() {
 		  return str;
 		}
 
-	  var googleApikey = "AIzaSyBOxTGl7m1u9h07PHa_H_mW4EVRxobgdpA"; // This will only work from iamwyza.github.io
+    var googleApikey = "AIzaSyBAUqoVXWhzN0FGhYjJteLqhAU5-FteHTs"; // This will only work from kingkiller39.github.io
 	  var localKey = getParameterByName("apiKey");
 	  if (localKey != null)
 		  googleApikey = localKey;
@@ -270,7 +270,7 @@ $( document ).ready(function() {
 				  var config = LZString.compressToEncodedURIComponent(JSON.stringify(map));
 
 				  toTiny(window.location.href.replace("editing=true","").replace("profile=" + profileId, "") + "&config=" + config, googleApikey, function(value){
-					  $('#tinyUrlText').val(value);
+                      $('#tinyUrlText').val(window.location.href.replace("editing=true", "").replace("profile=" + profileId, "") + "&config=" + config);
 				  })
 				  
 			  });
@@ -303,7 +303,9 @@ $( document ).ready(function() {
 				  map.containers[currentId].scale = $('#scale').val();
 				  $('#' + currentId + ' .itemDiv img').each(function(i,e) {
 					  var scale = $('#scale').val();
-					  $(e).css('zoom', scale + "%");
+                      //$(e).css('zoom', scale + "%");
+                      $(e).css("width", (1 + (156 * (scale / 100))) + "px");
+                      $(e).css("height", (1 + (156 * (scale / 100))) + "px");
 					  $(e).parent().css("width", (1 + (156 * (scale/100))) + "px");
 					  $(e).parent().css("height", (1 + (156 * (scale/100))) + "px");
 				  });
@@ -527,8 +529,8 @@ $( document ).ready(function() {
 		  
 		  div.resizable({
 			  handles: "n,e,s,w",
-			  minWidth: (div.hasClass('container') ? 164 * (container.scale/100) : 20),
-			  minHeight:(div.hasClass('container') ? 164 * (container.scale/100) : 20),
+			  minWidth: 10, //(div.hasClass('container') ? 164 * (container.scale/100)-30 : 20),
+			  minHeight: 10, //(div.hasClass('container') ? 164 * (container.scale/100)-30 : 20),
 			  containment: $(document.body), 
 			  stop: function(event, ui) {
 				  var id = $(ui.helper).attr('id');
@@ -575,8 +577,14 @@ $( document ).ready(function() {
 
 	  function addItem(container, item, name, div) {
 		  var itemDiv = $("<div></div>").addClass('itemDiv');
-		  var img = $('<img></img>').attr({'id' : name});
-		  img.css("zoom" , container.scale + "%");
+          var img = $('<img></img>').attr({ 'id': name });
+          var itemdivscale = parseFloat(container.scale);
+          var itemdivscale = itemdivscale + 10;
+          var itemdivscale = itemdivscale + "";
+          img.css("width", container.scale + "px");
+          img.css("height", container.scale + "px");
+          itemDiv.css("width", itemdivscale + "px");
+          itemDiv.css("height", itemdivscale + "px");
 		  itemDiv.append(img);
 		  
 		  

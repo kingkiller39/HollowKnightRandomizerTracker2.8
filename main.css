@@ -61,41 +61,49 @@
 	color: #FFFFFF;
 }
 
-	
+
 div.charmDiv > img {
-	display:none;
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 
 .charmDiv {
-	background: url(images/slotBGsm.png) no-repeat;
-	background-position: center;
-	display:block;
+    background: url(images/slotBGsm.png) no-repeat;
+    background-position: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .container > div.itemDiv > img:not(.selected):not(.multiple) {
-	-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
-	filter: grayscale(100%);
-	
+    -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+    filter: grayscale(100%);
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .container > div.itemDiv > img {
-	position: relative;
-	top: 50%;
-	transform: translateY(-50%);
-	display:block;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .container > div.itemDiv:not(.charmDiv) >  img.selected {
 	-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
 	filter: grayscale(0%);
 	border-radius: 50%;
-	box-shadow: 0px 0px 40px 10px #07ff6e;
+	box-shadow: 0px 0px 5px 5px #07ff6e;
 	display:block !important;
+
 }
 
 .container > div.itemDiv:not(.charmDiv) >  img.gaveItem {
-	box-shadow: 0px 0px 40px 10px #FF0000;
+	box-shadow: 0px 0px 5px 5px #FF0000;
 }
 
 .misc-container {
@@ -105,7 +113,7 @@ div.charmDiv > img {
 
 img.equipped {
 	border-radius: 50%;
-	box-shadow: 0px 0px 40px 10px #07ff6e;
+	box-shadow: 0px 0px 5px 5px #07ff6e;
 }
 
 .itemDiv { 
@@ -113,6 +121,8 @@ img.equipped {
 	height: 41px;
 	position:relative;
 	display:block;
+    margin-left:auto;
+    margin-right:auto;
 }
 
 .itemDivGrowLeft > .itemDiv {
@@ -127,7 +137,7 @@ img.multiple {
 	-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
 	filter: grayscale(0%);
 	border-radius: 50%;
-	box-shadow: 0px 0px 40px 10px #07ff6e;
+	box-shadow: 0px 0px 5px 5px #07ff6e;
 	display:block !important;
 }
 
@@ -137,8 +147,8 @@ div.counter {
 	border-radius: 50%;
 	box-shadow: 0px 0px 5px 2px #FFFFFF;
 	position: absolute;
-	top: 25px;
-	left: 20px;
+	top: 60%;
+	left: 60%;
 	background-color: #000000;
 	color: #FFFFFF;
 	text-align: center;
@@ -152,8 +162,8 @@ div.charmSlotsFilled {
 	border-radius: 50%;
 	box-shadow: 0px 0px 5px 2px #FFFFFF;
 	position: absolute;
-	top: 0px;
-	left: 20px;
+	top: 25%;
+	left: 60%;
 	background-color: #000000;
 	color: #07ff6e;
 	text-align: center;
