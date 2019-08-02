@@ -30,38 +30,6 @@ namespace PlayerDataDump
         }
 
         /// <summary>
-        /// Fetches and compares the compiled version with the version from the site.
-        /// </summary>
-        /// <returns>Returns the current version.  Includes additional text if the current version doesn't match the version of the site.</returns>
-        public override string GetVersion() => FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(PlayerDataDump)).Location).FileVersion;
-
-        private bool? isCurrent;
-
-        public override bool IsCurrent()
-        {
-            if (isCurrent != null)
-                return isCurrent.Value;
-
-            try
-            {
-                GithubVersionHelper helper = new GithubVersionHelper("iamwyza/HollowKnightRandomizerTracker");
-                Version currentVersion = new Version(GetVersion());
-                
-                Version newVersion = new Version(helper.GetVersion());
-                LogDebug($"Comparing Versions: {newVersion} > {currentVersion}");
-                isCurrent = newVersion.CompareTo(currentVersion) <= 0;
-
-                return isCurrent.Value;
-            }
-            catch (Exception ex)
-            {
-                LogError("Couldn't check version" + ex);
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Creates and starts the WebSocket Server instances.
         /// </summary>
         public override void Initialize()

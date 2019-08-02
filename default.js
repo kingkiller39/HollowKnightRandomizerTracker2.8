@@ -302,10 +302,13 @@ function getEntities() {
 			"name": "", 
 			"type":"skill"
 		},
-		"hasDash": {
-			"sprite": "items__0004_shade_cloak - Copy.png",
+        "hasDash": {
+            "levelSprites": [
+                "items__0004_mothwing_cloak.png",
+                "items__0004_shade_cloak.png"
+            ],
 			"enabled": true,
-			"name": "", 
+			"name": "dash", 
 			"type":"skill"
 		},
 		"screamLevel": {
@@ -555,7 +558,7 @@ function getEntities() {
 			"sprite": "DreamNail1.png",
 			"enabled": true,
 			"name": "Dream Nail", 
-			"type":"generic"
+            "type": "generic"
 		},
 		"hasDreamGate": {
 			"enabled": true,
@@ -596,7 +599,7 @@ function getDefault() {
 				text: "Seed: {0}",
 				dataSource: "data",
 				dataElement: "seed",
-				left: 300,
+				left: 355,
 				top: 10,
 				width: 140,
 				height:20,
@@ -609,22 +612,61 @@ function getDefault() {
 				dataSource: "data",
 				dataElement: "mode",
 				text: "{0}",
-				left: 252,
+				left: 170,
 				top: 10,
 				width: 45,
 				height:20,
 				scale: 100,
 				color: "#FFFFFF",
 				fontSize: 16
-			}
+            },
+            "bench": {
+                "enabled": true,
+                "dataSource": "data",
+                "dataElement": "bench",
+                "text": "Bench: {0}",
+                "left": 810,
+                "top": 10,
+                "width": 299,
+                "height": 20,
+                "scale": 100,
+                "color": "#FFFFFF",
+                "fontSize": 16
+            },
+            "preset": {
+                "enabled": true,
+                "dataSource": "data",
+                "dataElement": "preset",
+                "text": "{0}",
+                "left": 220,
+                "top": 10,
+                "width": 129,
+                "height": 20,
+                "scale": 100,
+                "color": "#FFFFFF",
+                "fontSize": 16
+            },
+            "Essence": {
+                "enabled": true,
+                "dataSource": "data",
+                "dataElement": "dreamOrbs",
+                "text": "Essence: {0}",
+                "left": 694,
+                "top": 10,
+                "width": 111,
+                "height": 20,
+                "scale": 100,
+                "color": "#FFFFFF",
+                "fontSize": 16
+            }
 		},
 		"containers" : {
 			"charms": {
 				"itemsPerRow": 9,
 				"scale" : 40,
-				"width" : 400,
-				"height" : 160,
-				"left": 10,
+				"width" : 510,
+				"height" : 310,
+				"left": 0,
 				"top":25,
 				"flourish" :"topRight",
 				"growDirection" :"Left",
@@ -676,8 +718,8 @@ function getDefault() {
 				"scale" : 40,
 				"left": 10,
 				"top":25,
-				"width" : 330,
-				"height": 40,
+				"width" : 410,
+				"height": 50,
 				"items": [
 					"hasDash", 
 					"hasWalljump", 
@@ -694,8 +736,8 @@ function getDefault() {
 				"scale" : 40,
 				"left": 10,
 				"top":25,
-				"width" : 330,
-				"height": 40,
+				"width" : 410,
+				"height": 50,
 				"items": [
 					"screamLevel",
 					"fireballLevel",
@@ -706,8 +748,8 @@ function getDefault() {
 				"scale" : 40,
 				"left": 10,
 				"top":25,
-				"width" : 622,
-				"height": 45,
+				"width" : 800,
+				"height": 50,
 				"growDirection" : "Right",
 				"items": [
 					"trinket1",
@@ -735,7 +777,7 @@ function getDefault() {
 				"scale" : 40,
 				"left": 10,
 				"top":25,
-				"width" : 126,
+				"width" : 150,
 				"height": 45,
 				"growDirection" : "Left",
                 "items": [
@@ -749,7 +791,7 @@ function getDefault() {
 				"left": 10,
 				"top":25,
 				"growDirection" : "Right",
-				"width" : 206,
+				"width" : 258,
 				"height": 45,
 				"items": [
 					"hasDreamNail",

@@ -36,10 +36,10 @@ $( document ).ready(function() {
 		  return str;
 		}
 
-    var googleApikey = "AIzaSyBAUqoVXWhzN0FGhYjJteLqhAU5-FteHTs"; // This will only work from kingkiller39.github.io
+    var FirebaseApiKey = "AIzaSyBOA8aHWorp3n1Qg7TTYYgAxf5Nk8NxT_A"; // This will only work from kingkiller39.github.io
 	  var localKey = getParameterByName("apiKey");
 	  if (localKey != null)
-		  googleApikey = localKey;
+		  FirebaseApiKey = localKey;
 
 	  var profileId = getParameterByName("profile");
 	
@@ -117,17 +117,17 @@ $( document ).ready(function() {
 					  height = $('#setupPageHeight').val() - 4;
 
 					  map = getDefault();
-					  map.containers.charms.top = height - 161;
-					  map.containers.charms.left = 4;
-					  map.containers.spells.top = height - 42 - map.containers.skills.height;
+					  map.containers.charms.top = height - 310;
+					  map.containers.charms.left = 0;
+					  map.containers.spells.top = height - 50 - map.containers.skills.height;
 					  map.containers.spells.left = width - map.containers.spells.width;
-					  map.containers.skills.top = height - 42 ;
+					  map.containers.skills.top = height - 50 ;
 					  map.containers.skills.left = width - map.containers.skills.width;
 					  map.containers.items.top = 0;
 					  map.containers.items.left = width - map.containers.items.width;
-					  map.containers.dreamers.top = 48;
+					  map.containers.dreamers.top = 53;
 					  map.containers.dreamers.left = width - map.containers.dreamers.width;
-					  map.containers.misc.top = 48;
+					  map.containers.misc.top = 53;
 					  map.containers.misc.left = width - (map.containers.dreamers.width + map.containers.misc.width);
 					  map.containers.disabled.top = 178;
 					  map.containers.disabled.left = 508;
@@ -269,8 +269,8 @@ $( document ).ready(function() {
 				  $('#urlText').val(window.location.href.replace(/\?.*/,"") + "?profile=" + profileId + ( overrideUrl != undefined ? "&url=" + overrideUrl : "") );
 				  var config = LZString.compressToEncodedURIComponent(JSON.stringify(map));
 
-				  toTiny(window.location.href.replace("editing=true","").replace("profile=" + profileId, "") + "&config=" + config, googleApikey, function(value){
-                      $('#tinyUrlText').val(window.location.href.replace("editing=true", "").replace("profile=" + profileId, "") + "&config=" + config);
+				  toTiny(window.location.href.replace("editing=true","").replace("&profile=" + profileId, "") + "config=" + config, FirebaseApiKey, function(value){
+                      $('#tinyUrlText').val(value);
 				  })
 				  
 			  });
@@ -601,8 +601,12 @@ $( document ).ready(function() {
 				  img.attr('src', "images/" + item.levelSprites[0]);
 				  break;
 			  
-			  case "skill":
-				  img.attr('src', "images/" + item.sprite);
+              case "skill":
+                  if (item.name == "dash") {
+                      img.attr('src', "images/" + item.levelSprites[0]);
+                      break;
+                  }
+                  else { img.attr('src', "images/" + item.sprite) };
 				  break;
 				  
 			  case "item":
@@ -615,7 +619,7 @@ $( document ).ready(function() {
 				  break;
 				  
 			  case "generic":
-				  img.attr('src', "images/" + item.sprite);
+                  img.attr('src', "images/" + item.sprite);
 				  break;	
 			  case "charmNotch":
 				  img.attr('src', "images/" + item.sprite);
@@ -868,74 +872,80 @@ $( document ).ready(function() {
 				  var img = $(id);
 				  
 				  if (name in data) {
-					  switch (item.type) {
-						  case "charm":
-							  if (name == "gotCharm_36") // Kingsoul / Void Heart is special
-							  {
-								  setSelected(data[name], id);
-                                  
+                      switch (item.type) {
+                          case "charm":
+                              if (name == "gotCharm_36") // Kingsoul / Void Heart is special
+                              {
+                                  setSelected(data[name], id);
+
                                   if (data.royalCharmState == 1) { $(id).attr('src', "images/Charm_KingSoul_Right.png"); }
                                   else if (!data.royalCharmState == 2) { $(id).attr('src', "images/Charm_KingSoul_Left.png"); }
                                   else if (data.royalCharmState == 3) { $(id).attr('src', "images/Kingsoul.png"); }
                                   else if (data.royalCharmState == 4) { $(id).attr('src', "images/charmSprite35.png") }
-								  if (!$(id).hasClass('selected'))
-									  $(id).hide();
-								  else
+                                  if (!$(id).hasClass('selected'))
+                                      $(id).hide();
+                                  else
                                       $(id).show();
                                   if (data[name.replace('got', 'equipped')] && !img.hasClass('equipped'))
                                       img.addClass('equipped');
                                   else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped'))
                                       img.removeClass('equipped');
-							  }else{
-								  setSelected(data[name], id);
-								  if (!$(id).hasClass('selected'))
-									  $(id).hide();
-								  else
-									  $(id).show();
-																	  
-								  if (data[name.replace('got', 'equipped')] && !img.hasClass('equipped') )
-									  img.addClass('equipped');
-								  else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped'))
-									  img.removeClass('equipped');
-								
-								  
+                              } else {
+                                  setSelected(data[name], id);
+                                  if (!$(id).hasClass('selected'))
+                                      $(id).hide();
+                                  else
+                                      $(id).show();
 
-								//Dealing with the new Levelup of the grimm charm, though generic enough to handle others if they did it.
-								if ("charmLevelSprites" in item) {
-									if (item.charmLevel in data && data[item.charmLevel]-1 <= item.charmLevelSprites.length){
-										img.attr('src', "images/" + item.charmLevelSprites[data[item.charmLevel]-1]);
-									}
-								}
-								//Deal with broken fragile items
-								if ("brokenCheck" in item && item.brokenCheck in data) {
-									if (data[item.brokenCheck]) {
-										img.attr('src', "images/" + item.brokenSprite);
-									}else{
-										img.attr('src', "images/" + item.sprite);
-									}
-								}
-
-								  // Dealing with upgrading the 3 fragile charms to unbreakable charms
-								  if ("unbreakableSprite" in item){
-										if (item.unbreakableCheck in data){
-											if (data[item.unbreakableCheck])
-												img.attr('src', "images/" + item.unbreakableSprite);
-										}
-								  }
+                                  if (data[name.replace('got', 'equipped')] && !img.hasClass('equipped'))
+                                      img.addClass('equipped');
+                                  else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped'))
+                                      img.removeClass('equipped');
 
 
-							  }
-							  break;
-							  
-						  case "spell":
-							  setSelected(data[name] > 0, id);
-							  if ("levelSprites" in item && data[name]-1 > 0 && data[name]-1 <= item.levelSprites.length){
-								  img.attr("src", "images/" + item.levelSprites[data[name]-1]);
-							  }
-							  break;
-						  
-						  case "skill":
-							  setSelected(data[name], id);
+
+                                  //Dealing with the new Levelup of the grimm charm, though generic enough to handle others if they did it.
+                                  if ("charmLevelSprites" in item) {
+                                      if (item.charmLevel in data && data[item.charmLevel] - 1 <= item.charmLevelSprites.length) {
+                                          img.attr('src', "images/" + item.charmLevelSprites[data[item.charmLevel] - 1]);
+                                      }
+                                  }
+                                  //Deal with broken fragile items
+                                  if ("brokenCheck" in item && item.brokenCheck in data) {
+                                      if (data[item.brokenCheck]) {
+                                          img.attr('src', "images/" + item.brokenSprite);
+                                      } else {
+                                          img.attr('src', "images/" + item.sprite);
+                                      }
+                                  }
+
+                                  // Dealing with upgrading the 3 fragile charms to unbreakable charms
+                                  if ("unbreakableSprite" in item) {
+                                      if (item.unbreakableCheck in data) {
+                                          if (data[item.unbreakableCheck])
+                                              img.attr('src', "images/" + item.unbreakableSprite);
+                                      }
+                                  }
+
+
+                              }
+                              break;
+
+                          case "spell":
+                              setSelected(data[name] > 0, id);
+                              if ("levelSprites" in item && data[name] - 1 > 0 && data[name] - 1 <= item.levelSprites.length) {
+                                  img.attr("src", "images/" + item.levelSprites[data[name] - 1]);
+                              }
+                              break;
+
+                          case "skill":
+                              setSelected(data[name], id);
+                              if ("levelSprites" in item && data["hasDash"] && !data["hasShadowDash"]) {
+                                  img.attr("src", "images/" + entities["hasDash"].levelSprites[0]);
+                              }
+                              else if ("levelSprites" in item && data["hasDash"] && data["hasShadowDash"]) {
+                                  img.attr("src", "images/" + entities["hasDash"].levelSprites[1]);
+                              }
 							  break;
 							  
 						  case "item":
@@ -971,8 +981,8 @@ $( document ).ready(function() {
 
 							  }
 						  break;
-						  case "generic":
-							  setSelected(data[name], id);
+                          case "generic":
+                              setSelected(data[name], id);
 							  
 							  break;	
 					  }
@@ -1063,32 +1073,21 @@ $( document ).ready(function() {
 		  return null;
 	  }
 
-	  function toTiny(url, apiKey, callback) {
+    function toTiny(url, apiKey, callback) {
 
-		  if (regexReplaceUrl.test(url)){ // only works if not local
-			  callback(url);
-		  }
-
-		  $.ajax({
-			  url: 'https://www.googleapis.com/urlshortener/v1/url?key=' + apiKey,
-			  type: 'POST',
-			  contentType: 'application/json; charset=utf-8',
-			  data: JSON.stringify({ longUrl: url }),
-			  success: function(response) {
-				  callback(response.id);
-			  }
-		   });
-	  }
-
-	  function fromTiny(url, callback) {
-		  $.ajax({
-			  url: 'https://www.googleapis.com/urlshortener/v1/url',
-			  type: 'GET',
-			  contentType: 'application/json; charset=utf-8',
-			  data: JSON.stringify({ shortUrl: url }),
-			  success: function(response) {
-				  callback(response.longUrl);
-			  }
-		   });
-	  }
+        if (regexReplaceUrl.test(url)) { // only works if not local
+            callback(url);
+        }
+        var params = {
+            "longDynamicLink": "https://tracker.kingkiller39.me/?link=" + url,
+        }
+        $.ajax({
+            url: 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=' + apiKey,
+            type: 'POST',
+            data: params,
+            success: function(response) {
+                callback(response.shortLink);
+            }
+        });
+	}
 });

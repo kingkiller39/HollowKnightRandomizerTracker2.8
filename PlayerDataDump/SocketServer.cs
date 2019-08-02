@@ -127,6 +127,7 @@ namespace PlayerDataDump
                 SendMessage(var, value.ToString());
             }
             PlayerData.instance.SetBoolInternal(var, value);
+            SendMessage("bench", PlayerData.instance.respawnScene.ToString());
         }
 
        public void EchoInt(string var, int value)
@@ -136,7 +137,7 @@ namespace PlayerDataDump
             {
                 EchoBool("gotCharm_36", true);
             }
-            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") || var == "nailSmithUpgrades" || var == "rancidEggs" || var == "royalCharmState")
+            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") || var == "nailSmithUpgrades" || var == "rancidEggs" || var == "royalCharmState" || var == "dreamOrbs")
             {
                 SendMessage(var, value.ToString());
             }
@@ -157,13 +158,36 @@ namespace PlayerDataDump
             {
                 if (RandomizerMod.RandomizerMod.Instance.Settings.Randomizer)
                 {
+                    bool presetClassic = !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeDreamers && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSkills && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharms && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeKeys && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeGeoChests && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeMaskShards && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeVesselFragments && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizePaleOre && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharmNotches && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRancidEggs && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRelics;
+                    bool presetProgressive = RandomizerMod.RandomizerMod.Instance.Settings.RandomizeDreamers && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSkills && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharms && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeKeys && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeGeoChests && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeMaskShards && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeVesselFragments && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizePaleOre && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharmNotches && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRancidEggs && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRelics;
+                    bool presetCompletionist = RandomizerMod.RandomizerMod.Instance.Settings.RandomizeDreamers && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSkills && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharms && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeKeys && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeGeoChests && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeMaskShards && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeVesselFragments && RandomizerMod.RandomizerMod.Instance.Settings.RandomizePaleOre && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharmNotches && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRancidEggs && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRelics;
+                    bool presetJunkPit = RandomizerMod.RandomizerMod.Instance.Settings.RandomizeDreamers && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSkills && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharms && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeKeys && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeGeoChests && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeMaskShards && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeVesselFragments && RandomizerMod.RandomizerMod.Instance.Settings.RandomizePaleOre && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharmNotches && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRancidEggs && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRelics;
                     SendMessage("seed", RandomizerMod.RandomizerMod.Instance.Settings.Seed.ToString());
+                    if (RandomizerMod.RandomizerMod.Instance.Settings.AcidSkips && RandomizerMod.RandomizerMod.Instance.Settings.FireballSkips && RandomizerMod.RandomizerMod.Instance.Settings.MildSkips && RandomizerMod.RandomizerMod.Instance.Settings.ShadeSkips && RandomizerMod.RandomizerMod.Instance.Settings.SpikeTunnels && RandomizerMod.RandomizerMod.Instance.Settings.DarkRooms && RandomizerMod.RandomizerMod.Instance.Settings.SpicySkips)
+                        SendMessage("mode", "Hard");
+                    else if (!RandomizerMod.RandomizerMod.Instance.Settings.AcidSkips && !RandomizerMod.RandomizerMod.Instance.Settings.FireballSkips && !RandomizerMod.RandomizerMod.Instance.Settings.MildSkips && !RandomizerMod.RandomizerMod.Instance.Settings.ShadeSkips && !RandomizerMod.RandomizerMod.Instance.Settings.SpikeTunnels && !RandomizerMod.RandomizerMod.Instance.Settings.DarkRooms &&!RandomizerMod.RandomizerMod.Instance.Settings.SpicySkips)
+                        SendMessage("mode", "Easy");
+                    else
+                        SendMessage("mode", "Custom");
+                    
+                    if (presetJunkPit)
+                        SendMessage("preset", "Junk Pit");
+                    else if (presetCompletionist)
+                        SendMessage("preset", "Completionist");
+                    else if (presetProgressive)
+                        SendMessage("preset", "Progressive");
+                    else if (presetClassic)
+                        SendMessage("preset", "Classic");
+                    else
+                        SendMessage("preset", "Custom");
+
                 }
             }
             catch
             {
                 SendMessage("randomizer", "false");
             }
+            SendMessage("bench", PlayerData.instance.respawnScene.ToString());
         }
 
 

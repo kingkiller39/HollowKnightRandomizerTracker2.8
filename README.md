@@ -2,7 +2,7 @@
 
 This is the UI side of a tracker for items in Hollow Knight as an overlay in OBS.  You'll need to install this for it to work: https://drive.google.com/open?id=1BBQzGg9t5DIrKAQ6y5Dn-sMMgnoBedT5. (also requires Modding API: https://drive.google.com/open?id=0B_b9PFqx_PR9X1ZrWGFxUGdydTg) Big Thanks to @KDT for getting the Game Side working to get this data out.  This wouldn't work at all without it.  (and of course to Team Cherry for an amazing game)
 
-![Demo](https://github.com/iamwyza/HollowKnightRandomizerTracker/blob/master/demo.png "Demo")
+![Demo](https://github.com/kingkiller39/HollowKnightRandomizerTracker/blob/master/demo.png "Demo")
 
 # Setup & Configuration
 
@@ -44,9 +44,20 @@ Thankfully Windows provides an excellent and easy workaround.
   * `netsh interface portproxy add v4tov4 listenaddress=localhost listenport=11420 connectaddress=gamingpc connectport=11420`
 * This command sets a redirect in windows that says requests to localhost:11420 are to be directed to gamingpc:11420.
 
+## Changelog
+
+### 2.7.4.0
+* You can now share your overlay layout. Short URLs now provided by Firebase.
+* Randomizer difficulty will now correctly show.
+* You will need to re-setup your tracker if you want to take advantage of the following new features:
+	* The overlay will now show the randomizer preset.
+	* The overlay will now show your last bench.
+	* The overlay will now show your essence count.
+* Added new sprite for mothwing cloak. The tracker will now acurrately show mothwing cloack to shade cloak.
+* Code optimization and general bug fixes.
 
 ## Credits
-* @iamwyza - Original creator of this tracker.
+* @iamwyza - Forked repo from.
 * @KayDeeTee - PlayerDataTracker Coding and general help with HK data structures.
 * @Seanpr - Modding API used by PlayerDataTracker and general help with HK data structures.
 * Mickley_3, ciplax, and RiskyCB for early testing and feedback.

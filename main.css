@@ -109,6 +109,7 @@ div.charmDiv > img {
 .misc-container {
 	color: #FFFFFF;
 	position: absolute; 
+    text-align: right;
 }
 
 img.equipped {
