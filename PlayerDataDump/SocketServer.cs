@@ -13,7 +13,7 @@ namespace PlayerDataDump
             IgnoreExtensions = true;
         }
 
-        private static readonly HashSet<string> IntKeysToSend = new HashSet<string> {"simpleKeys", "nailDamage", "maxHealth", "MPReserveMax", "ore", "rancidEggs", "grubsCollected", "charmSlotsFilled", "charmSlots" };
+        private static readonly HashSet<string> IntKeysToSend = new HashSet<string> {"simpleKeys", "nailDamage", "maxHealth", "MPReserveMax", "ore", "rancidEggs", "grubsCollected", "charmSlotsFilled", "charmSlots", "flamesCollected" };
 
         public void Broadcast(string s)
         {
@@ -122,7 +122,7 @@ namespace PlayerDataDump
             {
                 var = var.Remove(0, 10);
             }
-            if (var.StartsWith("RandomizerMod.has") || var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed" || var.StartsWith("used") || var.StartsWith("opened") || var.StartsWith("gave"))
+            if (var.StartsWith("RandomizerMod.has") || var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed" || var.StartsWith("used") || var.StartsWith("opened") || var.StartsWith("gave") || var == "unlockedCompletionRate")
             {
                 SendMessage(var, value.ToString());
             }
@@ -180,7 +180,7 @@ namespace PlayerDataDump
                         SendMessage("preset", "Classic");
                     else
                         SendMessage("preset", "Custom");
-
+                    
                 }
             }
             catch

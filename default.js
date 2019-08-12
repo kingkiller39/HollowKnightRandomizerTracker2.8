@@ -584,6 +584,27 @@ function getEntities() {
             "name": "Nail",
             "type": "item",
             "multiple": true
+        },
+        "unlockedCompletionRate": {
+            "sprite": "unlockedCompletionRate.png",
+            "enabled": true,
+            "name": "World Sense",
+            "type": "item",
+            "multiple": false
+        },
+        "hasGodfinder": {
+            "sprite": "hasGodfinder.png",
+            "enabled": true,
+            "name": "God Tuner",
+            "type": "item",
+            "multiple": false
+        },
+        "hasPinGrub": {
+            "sprite": "hasPinGrub.png",
+            "enabled": true,
+            "name": "Collector's Map",
+            "type": "item",
+            "multiple": false
         }
 	};
 }
@@ -817,8 +838,10 @@ function getDefault() {
 					"Inv_0028_spell_ring.png",
 					"slotCost.png",
 					"slotOff.png",
-					"slotOn.png"
-                   
+					"slotOn.png",
+                    "unlockedCompletionRate",
+                    "hasGodfinder",
+                    "hasPinGrub"
 				]
 			}
 		}

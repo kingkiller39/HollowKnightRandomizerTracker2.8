@@ -28,7 +28,8 @@ namespace PlayerDataDump
             output = output.TrimEnd(',') + "]";
             return output;
         }
-
+        public override bool IsCurrent() {return true;}
+        public override string GetVersion() => FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(PlayerDataDump)).Location).FileVersion;
         /// <summary>
         /// Creates and starts the WebSocket Server instances.
         /// </summary>
