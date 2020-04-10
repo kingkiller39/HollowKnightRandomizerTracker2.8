@@ -70,6 +70,7 @@ namespace PlayerDataDump
             
             ModHooks.Instance.NewGameHook -= NewGame;
             ModHooks.Instance.SavegameLoadHook -= LoadSave;
+            ModHooks.Instance.BeforeSavegameSaveHook -= BeforeSave;
             ModHooks.Instance.SetPlayerBoolHook -= EchoBool;
             ModHooks.Instance.SetPlayerIntHook -= EchoInt;
 
@@ -98,19 +99,24 @@ namespace PlayerDataDump
             SendMessage("SaveLoaded", "true");
         }
 
+        public void BeforeSave(SaveGameData data)
+        {
+            SendMessage("SaveLoaded", "true");
+        }
+
         public void EchoBool(string var, bool value)
         {
             PlayerDataDump.Instance.LogDebug($"EchoBool: {var} = {value}");
         
-            if (var == "RandomizerMod.Monomon" || var == "AreaRando.Monomon")
+            if (var == "RandomizerMod.Monomon" || var == "AreaRando.Monomon" || var == "monomonDefeated")
             {
                 var= "maskBrokenMonomon";
             }
-            else if (var == "RandomizerMod.Lurien" || var == "AreaRando.Lurien")
+            else if (var == "RandomizerMod.Lurien" || var == "AreaRando.Lurien" || var == "lurienDefeated")
             {
                 var= "maskBrokenLurien";
             }
-            else if (var == "RandomizerMod.Herrah" || var == "AreaRando.Herrah")
+            else if (var == "RandomizerMod.Herrah" || var == "AreaRando.Herrah" || var == "hegemolDefeated")
             {
                 var= "maskBrokenHegemol";
             }
@@ -122,7 +128,7 @@ namespace PlayerDataDump
             {
                 var = var.Remove(0, 10);
             }
-            if (var.StartsWith("RandomizerMod.has") || var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed" || var.StartsWith("used") || var.StartsWith("opened") || var.StartsWith("gave") || var == "unlockedCompletionRate")
+            if (var.StartsWith("RandomizerMod.has") || var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed" || var.StartsWith("used") || var.StartsWith("opened") || var.StartsWith("gave") || var == "unlockedCompletionRate" || var.EndsWith("Collected"))
             {
                 SendMessage(var, value.ToString());
             }
@@ -137,7 +143,7 @@ namespace PlayerDataDump
             {
                 EchoBool("gotCharm_36", true);
             }
-            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") || var == "nailSmithUpgrades" || var == "rancidEggs" || var == "royalCharmState" || var == "dreamOrbs")
+            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") || var == "nailSmithUpgrades" || var == "rancidEggs" || var == "royalCharmState" || var == "dreamOrbs" || var.EndsWith("Collected"))
             {
                 SendMessage(var, value.ToString());
             }
@@ -156,31 +162,69 @@ namespace PlayerDataDump
         {
             try
             {
-                if (RandomizerMod.RandomizerMod.Instance.Settings.Randomizer)
+                var settings = RandomizerMod.RandomizerMod.Instance.Settings;
+                if (settings.Randomizer)
                 {
-                    bool presetClassic = !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeDreamers && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSkills && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharms && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeKeys && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeGeoChests && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeMaskShards && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeVesselFragments && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizePaleOre && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharmNotches && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRancidEggs && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRelics;
-                    bool presetProgressive = RandomizerMod.RandomizerMod.Instance.Settings.RandomizeDreamers && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSkills && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharms && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeKeys && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeGeoChests && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeMaskShards && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeVesselFragments && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizePaleOre && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharmNotches && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRancidEggs && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRelics;
-                    bool presetCompletionist = RandomizerMod.RandomizerMod.Instance.Settings.RandomizeDreamers && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSkills && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharms && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeKeys && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeGeoChests && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeMaskShards && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeVesselFragments && RandomizerMod.RandomizerMod.Instance.Settings.RandomizePaleOre && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharmNotches && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRancidEggs && !RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRelics;
-                    bool presetJunkPit = RandomizerMod.RandomizerMod.Instance.Settings.RandomizeDreamers && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSkills && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharms && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeKeys && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeGeoChests && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeMaskShards && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeVesselFragments && RandomizerMod.RandomizerMod.Instance.Settings.RandomizePaleOre && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCharmNotches && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRancidEggs && RandomizerMod.RandomizerMod.Instance.Settings.RandomizeRelics;
-                    SendMessage("seed", RandomizerMod.RandomizerMod.Instance.Settings.Seed.ToString());
-                    if (RandomizerMod.RandomizerMod.Instance.Settings.AcidSkips && RandomizerMod.RandomizerMod.Instance.Settings.FireballSkips && RandomizerMod.RandomizerMod.Instance.Settings.MildSkips && RandomizerMod.RandomizerMod.Instance.Settings.ShadeSkips && RandomizerMod.RandomizerMod.Instance.Settings.SpikeTunnels && RandomizerMod.RandomizerMod.Instance.Settings.DarkRooms && RandomizerMod.RandomizerMod.Instance.Settings.SpicySkips)
+                    var msgText = "";
+                    if (settings.Cursed)
+                        msgText += "Cursed ";
+
+                    if (settings.ConnectAreas || settings.RandomizeTransitions)
+                    {
+                        if (settings.ConnectAreas)
+                            msgText += "Connected-Area ";
+
+                        if (settings.RandomizeRooms)
+                            msgText += "Room ";
+                        else if (settings.RandomizeAreas)
+                            msgText += "Area ";
+
+                        msgText += "Rando ";
+                    }
+                    else
+                    {
+                        msgText += "Item Rando";
+                    }
+                    SendMessage("rando_type", msgText.Trim());
+
+
+
+                    bool presetClassic = !settings.RandomizeDreamers && settings.RandomizeSkills && settings.RandomizeCharms && !settings.RandomizeKeys && settings.RandomizeGeoChests && !settings.RandomizeMaskShards && !settings.RandomizeVesselFragments && !settings.RandomizePaleOre && !settings.RandomizeCharmNotches && !settings.RandomizeRancidEggs && !settings.RandomizeRelics;
+                    bool presetProgressive = settings.RandomizeDreamers && settings.RandomizeSkills && settings.RandomizeCharms && settings.RandomizeKeys && !settings.RandomizeGeoChests && !settings.RandomizeMaskShards && !settings.RandomizeVesselFragments && !settings.RandomizePaleOre && !settings.RandomizeCharmNotches && !settings.RandomizeRancidEggs && !settings.RandomizeRelics;
+                    bool presetCompletionist = settings.RandomizeDreamers && settings.RandomizeSkills && settings.RandomizeCharms && settings.RandomizeKeys && settings.RandomizeGeoChests && settings.RandomizeMaskShards && settings.RandomizeVesselFragments && settings.RandomizePaleOre && settings.RandomizeCharmNotches && !settings.RandomizeRancidEggs && !settings.RandomizeRelics;
+                    bool presetJunkPit = settings.RandomizeDreamers && settings.RandomizeSkills && settings.RandomizeCharms && settings.RandomizeKeys && settings.RandomizeGeoChests && settings.RandomizeMaskShards && settings.RandomizeVesselFragments && settings.RandomizePaleOre && settings.RandomizeCharmNotches && settings.RandomizeRancidEggs && settings.RandomizeRelics;
+
+                    bool presetCollector = settings.RandomizeDreamers && settings.RandomizeSkills && settings.RandomizeCharms && settings.RandomizeKeys &&
+                        !settings.RandomizeGeoChests && !settings.RandomizeMaskShards && !settings.RandomizeVesselFragments && !settings.RandomizePaleOre &&
+                        !settings.RandomizeCharmNotches && !settings.RandomizeRancidEggs && !settings.RandomizeRelics && settings.RandomizeMaps &&
+                        settings.RandomizeStags && settings.RandomizeGrubs && settings.RandomizeWhisperingRoots;
+                    bool presetSuperJunkPit = presetJunkPit && settings.RandomizeMaps && settings.RandomizeStags && settings.RandomizeGrubs && settings.RandomizeWhisperingRoots;
+
+                    SendMessage("seed", settings.Seed.ToString());
+                    if (settings.AcidSkips && settings.FireballSkips && settings.MildSkips && settings.ShadeSkips && settings.SpikeTunnels && settings.DarkRooms && settings.SpicySkips)
                         SendMessage("mode", "Hard");
-                    else if (!RandomizerMod.RandomizerMod.Instance.Settings.AcidSkips && !RandomizerMod.RandomizerMod.Instance.Settings.FireballSkips && !RandomizerMod.RandomizerMod.Instance.Settings.MildSkips && !RandomizerMod.RandomizerMod.Instance.Settings.ShadeSkips && !RandomizerMod.RandomizerMod.Instance.Settings.SpikeTunnels && !RandomizerMod.RandomizerMod.Instance.Settings.DarkRooms &&!RandomizerMod.RandomizerMod.Instance.Settings.SpicySkips)
+                    else if (!settings.AcidSkips && !settings.FireballSkips && !settings.MildSkips && !settings.ShadeSkips && !settings.SpikeTunnels && !settings.DarkRooms &&!settings.SpicySkips)
                         SendMessage("mode", "Easy");
                     else
                         SendMessage("mode", "Custom");
                     
-                    if (presetJunkPit)
-                        SendMessage("preset", "Junk Pit");
+                    if (presetSuperJunkPit)
+                        msgText = "Super Junk Pit";
+                    else if (presetJunkPit)
+                        msgText = "Junk Pit";
+                    else if (presetCollector)
+                        msgText = "Collector";
                     else if (presetCompletionist)
-                        SendMessage("preset", "Completionist");
+                        msgText = "Completionist";
                     else if (presetProgressive)
-                        SendMessage("preset", "Progressive");
+                        msgText = "Progressive";
                     else if (presetClassic)
-                        SendMessage("preset", "Classic");
+                        msgText = "Classic";
                     else
-                        SendMessage("preset", "Custom");
-                    
+                        msgText = $"Custom";
+
+                    SendMessage("preset", msgText.Trim());
+
                 }
             }
             catch
