@@ -43,6 +43,7 @@ namespace PlayerDataDump
             {
                 ModHooks.Instance.NewGameHook += ss.NewGame;
                 ModHooks.Instance.SavegameLoadHook += ss.LoadSave;
+                ModHooks.Instance.BeforeSavegameSaveHook += ss.BeforeSave;
 
                 ModHooks.Instance.SetPlayerBoolHook += ss.EchoBool;
                 ModHooks.Instance.SetPlayerIntHook += ss.EchoInt;
