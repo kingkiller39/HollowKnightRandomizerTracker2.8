@@ -269,7 +269,7 @@ $( document ).ready(function() {
 				  $('#urlText').val(window.location.href.replace(/\?.*/,"") + "?profile=" + profileId + ( overrideUrl != undefined ? "&url=" + overrideUrl : "") );
 				  var config = LZString.compressToEncodedURIComponent(JSON.stringify(map));
 
-				  toTiny(window.location.href.replace("editing=true","").replace("&profile=" + profileId, "") + "config=" + config, FirebaseApiKey, function(value){
+                  toTiny("https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/Index.html?config=" + config, FirebaseApiKey, function (value) {
                       $('#tinyUrlText').val(value);
 				  })
 				  
