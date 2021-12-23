@@ -894,8 +894,8 @@ $( document ).ready(function() {
 							  {
 								  setSelected(data[name], id);
 
-								  if (data.royalCharmState == 1) { $(id).attr('src', "images/Charm_KingSoul_Right.png"); }
-								  else if (data.royalCharmState == 2) { $(id).attr('src', "images/Charm_KingSoul_Left.png"); }
+								  if (data.royalCharmState == 1) { $(id).attr('src', "images/Charm_KingSoul_Left.png"); }
+								  else if (data.royalCharmState == 2) { $(id).attr('src', "images/Charm_KingSoul_Right.png"); }
 								  else if (data.royalCharmState == 3) { $(id).attr('src', "images/Kingsoul.png"); }
 								  else if (data.royalCharmState == 4) { $(id).attr('src', "images/charmSprite35.png") }
 								  if (!$(id).hasClass('selected'))
