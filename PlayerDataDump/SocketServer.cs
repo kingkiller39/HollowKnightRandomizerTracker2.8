@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Modding;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using UnityEngine;
-
 namespace PlayerDataDump
 {
     internal class SocketServer : WebSocketBehavior
@@ -14,7 +14,9 @@ namespace PlayerDataDump
         }
 
         private static readonly HashSet<string> IntKeysToSend = new HashSet<string> {"simpleKeys", "nailDamage", "maxHealth", "MPReserveMax", "ore", "rancidEggs", "grubsCollected", "charmSlotsFilled", "charmSlots", "flamesCollected" };
-
+        private static readonly string[] LeftCloak = new string[] { "Left_Mothwing_Cloak", "Left_Mothwing_Cloak_(1)", "Left_Shade_Cloak", "Left_Shade_Cloak_(1)" };
+        private static readonly string[] RightCloack = new string[] { "Right_Mothwing_Cloak", "Right_Mothwing_Cloak_(1)", "Right_Shade_Cloak", "Right_Shade_Cloak_(1)" };
+        private static bool randoAtBench = false;
         public void Broadcast(string s)
         {
             Sessions.Broadcast(s);
@@ -35,6 +37,8 @@ namespace PlayerDataDump
                 case "json":
                     Send(GetJson());
                     GetRandom();
+                    SplitItems();
+                    getCursedNail();
                     break;
                 default:
                     if (e.Data.Contains('|'))
@@ -69,11 +73,10 @@ namespace PlayerDataDump
             base.OnClose(e);
             
             ModHooks.Instance.NewGameHook -= NewGame;
-            ModHooks.Instance.SavegameLoadHook -= LoadSave;
-            ModHooks.Instance.BeforeSavegameSaveHook -= BeforeSave;
+            ModHooks.Instance.AfterSavegameLoadHook -= LoadSave;
             ModHooks.Instance.SetPlayerBoolHook -= EchoBool;
             ModHooks.Instance.SetPlayerIntHook -= EchoInt;
-
+            On.GameMap.Start -= gameMapStart;
             ModHooks.Instance.ApplicationQuitHook -= OnQuit;
             
             PlayerDataDump.Instance.Log("CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
@@ -89,34 +92,44 @@ namespace PlayerDataDump
         public void SendMessage(string var, string value)
         {
             if (State != WebSocketState.Open) return;
-
             Send(new Row(var, value).ToJsonElementPair);
         }
 
-        public void LoadSave(int slot)
+        public void LoadSave(SaveGameData data)
         {
+            if (State != WebSocketState.Open) return;
+            PlayerDataDump.Instance.LogDebug("Loaded Save");
             GetRandom();
             SendMessage("SaveLoaded", "true");
         }
-
-        public void BeforeSave(SaveGameData data)
+        public void LoadSave()
         {
+            if (State != WebSocketState.Open) return;
+            GetRandom();
             SendMessage("SaveLoaded", "true");
         }
 
         public void EchoBool(string var, bool value)
         {
             PlayerDataDump.Instance.LogDebug($"EchoBool: {var} = {value}");
-        
-            if (var == "RandomizerMod.Monomon" || var == "AreaRando.Monomon" || var == "monomonDefeated")
+            if (var == "atBench" && value && !randoAtBench)
+            {
+                LoadSave();
+                randoAtBench = true;
+            }
+            else if (var == "atBench" && !value && randoAtBench)
+            {
+                randoAtBench = false;
+            }
+            if (var == "RandomizerMod.Monomon" || var == "AreaRando.Monomon")
             {
                 var= "maskBrokenMonomon";
             }
-            else if (var == "RandomizerMod.Lurien" || var == "AreaRando.Lurien" || var == "lurienDefeated")
+            else if (var == "RandomizerMod.Lurien" || var == "AreaRando.Lurien")
             {
                 var= "maskBrokenLurien";
             }
-            else if (var == "RandomizerMod.Herrah" || var == "AreaRando.Herrah" || var == "hegemolDefeated")
+            else if (var == "RandomizerMod.Herrah" || var == "AreaRando.Herrah")
             {
                 var= "maskBrokenHegemol";
             }
@@ -128,12 +141,23 @@ namespace PlayerDataDump
             {
                 var = var.Remove(0, 10);
             }
-            if (var.StartsWith("RandomizerMod.has") || var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed" || var.StartsWith("used") || var.StartsWith("opened") || var.StartsWith("gave") || var == "unlockedCompletionRate" || var.EndsWith("Collected"))
+            if (var == "canDashRight" || var == "canDashLeft")
+            {
+                SendMessage(var, value.ToString());
+                SendMessage("hasDash", "true");
+            }
+            else if (var == "hasWalljumpRight" || var == "hasWalljumpLeft")
+            {
+                SendMessage(var, value.ToString());
+                SendMessage("hasWalljump", "true");
+            }
+            else if (var.StartsWith("RandomizerMod.has") || var.StartsWith("gotCharm_") || var.StartsWith("brokenCharm_") || var.StartsWith("equippedCharm_") || var.StartsWith("has") || var.StartsWith("maskBroken") || var == "overcharmed" || var.StartsWith("used") || var.StartsWith("opened") || var.StartsWith("gave") || var == "unlockedCompletionRate")
             {
                 SendMessage(var, value.ToString());
             }
             PlayerData.instance.SetBoolInternal(var, value);
             SendMessage("bench", PlayerData.instance.respawnScene.ToString());
+            if (RandomizerMod.RandomizerMod.Instance.Settings.CursedNail) { getCursedNail(); }
         }
 
        public void EchoInt(string var, int value)
@@ -143,28 +167,66 @@ namespace PlayerDataDump
             {
                 EchoBool("gotCharm_36", true);
             }
-            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") || var == "nailSmithUpgrades" || var == "rancidEggs" || var == "royalCharmState" || var == "dreamOrbs" || var.EndsWith("Collected"))
+            if (IntKeysToSend.Contains(var) || var.EndsWith("Level") || var.StartsWith("trinket") || var == "nailSmithUpgrades" || var == "rancidEggs" || var == "royalCharmState" || var == "dreamOrbs")
             {
                 SendMessage(var, value.ToString());
             }
             PlayerData.instance.SetIntInternal(var, value);
         }
 
-        public static string GetJson()
+        public string GetJson()
         {
             PlayerData playerData = PlayerData.instance;
             string json = JsonUtility.ToJson(playerData);
-
             return json;
+        }
+
+        public void SplitItems()
+        {
+            if (RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCloakPieces) { getSplitDash(); }
+            if (RandomizerMod.RandomizerMod.Instance.Settings.RandomizeClawPieces) { getSplitClaw(); }
+            
+            PlayerData playerData = PlayerData.instance;
+            if (playerData.GetBool("hasDash") || playerData.GetBool("hasDashAny")) SendMessage("hasDash", "true");
+            if (playerData.GetBool("hasWalljump") || playerData.GetBool("hasWalljumpAny")) SendMessage("hasWalljump", "true");
+        }
+
+        public void getSplitDash()
+        {
+
+            if (RightCloack.Intersect(RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound()).Any()) SendMessage("canDashRight", "true");
+            if (LeftCloak.Intersect(RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound()).Any()) SendMessage("canDashLeft", "true");
+        }
+
+        public void getSplitClaw()
+        {
+            if (PlayerData.instance.GetBool("hasWalljumpRight")) SendMessage("hasWalljumpRight", "true");
+            if (PlayerData.instance.GetBool("hasWalljumpLeft")) SendMessage("hasWalljumpLeft", "true");
+        }
+
+        public void getCursedNail()
+        {
+            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("Upslash".Contains)) SendMessage("Upslash", "true");
+            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("Leftslash".Contains)) SendMessage("Leftslash", "true");
+            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("Rightslash".Contains)) SendMessage("Rightslash", "true");
         }
 
         public void GetRandom()
         {
+            if (State != WebSocketState.Open) return;
             try
             {
                 var settings = RandomizerMod.RandomizerMod.Instance.Settings;
                 if (settings.Randomizer)
                 {
+                    if (settings.CursedNail)
+                    {
+                        SendMessage("Downslash", "true");
+                    }
+                    else
+                    {
+                        SendMessage("FullNail", "true");
+                    }
                     var msgText = "";
                     if (settings.Cursed)
                         msgText += "Cursed ";
@@ -187,39 +249,124 @@ namespace PlayerDataDump
                     }
                     SendMessage("rando_type", msgText.Trim());
 
+                    // Preset reference:
+                    // https://github.com/flibber-hk/HollowKnight.RandomizerMod/blob/6d46547e79a1d472791070477aa18450f3364363/RandomizerMod3.0/MenuChanger.cs#L269
+
+                    // "Standard", formerly "Super Mini Junk Pit"
+                    // "Junk Pit" was this minus Stags
+                    bool selectionsTrueStandard =
+                        settings.RandomizeDreamers &&
+                        settings.RandomizeSkills &&
+                        settings.RandomizeCharms &&
+                        settings.RandomizeKeys &&
+                        settings.RandomizeGeoChests &&
+                        settings.RandomizeMaskShards &&
+                        settings.RandomizeVesselFragments &&
+                        settings.RandomizePaleOre &&
+                        settings.RandomizeCharmNotches &&
+                        settings.RandomizeRancidEggs &&
+                        settings.RandomizeRelics &&
+                        settings.RandomizeStags;
+
+                    // "Super", formerly "Super Junk Pit"
+                    bool selectionsTrueSuper =
+                        selectionsTrueStandard &&
+                        settings.RandomizeMaps &&
+                        settings.RandomizeGrubs &&
+                        settings.RandomizeWhisperingRoots;
+
+                    // "LifeTotems"
+                    bool selectionsTrueLifeTotems =
+                        selectionsTrueStandard &&
+                        settings.RandomizeLifebloodCocoons &&
+                        settings.RandomizeSoulTotems &&
+                        settings.RandomizePalaceTotems &&
+                        settings.RandomizeBossGeo;
+
+                    // "Spoiler DAB" (Double Anti Bingo)
+                    bool selectionsTrueSpoilerDAB =
+                        selectionsTrueStandard &&
+                        settings.RandomizeMaps &&
+                        settings.RandomizeWhisperingRoots &&
+                        settings.RandomizeLifebloodCocoons &&
+                        settings.RandomizeSoulTotems;
 
 
-                    bool presetClassic = !settings.RandomizeDreamers && settings.RandomizeSkills && settings.RandomizeCharms && !settings.RandomizeKeys && settings.RandomizeGeoChests && !settings.RandomizeMaskShards && !settings.RandomizeVesselFragments && !settings.RandomizePaleOre && !settings.RandomizeCharmNotches && !settings.RandomizeRancidEggs && !settings.RandomizeRelics;
-                    bool presetProgressive = settings.RandomizeDreamers && settings.RandomizeSkills && settings.RandomizeCharms && settings.RandomizeKeys && !settings.RandomizeGeoChests && !settings.RandomizeMaskShards && !settings.RandomizeVesselFragments && !settings.RandomizePaleOre && !settings.RandomizeCharmNotches && !settings.RandomizeRancidEggs && !settings.RandomizeRelics;
-                    bool presetCompletionist = settings.RandomizeDreamers && settings.RandomizeSkills && settings.RandomizeCharms && settings.RandomizeKeys && settings.RandomizeGeoChests && settings.RandomizeMaskShards && settings.RandomizeVesselFragments && settings.RandomizePaleOre && settings.RandomizeCharmNotches && !settings.RandomizeRancidEggs && !settings.RandomizeRelics;
-                    bool presetJunkPit = settings.RandomizeDreamers && settings.RandomizeSkills && settings.RandomizeCharms && settings.RandomizeKeys && settings.RandomizeGeoChests && settings.RandomizeMaskShards && settings.RandomizeVesselFragments && settings.RandomizePaleOre && settings.RandomizeCharmNotches && settings.RandomizeRancidEggs && settings.RandomizeRelics;
+                    // new age set - stuff added more recently
+                    bool selectionsFalseNewAgeSet =
+                        !settings.RandomizeLoreTablets &&
+                        !settings.RandomizePalaceTablets &&
+                        !settings.RandomizeGrimmkinFlames;
 
-                    bool presetCollector = settings.RandomizeDreamers && settings.RandomizeSkills && settings.RandomizeCharms && settings.RandomizeKeys &&
-                        !settings.RandomizeGeoChests && !settings.RandomizeMaskShards && !settings.RandomizeVesselFragments && !settings.RandomizePaleOre &&
-                        !settings.RandomizeCharmNotches && !settings.RandomizeRancidEggs && !settings.RandomizeRelics && settings.RandomizeMaps &&
-                        settings.RandomizeStags && settings.RandomizeGrubs && settings.RandomizeWhisperingRoots;
-                    bool presetSuperJunkPit = presetJunkPit && settings.RandomizeMaps && settings.RandomizeStags && settings.RandomizeGrubs && settings.RandomizeWhisperingRoots;
+                    // junk set - stuff that Super adds to Standard
+                    bool selectionsFalseJunkSet =
+                        !settings.RandomizeMaps &&
+                        !settings.RandomizeGrubs &&
+                        !settings.RandomizeWhisperingRoots;
+
+                    // "Super"
+                    bool selectionsFalseSuper =
+                        !settings.RandomizeRocks &&
+                        !settings.RandomizeLifebloodCocoons &&
+                        !settings.RandomizeSoulTotems &&
+                        !settings.RandomizePalaceTotems &&
+                        selectionsFalseNewAgeSet;
+
+                    // "Standard"
+                    bool selectionsFalseStandard =
+                        selectionsFalseJunkSet &&
+                        selectionsFalseSuper;
+
+                    // "LifeTotems"
+                    bool selectionsFalseLifeTotems =
+                        selectionsFalseJunkSet &&
+                        !settings.RandomizeRocks &&
+                        !settings.RandomizeLoreTablets &&
+                        !settings.RandomizePalaceTablets &&
+                        !settings.RandomizeGrimmkinFlames &&
+                        !settings.RandomizeBossEssence;
+
+                    // "Spoiler DAB"
+                    bool selectionsFalseSpoilerDAB =
+                        !settings.RandomizeGrubs &&
+                        !settings.RandomizeRocks &&
+                        !settings.RandomizePalaceTotems &&
+                        selectionsFalseNewAgeSet;
+
+                    bool presetStandard = selectionsTrueStandard && selectionsFalseStandard;
+                    bool presetSuper = selectionsTrueSuper && selectionsFalseSuper;
+                    bool presetLifeTotems = selectionsTrueLifeTotems && selectionsFalseLifeTotems;
+                    bool presetSpoilerDAB = selectionsTrueSpoilerDAB && selectionsFalseSpoilerDAB;
+
+                    // "EVERYTHING" in aggressive all-caps
+                    bool presetEverything =
+                        selectionsTrueSuper &&
+                        selectionsTrueLifeTotems &&
+                        selectionsTrueSpoilerDAB &&
+                        settings.RandomizeRocks &&
+                        settings.RandomizeLoreTablets &&
+                        settings.RandomizeGrimmkinFlames &&
+                        settings.RandomizeBossEssence &&
+                        settings.RandomizeBossGeo;
 
                     SendMessage("seed", settings.Seed.ToString());
                     if (settings.AcidSkips && settings.FireballSkips && settings.MildSkips && settings.ShadeSkips && settings.SpikeTunnels && settings.DarkRooms && settings.SpicySkips)
                         SendMessage("mode", "Hard");
-                    else if (!settings.AcidSkips && !settings.FireballSkips && !settings.MildSkips && !settings.ShadeSkips && !settings.SpikeTunnels && !settings.DarkRooms &&!settings.SpicySkips)
+                    else if (!settings.AcidSkips && !settings.FireballSkips && !settings.MildSkips && !settings.ShadeSkips && !settings.SpikeTunnels && !settings.DarkRooms && !settings.SpicySkips)
                         SendMessage("mode", "Easy");
                     else
                         SendMessage("mode", "Custom");
-                    
-                    if (presetSuperJunkPit)
-                        msgText = "Super Junk Pit";
-                    else if (presetJunkPit)
-                        msgText = "Junk Pit";
-                    else if (presetCollector)
-                        msgText = "Collector";
-                    else if (presetCompletionist)
-                        msgText = "Completionist";
-                    else if (presetProgressive)
-                        msgText = "Progressive";
-                    else if (presetClassic)
-                        msgText = "Classic";
+
+                    if (presetStandard)
+                        msgText = "Standard";
+                    else if (presetSuper)
+                        msgText = "Super";
+                    else if (presetLifeTotems)
+                        msgText = "LifeTotems";
+                    else if (presetSpoilerDAB)
+                        msgText = "Spoiler DAB";
+                    else if (presetEverything)
+                        msgText = "EVERYTHING";
                     else
                         msgText = $"Custom";
 
@@ -237,13 +384,23 @@ namespace PlayerDataDump
 
         public void NewGame()
         {
+            if (State != WebSocketState.Open) return;
+            PlayerDataDump.Instance.LogDebug("Loaded New Save");
             GetRandom();
             SendMessage("NewSave", "true");
         }
 
+        public void gameMapStart(On.GameMap.orig_Start orig, GameMap self)
+        {
+            if (State != WebSocketState.Open) return;
+            orig(self);
+            GetRandom();
+            SendMessage("NewSave", "true");
+        }
 
         public void OnQuit()
         {
+            if (State != WebSocketState.Open) return;
             SendMessage("GameExiting", "true");
         }
 

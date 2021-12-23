@@ -4,6 +4,10 @@ var data;
 var wsprofile;
 var lastCommand;
 var playerData;
+var hasAppliedDS = false;
+var hasAppliedUS = false;
+var hasAppliedLS = false;
+var hasAppliedRS = false;
 $( document ).ready(function() {
 	/*
 	  var map;	
@@ -269,7 +273,7 @@ $( document ).ready(function() {
 				  $('#urlText').val(window.location.href.replace(/\?.*/,"") + "?profile=" + profileId + ( overrideUrl != undefined ? "&url=" + overrideUrl : "") );
 				  var config = LZString.compressToEncodedURIComponent(JSON.stringify(map));
 
-                  toTiny("https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/Index.html?config=" + config, FirebaseApiKey, function (value) {
+                  toTiny("https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/Index.html?config=" + config, FirebaseApiKey, function(value){
                       $('#tinyUrlText').val(value);
 				  })
 				  
@@ -619,6 +623,10 @@ $( document ).ready(function() {
 				  break;
 				  
 			  case "generic":
+				  if (item.name == "Dream Nail") {
+					  img.attr('src', "images/" + item.levelSprites[0]);
+					  break;
+                  }
                   img.attr('src', "images/" + item.sprite);
 				  break;	
 			  case "charmNotch":
@@ -822,14 +830,22 @@ $( document ).ready(function() {
 			  
 	  function getPlayerData() {
 		  console.log("Refreshing data");
+		  $(".selected").removeClass("selected");
+		  $(".equipped").removeClass("equipped");
+		  hasAppliedDS = false;
+		  hasAppliedUS = false;
+		  hasAppliedLS = false;
+		  hasAppliedRS = false;
 		  send("json");
 	  }
 	  
 	  function updatePlayerData(minData) {
-
+		  
 		  if (minData != undefined && "var" in minData) {
 			  if (minData.var == "SaveLoaded" || minData.var == "NewSave") {
-				  send("json");
+				  console.log("Save Loaded");
+				  data = [];
+				  getPlayerData();
 				  return;
 			  }else{
 				  var name = minData.var;
@@ -870,76 +886,122 @@ $( document ).ready(function() {
 					  
 				  var id = "#" + name;
 				  var img = $(id);
-				  
+
 				  if (name in data) {
-                      switch (item.type) {
-                          case "charm":
-                              if (name == "gotCharm_36") // Kingsoul / Void Heart is special
-                              {
-                                  setSelected(data[name], id);
+					  switch (item.type) {
+						  case "charm":
+							  if (name == "gotCharm_36") // Kingsoul / Void Heart is special
+							  {
+								  setSelected(data[name], id);
 
-                                  if (data.royalCharmState == 1) { $(id).attr('src', "images/Charm_KingSoul_Right.png"); }
-                                  else if (!data.royalCharmState == 2) { $(id).attr('src', "images/Charm_KingSoul_Left.png"); }
-                                  else if (data.royalCharmState == 3) { $(id).attr('src', "images/Kingsoul.png"); }
-                                  else if (data.royalCharmState == 4) { $(id).attr('src', "images/charmSprite35.png") }
-                                  if (!$(id).hasClass('selected'))
-                                      $(id).hide();
-                                  else
-                                      $(id).show();
-                                  if (data[name.replace('got', 'equipped')] && !img.hasClass('equipped'))
-                                      img.addClass('equipped');
-                                  else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped'))
-                                      img.removeClass('equipped');
-                              } else {
-                                  setSelected(data[name], id);
-                                  if (!$(id).hasClass('selected'))
-                                      $(id).hide();
-                                  else
-                                      $(id).show();
+								  if (data.royalCharmState == 1) { $(id).attr('src', "images/Charm_KingSoul_Right.png"); }
+								  else if (data.royalCharmState == 2) { $(id).attr('src', "images/Charm_KingSoul_Left.png"); }
+								  else if (data.royalCharmState == 3) { $(id).attr('src', "images/Kingsoul.png"); }
+								  else if (data.royalCharmState == 4) { $(id).attr('src', "images/charmSprite35.png") }
+								  if (!$(id).hasClass('selected'))
+									  $(id).hide();
+								  else
+									  $(id).show();
+								  if (data[name.replace('got', 'equipped')] && !img.hasClass('equipped'))
+									  img.addClass('equipped');
+								  else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped'))
+									  img.removeClass('equipped');
+							  } else {
+								  setSelected(data[name], id);
+								  if (!$(id).hasClass('selected'))
+									  $(id).hide();
+								  else
+									  $(id).show();
 
-                                  if (data[name.replace('got', 'equipped')] && !img.hasClass('equipped'))
-                                      img.addClass('equipped');
-                                  else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped'))
-                                      img.removeClass('equipped');
-
-
-
-                                  //Dealing with the new Levelup of the grimm charm, though generic enough to handle others if they did it.
-                                  if ("charmLevelSprites" in item) {
-                                      if (item.charmLevel in data && data[item.charmLevel] - 1 <= item.charmLevelSprites.length) {
-                                          img.attr('src', "images/" + item.charmLevelSprites[data[item.charmLevel] - 1]);
-                                      }
-                                  }
-                                  //Deal with broken fragile items
-                                  if ("brokenCheck" in item && item.brokenCheck in data) {
-                                      if (data[item.brokenCheck]) {
-                                          img.attr('src', "images/" + item.brokenSprite);
-                                      } else {
-                                          img.attr('src', "images/" + item.sprite);
-                                      }
-                                  }
-
-                                  // Dealing with upgrading the 3 fragile charms to unbreakable charms
-                                  if ("unbreakableSprite" in item) {
-                                      if (item.unbreakableCheck in data) {
-                                          if (data[item.unbreakableCheck])
-                                              img.attr('src', "images/" + item.unbreakableSprite);
-                                      }
-                                  }
+								  if (data[name.replace('got', 'equipped')] && !img.hasClass('equipped'))
+									  img.addClass('equipped');
+								  else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped'))
+									  img.removeClass('equipped');
 
 
-                              }
-                              break;
 
-                          case "spell":
-                              setSelected(data[name] > 0, id);
-                              if ("levelSprites" in item && data[name] - 1 > 0 && data[name] - 1 <= item.levelSprites.length) {
-                                  img.attr("src", "images/" + item.levelSprites[data[name] - 1]);
-                              }
-                              break;
+								  //Dealing with the new Levelup of the grimm charm, though generic enough to handle others if they did it.
+								  if ("charmLevelSprites" in item) {
+									  if (item.charmLevel in data && data[item.charmLevel] - 1 <= item.charmLevelSprites.length) {
+										  img.attr('src', "images/" + item.charmLevelSprites[data[item.charmLevel] - 1]);
+									  }
+								  }
+								  //Deal with broken fragile items
+								  if ("brokenCheck" in item && item.brokenCheck in data) {
+									  if (data[item.brokenCheck]) {
+										  img.attr('src', "images/" + item.brokenSprite);
+									  } else {
+										  img.attr('src', "images/" + item.sprite);
+									  }
+								  }
 
-                          case "skill":
-                              setSelected(data[name], id);
+								  // Dealing with upgrading the 3 fragile charms to unbreakable charms
+								  if ("unbreakableSprite" in item) {
+									  if (item.unbreakableCheck in data) {
+										  if (data[item.unbreakableCheck])
+											  img.attr('src', "images/" + item.unbreakableSprite);
+									  }
+								  }
+
+
+							  }
+							  break;
+
+						  case "spell":
+							  setSelected(data[name] > 0, id);
+							  if ("levelSprites" in item && data[name] - 1 > 0 && data[name] - 1 <= item.levelSprites.length) {
+								  img.attr("src", "images/" + item.levelSprites[data[name] - 1]);
+							  }
+							  break;
+
+						  case "skill":
+							  
+							  if (name == "hasDash" && !data["canDashLeft"] && !data["canDashRight"]) { //no split dash
+								  setSelected(data[name], id);
+								  break;
+							  }
+							  else if (name == "hasDash" && data["canDashLeft"] && !data["canDashRight"]) { //can dash left
+								  $(id).removeClass("container");
+								  $(id).addClass("LeftItem"); //Not sure this works
+								  break;
+							  }
+							  else if (name == "hasDash" && !data["canDashLeft"] && data["canDashRight"]) { //can dash right
+								  $(id).removeClass("container");
+								  $(id).addClass("RightItem");
+								  break;
+							  }
+							  else if (name == "hasDash" && data["canDashLeft"] && data["canDashRight"]) { //can dash left and right
+								  $(id).removeClass("LeftItem");
+								  $(id).removeClass("RightItem");
+								  $(id).addClass("container");
+								  setSelected(data[name], id);
+								  break;
+							  }
+
+							  if (name == "hasWalljump" && !data["hasWalljumpLeft"] && !data["hasWalljumpRight"]) {
+								  setSelected(data[name], id);
+								  break;
+							  }
+							  else if (name == "hasWalljump" && data["hasWalljumpLeft"] && !data["hasWalljumpRight"]) {
+								  $(id).removeClass("container");
+								  $(id).addClass("LeftItem"); 
+								  break;
+							  }
+							  else if (name == "hasWalljump" && !data["hasWalljumpLeft"] && data["hasWalljumpRight"]) {
+								  $(id).removeClass("container");
+								  $(id).addClass("RightItem");
+								  break;
+							  }
+							  else if (name == "hasWalljump" && data["hasWalljumpLeft"] && data["hasWalljumpRight"]) {
+								  $(id).removeClass("LeftItem");
+								  $(id).removeClass("RightItem");
+								  $(id).addClass("container");
+								  setSelected(data[name], id);
+								  break;
+							  }
+
+
+							  setSelected(data[name], id);
                               if ("levelSprites" in item && data["hasDash"] && !data["hasShadowDash"]) {
                                   img.attr("src", "images/" + entities["hasDash"].levelSprites[0]);
                               }
@@ -949,7 +1011,17 @@ $( document ).ready(function() {
 							  break;
 							  
 						  case "item":
-							  if (! ("multiple" in item))
+
+
+							  if (name == "nailSmithUpgrades") {
+								  if (data["nailSmithUpgrades"] > 0) {
+									  $("#nail" + '_count').html(data["nailSmithUpgrades"]).show();
+								  }
+								  else {
+									  $("#nail" + '_count').hide();
+								  }
+                              }
+							  else if (! ("multiple" in item))
 								  if ("useItemState" in item && item.useItemState in data && data[item.useItemState])
 								  {
 									  setSelected(true, id);
@@ -982,7 +1054,13 @@ $( document ).ready(function() {
 							  }
 						  break;
                           case "generic":
-                              setSelected(data[name], id);
+							  setSelected(data[name], id);
+							  if ("levelSprites" in item && data["hasDreamNail"] && !data["dreamNailUpgraded"]) {
+								  img.attr("src", "images/" + entities["hasDreamNail"].levelSprites[0]);
+							  }
+							  else if ("levelSprites" in item && data["hasDreamNail"] && data["dreamNailUpgraded"]) {
+								  img.attr("src", "images/" + entities["hasDreamNail"].levelSprites[1]);
+							  }
 							  
 							  break;	
 					  }
@@ -1010,18 +1088,61 @@ $( document ).ready(function() {
 		  });
 
 		  updateVisible();
-		  
-		  if ($('#hasDreamNail').length > 0 && $('#dreamNailUpgraded').length > 0 && !isEditing) {
-			  if ($('#hasDreamNail').hasClass("selected") && $('#dreamNailUpgraded').hasClass("selected"))
-				  $('#hasDreamNail').removeClass("selected").parent().hide();
-			  else if ($('#hasDreamNail').hasClass("selected") && !$('#dreamNailUpgraded').hasClass("selected"))
-				  $('#dreamNailUpgraded').removeClass("selected").parent().hide();
-			  else
-				  $('#dreamNailUpgraded').removeClass("selected").parent().hide();
-		  }
 	  }
-	  
-	  function updateVisible() {
+	function handleCursedNail() {
+		if (data["FullNail"]) {
+			$("#nail").addClass('multiple').parent().removeClass('hideIfSet');
+		}
+		if (data["Downslash"] && !hasAppliedDS) {
+			hasAppliedDS = true;
+			if (!hasAppliedUS && !hasAppliedLS && !hasAppliedRS) {
+				document.getElementById("nail").style.boxShadow = "0px 5px 0px -3px #07ff6e";
+			}
+			else {
+				document.getElementById("nail").style.boxShadow += ", 0px 5px 0px -3px #07ff6e";
+			}
+
+			hasAppliedDS = true;
+		}
+		if (data["Upslash"] && !hasAppliedUS) {
+			hasAppliedUS = true;
+			if (!hasAppliedDS && !hasAppliedLS && !hasAppliedRS) {
+				document.getElementById("nail").style.boxShadow = "0px -5px 0px -3px #07ff6e";
+			}
+			else {
+				document.getElementById("nail").style.boxShadow += ", 0px -5px 0px -3px #07ff6e";
+			}
+			hasAppliedUS = true;
+		}
+		if (data["Leftslash"] && !hasAppliedLS) {
+			hasAppliedLS = true;
+			if (!hasAppliedDS && !hasAppliedUS && !hasAppliedRS) {
+				document.getElementById("nail").style.boxShadow = "-5px 0px 0px -3px #07ff6e";
+			}
+			else {
+				document.getElementById("nail").style.boxShadow += ", -5px 0px 0px -3px #07ff6e";
+			}
+			hasAppliedLS = true;
+		}
+		if (data["Rightslash"] && !hasAppliedRS) {
+			hasAppliedRS = true;
+			if (!hasAppliedDS && !hasAppliedUS && !hasAppliedLS) {
+				document.getElementById("nail").style.boxShadow = "5px 0px 0px -3px #07ff6e";
+			}
+			else {
+				document.getElementById("nail").style.boxShadow += ", 5px 0px 0px -3px #07ff6e";
+			}
+			hasAppliedRS = true;
+		}
+		if (data["nailSmithUpgrades"] > 0) {
+			$("#nail" + '_count').html(data["nailSmithUpgrades"]).show();
+		}
+		else {
+			$("#nail" + '_count').hide();
+		}
+    }
+	function updateVisible() {
+		handleCursedNail();
 		  $('.hideIfSet > div.itemDiv:not(:has(>.selected)):not(:has(>.multiple))').hide();
 		  $('.container:not(.hideIfSet) div.itemDiv').css("display", "block");
 		  $('.container.hideIfSet div.itemDiv:has(>.selected)').css("display", "block");
@@ -1078,6 +1199,7 @@ $( document ).ready(function() {
         if (regexReplaceUrl.test(url)) { // only works if not local
             callback(url);
         }
+        console.log(url);
         var params = {
             "longDynamicLink": "https://tracker.kingkiller39.me/?link=" + url,
         }

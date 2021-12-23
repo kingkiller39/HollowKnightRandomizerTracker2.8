@@ -37,17 +37,15 @@ namespace PlayerDataDump
         {
             Instance = this;
             Log("Initializing PlayerDataDump");
-
+            
             //Setup websockets server
             _wss.AddWebSocketService<SocketServer>("/playerData", ss =>
             {
                 ModHooks.Instance.NewGameHook += ss.NewGame;
-                ModHooks.Instance.SavegameLoadHook += ss.LoadSave;
-                ModHooks.Instance.BeforeSavegameSaveHook += ss.BeforeSave;
-
+                ModHooks.Instance.AfterSavegameLoadHook += ss.LoadSave;
+                On.GameMap.Start += ss.gameMapStart;
                 ModHooks.Instance.SetPlayerBoolHook += ss.EchoBool;
                 ModHooks.Instance.SetPlayerIntHook += ss.EchoInt;
-
                 ModHooks.Instance.ApplicationQuitHook += ss.OnQuit;
             });
             
@@ -55,7 +53,6 @@ namespace PlayerDataDump
             _wss.AddWebSocketService<ProfileStorageServer>("/ProfileStorage", ss => { });
 
             _wss.Start();
-
             Log("Initialized PlayerDataDump");
         }
 

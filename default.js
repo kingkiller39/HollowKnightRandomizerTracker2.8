@@ -555,7 +555,10 @@ function getEntities() {
 			"type":"generic"
 		},
 		"hasDreamNail": {
-			"sprite": "DreamNail1.png",
+			"levelSprites": [
+				"DreamNail1.png",
+				"DreamNail2.png"
+				],
 			"enabled": true,
 			"name": "Dream Nail", 
             "type": "generic"
@@ -563,13 +566,7 @@ function getEntities() {
 		"hasDreamGate": {
 			"enabled": true,
 			"sprite": "DreamGate.png",
-			"name": "Teatcher Mask", 
-			"type":"generic"
-		},
-		"dreamNailUpgraded": {
-			"sprite": "DreamNail2.png",
-			"enabled": true,
-			"name": "Teatcher Mask", 
+			"name": "Dream Gate", 
 			"type":"generic"
 		},
 		"charmSlots" :{
@@ -578,13 +575,38 @@ function getEntities() {
 			"name": "Charm Notch",
 			"type":"charmNotch"
         },
-        "nailSmithUpgrades": {
+        "nail": {
             "sprite": "nail.png",
             "enabled": true,
             "name": "Nail",
             "type": "item",
             "multiple": true
-        },
+		},
+		"FullNail": {
+			"enabled": false,
+			"name": "FullNail",
+			"type": "item"
+		},
+		"Upslash": {
+			"enabled": false,
+			"name": "Upslash",
+			"type": "item"
+		},
+		"Downslash": {
+			"enabled": false,
+			"name": "Downslash",
+			"type": "item"
+		},
+		"Rightslash": {
+			"enabled": false,
+			"name": "Rightslash",
+			"type": "item"
+		},
+		"Leftslash": {
+			"enabled": false,
+			"name": "Leftslash",
+			"type": "item"
+		},
         "unlockedCompletionRate": {
             "sprite": "unlockedCompletionRate.png",
             "enabled": true,
@@ -791,7 +813,7 @@ function getDefault() {
 					"hasKingsBrand",
 					"grubsCollected",
                     "hasLantern",
-                    "nailSmithUpgrades"
+                    "nail"
 				]	
 			},
 			"dreamers" :{

@@ -1,8 +1,8 @@
 
 @font-face {
-	font-family: Constantine; 
+	font-family: Constantine;
 	src: url('Constantine.ttf');
- } 
+} 
 
  html {
 	 font-family: Constantine;
@@ -77,7 +77,7 @@ div.charmDiv > img {
     margin-right: auto;
 }
 
-.container > div.itemDiv > img:not(.selected):not(.multiple) {
+.container > div.itemDiv > img:not(.selected):not(.multiple):not(.RightItem):not(.LeftItem) {
     -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
     filter: grayscale(100%);
     margin-left: auto;
@@ -93,17 +93,39 @@ div.charmDiv > img {
     margin-right: auto;
 }
 
-.container > div.itemDiv:not(.charmDiv) >  img.selected {
+.LeftItem {
+	-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
+	filter: grayscale(0%);
+	border-radius: 50%;
+	box-shadow: -5px 0px 0px 0px #07ff6e;
+	display: block !important;
+}
+
+.RightItem {
+	-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
+	filter: grayscale(0%);
+	border-radius: 50%;
+	box-shadow: 5px 0px 0px 0px #07ff6e;
+	display: block !important;
+}
+
+#nail {
+	-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
+	filter: grayscale(0%);
+	border-radius: 50%;
+	display: block !important;
+}
+
+.container > div.itemDiv:not(.charmDiv):not(.LeftItem):not(.RightItem) > img.selected:not(.LeftItem):not(.RightItem) {
 	-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
 	filter: grayscale(0%);
 	border-radius: 50%;
 	box-shadow: 0px 0px 5px 5px #07ff6e;
-	display:block !important;
-
+	display: block !important;
 }
 
 .container > div.itemDiv:not(.charmDiv) >  img.gaveItem {
-	box-shadow: 0px 0px 5px 5px #FF0000;
+	box-shadow: 0px 0px 5px 5px #FF0000 !important;
 }
 
 .misc-container {
@@ -133,13 +155,13 @@ img.equipped {
 .itemDivGrowRight > .itemDiv {
 	float:right;
 }
-		
-img.multiple {
+
+img.multiple:not(.LeftItem):not(.RightItem) {
 	-webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
 	filter: grayscale(0%);
 	border-radius: 50%;
 	box-shadow: 0px 0px 5px 5px #07ff6e;
-	display:block !important;
+	display: block !important;
 }
 
 div.counter {

@@ -67,7 +67,8 @@ namespace PlayerDataDump
 
         protected override void OnError(WebSocketSharp.ErrorEventArgs e)
         {
-            PlayerDataDump.Instance.LogError("[ProfileStorage]:" + e.Message);
+            PlayerDataDump.Instance.LogError("[ProfileStorage]:" + e.Message); 
+            PlayerDataDump.Instance.LogError("[ProfileStorage]:" + e.Exception);
         }
 
         protected override void OnClose(CloseEventArgs e)
