@@ -17,6 +17,14 @@ namespace PlayerDataDump
         private static readonly string[] LeftCloak = new string[] { "Left_Mothwing_Cloak", "Left_Mothwing_Cloak_(1)", "Left_Shade_Cloak", "Left_Shade_Cloak_(1)" };
         private static readonly string[] RightCloack = new string[] { "Right_Mothwing_Cloak", "Right_Mothwing_Cloak_(1)", "Right_Shade_Cloak", "Right_Shade_Cloak_(1)" };
         private static bool randoAtBench = false;
+        private static bool randoHasLeftDash = false;
+        private static bool randoHasRightDash = false;
+        private static bool randoHasLeftClaw = false;
+        private static bool randoHasRightClaw = false;
+        private static bool randoHasUpSlash = false;
+        private static bool randoHasLeftSlash = false;
+        private static bool randoHasRightSlash = false;
+        private static bool randoHasSwim = false;
         public void Broadcast(string s)
         {
             Sessions.Broadcast(s);
@@ -35,10 +43,12 @@ namespace PlayerDataDump
                     Send($"{{ \"version\":\"{PlayerDataDump.Instance.GetVersion()}\" }}");
                     break;
                 case "json":
+                    randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = false;
                     Send(GetJson());
                     GetRandom();
                     SplitItems();
                     getCursedNail();
+                    getSwim();
                     break;
                 default:
                     if (e.Data.Contains('|'))
@@ -78,7 +88,7 @@ namespace PlayerDataDump
             ModHooks.Instance.SetPlayerIntHook -= EchoInt;
             On.GameMap.Start -= gameMapStart;
             ModHooks.Instance.ApplicationQuitHook -= OnQuit;
-            
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = false;
             PlayerDataDump.Instance.Log("CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
         }
 
@@ -99,6 +109,7 @@ namespace PlayerDataDump
         {
             if (State != WebSocketState.Open) return;
             PlayerDataDump.Instance.LogDebug("Loaded Save");
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = false;
             GetRandom();
             SendMessage("SaveLoaded", "true");
         }
@@ -115,6 +126,7 @@ namespace PlayerDataDump
             if (var == "atBench" && value && !randoAtBench)
             {
                 LoadSave();
+                SendMessage("bench", PlayerData.instance.respawnScene.ToString());
                 randoAtBench = true;
             }
             else if (var == "atBench" && !value && randoAtBench)
@@ -155,9 +167,13 @@ namespace PlayerDataDump
             {
                 SendMessage(var, value.ToString());
             }
+            else if (var == "cityLift1" && value)
+            {
+                SendMessage("elevatorPass", "true");
+            }
             PlayerData.instance.SetBoolInternal(var, value);
-            SendMessage("bench", PlayerData.instance.respawnScene.ToString());
-            if (RandomizerMod.RandomizerMod.Instance.Settings.CursedNail) { getCursedNail(); }
+            if (RandomizerMod.RandomizerMod.Instance.Settings.CursedNail) getCursedNail();
+            if (RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSwim) getSwim();
         }
 
        public void EchoInt(string var, int value)
@@ -187,28 +203,73 @@ namespace PlayerDataDump
             if (RandomizerMod.RandomizerMod.Instance.Settings.RandomizeClawPieces) { getSplitClaw(); }
             
             PlayerData playerData = PlayerData.instance;
+            if (playerData.GetBool("cityLift1") || playerData.GetBool("cityLift2")) SendMessage("elevatorPass", "true");
             if (playerData.GetBool("hasDash") || playerData.GetBool("hasDashAny")) SendMessage("hasDash", "true");
             if (playerData.GetBool("hasWalljump") || playerData.GetBool("hasWalljumpAny")) SendMessage("hasWalljump", "true");
         }
 
         public void getSplitDash()
         {
+            if (!RandomizerMod.RandomizerMod.Instance.Settings.RandomizeCloakPieces) return;
+            if (RightCloack.Intersect(RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound()).Any() && !randoHasRightDash)
+            {
+                randoHasRightDash = true;
+                SendMessage("canDashRight", "true");
+            }
 
-            if (RightCloack.Intersect(RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound()).Any()) SendMessage("canDashRight", "true");
-            if (LeftCloak.Intersect(RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound()).Any()) SendMessage("canDashLeft", "true");
+            if (LeftCloak.Intersect(RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound()).Any() && !randoHasLeftDash)
+            {
+                randoHasLeftDash = true;
+                SendMessage("canDashLeft", "true");
+            }
         }
 
         public void getSplitClaw()
         {
-            if (PlayerData.instance.GetBool("hasWalljumpRight")) SendMessage("hasWalljumpRight", "true");
-            if (PlayerData.instance.GetBool("hasWalljumpLeft")) SendMessage("hasWalljumpLeft", "true");
+            if (!RandomizerMod.RandomizerMod.Instance.Settings.RandomizeClawPieces) return;
+            if (PlayerData.instance.GetBool("hasWalljumpRight") && !randoHasRightClaw)
+            {
+                randoHasRightClaw = true;
+                SendMessage("hasWalljumpRight", "true");
+            }
+
+            if (PlayerData.instance.GetBool("hasWalljumpLeft") && !randoHasLeftClaw)
+            {
+                randoHasLeftClaw = true;
+                SendMessage("hasWalljumpLeft", "true");
+            }
         }
 
         public void getCursedNail()
         {
-            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("Upslash".Contains)) SendMessage("Upslash", "true");
-            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("Leftslash".Contains)) SendMessage("Leftslash", "true");
-            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("Rightslash".Contains)) SendMessage("Rightslash", "true");
+            if (!RandomizerMod.RandomizerMod.Instance.Settings.CursedNail) return;
+            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("Upslash".Contains) && !randoHasUpSlash)
+            {
+                randoHasUpSlash = true;
+                SendMessage("Upslash", "true");
+            }
+
+            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("Leftslash".Contains) && !randoHasLeftSlash)
+            {
+                randoHasLeftSlash = true;
+                SendMessage("Leftslash", "true");
+            }
+
+            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("Rightslash".Contains) && !randoHasRightSlash)
+            {
+                randoHasRightSlash = true;
+                SendMessage("Rightslash", "true");
+            }
+        }
+
+        public void getSwim()
+        {
+            if (!RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSwim) return;
+            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("Swim".Contains) && !randoHasSwim)
+            {
+                randoHasSwim = true;
+                SendMessage("swim", "true");
+            }
         }
 
         public void GetRandom()
@@ -227,6 +288,8 @@ namespace PlayerDataDump
                     {
                         SendMessage("FullNail", "true");
                     }
+                    if (!settings.ElevatorPass) SendMessage("elevatorPass", "true");
+                    if (!settings.RandomizeSwim) SendMessage("swim", "true");
                     var msgText = "";
                     if (settings.Cursed)
                         msgText += "Cursed ";
@@ -386,14 +449,16 @@ namespace PlayerDataDump
         {
             if (State != WebSocketState.Open) return;
             PlayerDataDump.Instance.LogDebug("Loaded New Save");
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = false;
             GetRandom();
             SendMessage("NewSave", "true");
         }
 
         public void gameMapStart(On.GameMap.orig_Start orig, GameMap self)
         {
-            if (State != WebSocketState.Open) return;
             orig(self);
+            if (State != WebSocketState.Open) return;
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = false;
             GetRandom();
             SendMessage("NewSave", "true");
         }

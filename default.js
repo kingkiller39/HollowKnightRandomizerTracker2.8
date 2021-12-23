@@ -627,6 +627,19 @@ function getEntities() {
             "name": "Collector's Map",
             "type": "item",
             "multiple": false
+		},
+		"elevatorPass": {
+			"sprite": "ElevatorPass.png",
+			"enabled": true,
+			"name": "Elevator Pass",
+			"type": "item",
+			"multiple": false
+		},
+		"swim": {
+			"sprite": "Swim.png",
+			"enabled": true,
+			"name": "Swim",
+			"type": "skill",
         }
 	};
 }
