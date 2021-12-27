@@ -11,20 +11,33 @@ namespace PlayerDataDump
         public SocketServer()
         {
             IgnoreExtensions = true;
+            randoAtBench = false;
+            randoHasLeftDash = false;
+            randoHasRightDash = false;
+            randoHasLeftClaw = false;
+            randoHasRightClaw = false;
+            randoHasUpSlash = false;
+            randoHasLeftSlash = false;
+            randoHasRightSlash = false;
+            randoHasSwim = false;
+            randoHasElevatorPass = false;
+            randoHasDreamer = false;
         }
 
         private static readonly HashSet<string> IntKeysToSend = new HashSet<string> {"simpleKeys", "nailDamage", "maxHealth", "MPReserveMax", "ore", "rancidEggs", "grubsCollected", "charmSlotsFilled", "charmSlots", "flamesCollected" };
         private static readonly string[] LeftCloak = new string[] { "Left_Mothwing_Cloak", "Left_Mothwing_Cloak_(1)", "Left_Shade_Cloak", "Left_Shade_Cloak_(1)" };
         private static readonly string[] RightCloack = new string[] { "Right_Mothwing_Cloak", "Right_Mothwing_Cloak_(1)", "Right_Shade_Cloak", "Right_Shade_Cloak_(1)" };
-        private static bool randoAtBench = false;
-        private static bool randoHasLeftDash = false;
-        private static bool randoHasRightDash = false;
-        private static bool randoHasLeftClaw = false;
-        private static bool randoHasRightClaw = false;
-        private static bool randoHasUpSlash = false;
-        private static bool randoHasLeftSlash = false;
-        private static bool randoHasRightSlash = false;
-        private static bool randoHasSwim = false;
+        private bool randoAtBench { get; set; }
+        private bool randoHasLeftDash { get; set; }
+        private bool randoHasRightDash { get; set; }
+        private bool randoHasLeftClaw { get; set; }
+        private bool randoHasRightClaw { get; set; }
+        private bool randoHasUpSlash { get; set; }
+        private bool randoHasLeftSlash { get; set; }
+        private bool randoHasRightSlash { get; set; }
+        private bool randoHasSwim { get; set; }
+        private bool randoHasElevatorPass { get; set; }
+        private bool randoHasDreamer { get; set; }
         public void Broadcast(string s)
         {
             Sessions.Broadcast(s);
@@ -43,12 +56,14 @@ namespace PlayerDataDump
                     Send($"{{ \"version\":\"{PlayerDataDump.Instance.GetVersion()}\" }}");
                     break;
                 case "json":
-                    randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = false;
+                    randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = false;
                     Send(GetJson());
                     GetRandom();
                     SplitItems();
                     getCursedNail();
                     getSwim();
+                    getElevatorPass();
+                    getDreamer();
                     break;
                 default:
                     if (e.Data.Contains('|'))
@@ -88,7 +103,7 @@ namespace PlayerDataDump
             ModHooks.Instance.SetPlayerIntHook -= EchoInt;
             On.GameMap.Start -= gameMapStart;
             ModHooks.Instance.ApplicationQuitHook -= OnQuit;
-            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = false;
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = false;
             PlayerDataDump.Instance.Log("CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
         }
 
@@ -109,7 +124,7 @@ namespace PlayerDataDump
         {
             if (State != WebSocketState.Open) return;
             PlayerDataDump.Instance.LogDebug("Loaded Save");
-            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = false;
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = false;
             GetRandom();
             SendMessage("SaveLoaded", "true");
         }
@@ -125,6 +140,7 @@ namespace PlayerDataDump
             PlayerDataDump.Instance.LogDebug($"EchoBool: {var} = {value}");
             if (var == "atBench" && value && !randoAtBench)
             {
+                
                 LoadSave();
                 SendMessage("bench", PlayerData.instance.respawnScene.ToString());
                 randoAtBench = true;
@@ -167,13 +183,12 @@ namespace PlayerDataDump
             {
                 SendMessage(var, value.ToString());
             }
-            else if (var == "cityLift1" && value)
-            {
-                SendMessage("elevatorPass", "true");
-            }
+
             PlayerData.instance.SetBoolInternal(var, value);
             if (RandomizerMod.RandomizerMod.Instance.Settings.CursedNail) getCursedNail();
             if (RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSwim) getSwim();
+            if (RandomizerMod.RandomizerMod.Instance.Settings.ElevatorPass) getElevatorPass();
+            if (RandomizerMod.RandomizerMod.Instance.Settings.DuplicateMajorItems) getDreamer();
         }
 
        public void EchoInt(string var, int value)
@@ -203,7 +218,6 @@ namespace PlayerDataDump
             if (RandomizerMod.RandomizerMod.Instance.Settings.RandomizeClawPieces) { getSplitClaw(); }
             
             PlayerData playerData = PlayerData.instance;
-            if (playerData.GetBool("cityLift1") || playerData.GetBool("cityLift2")) SendMessage("elevatorPass", "true");
             if (playerData.GetBool("hasDash") || playerData.GetBool("hasDashAny")) SendMessage("hasDash", "true");
             if (playerData.GetBool("hasWalljump") || playerData.GetBool("hasWalljumpAny")) SendMessage("hasWalljump", "true");
         }
@@ -269,6 +283,26 @@ namespace PlayerDataDump
             {
                 randoHasSwim = true;
                 SendMessage("swim", "true");
+            }
+        }
+
+        public void getElevatorPass()
+        {
+            if (!RandomizerMod.RandomizerMod.Instance.Settings.ElevatorPass) return;
+            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("ElevatorPass".Contains) && !randoHasElevatorPass)
+            {
+                randoHasElevatorPass = true;
+                SendMessage("ElevatorPass", "true");
+            }
+        }
+        
+        public void getDreamer()
+        {
+            if (!RandomizerMod.RandomizerMod.Instance.Settings.DuplicateMajorItems) return;
+            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any(s => s.Contains("Dreamer")) && !randoHasDreamer)
+            {
+                randoHasDreamer = true;
+                SendMessage("DuplicateDreamer", "true");
             }
         }
 
@@ -449,7 +483,7 @@ namespace PlayerDataDump
         {
             if (State != WebSocketState.Open) return;
             PlayerDataDump.Instance.LogDebug("Loaded New Save");
-            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = false;
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = false;
             GetRandom();
             SendMessage("NewSave", "true");
         }
@@ -458,7 +492,7 @@ namespace PlayerDataDump
         {
             orig(self);
             if (State != WebSocketState.Open) return;
-            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = false;
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = false;
             GetRandom();
             SendMessage("NewSave", "true");
         }

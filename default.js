@@ -639,7 +639,13 @@ function getEntities() {
 			"sprite": "Swim.png",
 			"enabled": true,
 			"name": "Swim",
-			"type": "skill",
+			"type": "skill"
+		},
+		"DuplicateDreamer": {
+			"sprite": "mask_dreamers.png",
+			"enabled": true,
+			"name": "DuplicateDreamer",
+			"type": "generic"
         }
 	};
 }
