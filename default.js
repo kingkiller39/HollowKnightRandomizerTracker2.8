@@ -648,7 +648,7 @@ function getEntities() {
 			"type": "generic"
 		},
 		"canFocus": {
-			"sprite": "focus.png",
+			"sprite": "Focus.png",
 			"enabled": true,
 			"Name": "Focus",
 			"type": "skill"
