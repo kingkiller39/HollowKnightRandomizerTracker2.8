@@ -646,6 +646,12 @@ function getEntities() {
 			"enabled": true,
 			"name": "DuplicateDreamer",
 			"type": "generic"
+		},
+		"canFocus": {
+			"sprite": "focus.png",
+			"enabled": true,
+			"Name": "Focus",
+			"type": "skill"
         }
 	};
 }

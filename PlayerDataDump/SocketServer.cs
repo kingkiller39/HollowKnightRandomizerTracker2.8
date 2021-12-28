@@ -22,6 +22,7 @@ namespace PlayerDataDump
             randoHasSwim = false;
             randoHasElevatorPass = false;
             randoHasDreamer = false;
+            randoHasFocus = false;
         }
 
         private static readonly HashSet<string> IntKeysToSend = new HashSet<string> {"simpleKeys", "nailDamage", "maxHealth", "MPReserveMax", "ore", "rancidEggs", "grubsCollected", "charmSlotsFilled", "charmSlots", "flamesCollected" };
@@ -39,6 +40,7 @@ namespace PlayerDataDump
         private bool randoHasSwim { get; set; }
         private bool randoHasElevatorPass { get; set; }
         private bool randoHasDreamer { get; set; }
+        private bool randoHasFocus { get; set; }
         public void Broadcast(string s)
         {
             Sessions.Broadcast(s);
@@ -57,7 +59,7 @@ namespace PlayerDataDump
                     Send($"{{ \"version\":\"{PlayerDataDump.Instance.GetVersion()}\" }}");
                     break;
                 case "json":
-                    randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = false;
+                    randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = randoHasFocus = false;
                     Send(GetJson());
                     GetRandom();
                     SplitItems();
@@ -65,6 +67,7 @@ namespace PlayerDataDump
                     getSwim();
                     getElevatorPass();
                     getDreamer();
+                    getFocus();
                     break;
                 default:
                     if (e.Data.Contains('|'))
@@ -104,7 +107,7 @@ namespace PlayerDataDump
             ModHooks.Instance.SetPlayerIntHook -= EchoInt;
             On.GameMap.Start -= gameMapStart;
             ModHooks.Instance.ApplicationQuitHook -= OnQuit;
-            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = false;
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = randoHasFocus = false;
             PlayerDataDump.Instance.Log("CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
         }
 
@@ -125,7 +128,7 @@ namespace PlayerDataDump
         {
             if (State != WebSocketState.Open) return;
             PlayerDataDump.Instance.LogDebug("Loaded Save");
-            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = false;
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = randoHasFocus = false;
             GetRandom();
             SendMessage("SaveLoaded", "true");
         }
@@ -190,6 +193,7 @@ namespace PlayerDataDump
             if (RandomizerMod.RandomizerMod.Instance.Settings.RandomizeSwim) getSwim();
             if (RandomizerMod.RandomizerMod.Instance.Settings.ElevatorPass) getElevatorPass();
             if (RandomizerMod.RandomizerMod.Instance.Settings.DuplicateMajorItems) getDreamer();
+            if (RandomizerMod.RandomizerMod.Instance.Settings.RandomizeFocus) getFocus();
         }
 
        public void EchoInt(string var, int value)
@@ -309,6 +313,15 @@ namespace PlayerDataDump
             }
         }
 
+        public void getFocus()
+        {
+            if (!RandomizerMod.RandomizerMod.Instance.Settings.RandomizeFocus) return;
+            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any(s => s.Contains("Focus")) && !randoHasFocus)
+            {
+                randoHasFocus = true;
+                SendMessage("canFocus", "true");
+            }
+        }
         public void GetRandom()
         {
             if (State != WebSocketState.Open) return;
@@ -328,6 +341,7 @@ namespace PlayerDataDump
                     if (!settings.ElevatorPass) SendMessage("elevatorPass", "true");
                     if (!settings.RandomizeSwim) SendMessage("swim", "true");
                     if (!settings.DuplicateMajorItems) SendMessage("DupesOff", "true");
+                    if (!settings.RandomizeFocus) SendMessage("canFocus", "true");
                     var msgText = "";
                     if (settings.Cursed)
                         msgText += "Cursed ";
@@ -487,7 +501,7 @@ namespace PlayerDataDump
         {
             if (State != WebSocketState.Open) return;
             PlayerDataDump.Instance.LogDebug("Loaded New Save");
-            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = false;
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = randoHasFocus = false;
             GetRandom();
             SendMessage("NewSave", "true");
         }
@@ -496,7 +510,7 @@ namespace PlayerDataDump
         {
             orig(self);
             if (State != WebSocketState.Open) return;
-            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = false;
+            randoHasLeftDash = randoHasRightDash = randoHasLeftClaw = randoHasRightClaw = randoHasUpSlash = randoHasLeftSlash = randoHasRightSlash = randoHasSwim = randoHasElevatorPass = randoHasDreamer = randoHasFocus = false;
             GetRandom();
             SendMessage("NewSave", "true");
         }
