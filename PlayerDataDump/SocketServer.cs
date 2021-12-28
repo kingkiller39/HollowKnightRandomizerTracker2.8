@@ -27,6 +27,7 @@ namespace PlayerDataDump
         private static readonly HashSet<string> IntKeysToSend = new HashSet<string> {"simpleKeys", "nailDamage", "maxHealth", "MPReserveMax", "ore", "rancidEggs", "grubsCollected", "charmSlotsFilled", "charmSlots", "flamesCollected" };
         private static readonly string[] LeftCloak = new string[] { "Left_Mothwing_Cloak", "Left_Mothwing_Cloak_(1)", "Left_Shade_Cloak", "Left_Shade_Cloak_(1)" };
         private static readonly string[] RightCloack = new string[] { "Right_Mothwing_Cloak", "Right_Mothwing_Cloak_(1)", "Right_Shade_Cloak", "Right_Shade_Cloak_(1)" };
+        private static readonly string[] ElevatorPass = new string[] { "ElevatorPass", "Elevator_Pass" };
         private bool randoAtBench { get; set; }
         private bool randoHasLeftDash { get; set; }
         private bool randoHasRightDash { get; set; }
@@ -289,10 +290,10 @@ namespace PlayerDataDump
         public void getElevatorPass()
         {
             if (!RandomizerMod.RandomizerMod.Instance.Settings.ElevatorPass) return;
-            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any("ElevatorPass".Contains) && !randoHasElevatorPass)
+            if (ElevatorPass.Intersect(RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound()).Any() && !randoHasElevatorPass)
             {
                 randoHasElevatorPass = true;
-                SendMessage("ElevatorPass", "true");
+                SendMessage("elevatorPass", "true");
             }
         }
         
@@ -303,6 +304,8 @@ namespace PlayerDataDump
             {
                 randoHasDreamer = true;
                 SendMessage("DuplicateDreamer", "true");
+                SendMessage("dreamersDupe", "true");
+                
             }
         }
 
@@ -324,6 +327,7 @@ namespace PlayerDataDump
                     }
                     if (!settings.ElevatorPass) SendMessage("elevatorPass", "true");
                     if (!settings.RandomizeSwim) SendMessage("swim", "true");
+                    if (!settings.DuplicateMajorItems) SendMessage("DupesOff", "true");
                     var msgText = "";
                     if (settings.Cursed)
                         msgText += "Cursed ";
