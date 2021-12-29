@@ -316,7 +316,7 @@ namespace PlayerDataDump
         public void getFocus()
         {
             if (!RandomizerMod.RandomizerMod.Instance.Settings.RandomizeFocus) return;
-            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Any(s => s.Contains("Focus")) && !randoHasFocus)
+            if (RandomizerMod.RandomizerMod.Instance.Settings.GetItemsFound().Contains("Focus") && !randoHasFocus)
             {
                 randoHasFocus = true;
                 SendMessage("canFocus", "true");
