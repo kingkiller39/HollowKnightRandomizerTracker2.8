@@ -3,7 +3,7 @@
 This is the UI side of a tracker for items in Hollow Knight as an overlay in OBS.
 
 ![Demo](https://github.com/kingkiller39/HollowKnightRandomizerTracker/blob/master/demo.png "Demo")
-#Edit Layout
+# Edit Layout
 
 https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/Index.html?editing=true&profile=1
 
