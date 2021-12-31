@@ -597,8 +597,6 @@ $( document ).ready(function() {
 				  img.attr('src', "images/" + item.sprite);
 				  itemDiv.addClass('charmDiv');
 				  itemDiv.removeClass("hideIfSet");
-				  itemDiv.css("width", (1 + (156 * (container.scale/100))) + "px");
-				  itemDiv.css("height", (1 + (156 * (container.scale/100))) + "px");
 				  break;
 				  
 			  case "spell":
@@ -888,6 +886,7 @@ $( document ).ready(function() {
 				  var img = $(id);
 
 				  if (name in data) {
+					  //if (name == "openedWaterwaysManhole" || name == "bathHouseOpened" || name == "jijiDoorUnlocked" || name == )
 					  switch (item.type) {
 						  case "charm":
 							  if (name == "gotCharm_36") // Kingsoul / Void Heart is special
