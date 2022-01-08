@@ -632,8 +632,7 @@ function getEntities() {
 			"sprite": "ElevatorPass.png",
 			"enabled": true,
 			"name": "Elevator Pass",
-			"type": "item",
-			"multiple": false
+			"type": "item"
 		},
 		"swim": {
 			"sprite": "Swim.png",
@@ -657,8 +656,14 @@ function getEntities() {
 }
 function getDefault() {
 	return {
-		"settings" : {
+		"settings": {
+			"Style": "Classic",
 			"hasItemColor": "#07ff6e",
+			"borderGlow": true,
+			"borderBlur": "4",
+			"borderColourObtain": "#FFFFFF",
+			"borderColourGave": "#FF0000",
+			"borderColourEquip": "#07FF6E",
 			"version":1.0
 		},
 		"misc_containers" : {
@@ -731,7 +736,7 @@ function getDefault() {
 		"containers" : {
 			"charms": {
 				"itemsPerRow": 9,
-				"scale" : 40,
+				"scale" : 50,
 				"width" : 510,
 				"height" : 310,
 				"left": 0,

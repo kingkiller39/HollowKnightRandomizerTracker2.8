@@ -20,7 +20,7 @@
       <script type="text/javascript" src="lz-string.min.js"></script>
       <script type="text/javascript" src="default.js"></script>
       
-      <link rel="stylesheet" href="main.css">
+      <link id="pagestyle" rel="stylesheet" href="Classic.css">
       <script type="text/javascript" src="main.js"></script>
 
   </head>
@@ -35,6 +35,11 @@
               <div id="profile1">1</div>
               <div id="profile2">2</div>
               <div id="profile3">3</div>
+          </div>
+          <div id="Style" class="pageButton">
+              <span>Style:</span>
+              <div id="Classic">Classic</div>
+              <div id="Modern">Modern</div>
           </div>
           <div id="connectionStatus" style="color: #FF0000" class="pageButton">
               Not Connected
@@ -54,6 +59,10 @@
       </div>
       <div style="display:none" id="containerSettingDialog">
           <ul style="list-style-type:none">
+              <li style="font-weight: bold;">
+                  <label for="containerSettingName">Container:</label>
+                  <span id="containerSettingName"></span>
+              </li>
               <li><label for="scale">Scale:</label><input type="text" id="scale" /></li>
               <li><label for="hideWhenMissing">Hide Icon When Missing:</label><input type="checkbox" id="hideWhenMissing" /></li>
               <li>
@@ -75,6 +84,10 @@
           <ul style="list-style-type:none">
               <li><label for="pageWidth">Page Width:</label><input type="text" id="pageWidth" /></li>
               <li><label for="pageHeight">Page Height:</label><input type="text" id="pageHeight" /></li>
+              <li><label for="borderGlow">Border Glow:</label><input type="checkbox" id="borderGlowToggle" /></li>
+              <li><label for="borderObtain">Obtained Colour (Hex):</label><input type="text" id="borderObtainC" /></li>
+              <li><label for="borderEquip">Equipped Colour (Hex):</label><input type="text" id="borderEquipC" /></li>
+              <li><label for="borderGave">Gave Colour (Hex):</label><input type="text" id="borderGaveC" /></li>
           </ul>
       </div>
       <div style="display:none" id="initialSettingsDialog">
@@ -86,6 +99,8 @@
               Next you'll be given the ability to move stuff around the page.  The green border signifies the area that you'll be displaying in OBS.  Icons can be moved from container to container or reordered within the container.  Icons moved into the Red/Disabled container will be hidden even if you pick them up.
               <br /> <br />
               For more information go to: <a href="https://github.com/kingkiller39/HollowKnightRandomizerTracker">https://github.com/kingkiller39/HollowKnightRandomizerTracker</a>
+              <br /><br />
+              To Edit an existing layout, please go here: <a href="https://kingkiller39.github.io/HollowKnightTracker/index.html?editing=true&profile=1">>https://kingkiller39.github.io/HollowKnightTracker/index.html?editing=true&profile=1</a>
           </p>
           <ul style="list-style-type:none">
               <li><label for="setupPageWidth">Page Width:</label><input type="text" id="setupPageWidth" value="1920" /></li>
@@ -114,6 +129,10 @@
       </script>
       <div style="display:none" id="miscSettingsDialog">
           <ul style="list-style-type:none;">
+              <li style="font-weight: bold;">
+                  <label for="miscSettingName">Setting:</label>
+                  <span id="miscSettingName"></span>
+              </li>
               <li><label for="miscEnabled">Enabled:</label><input type="checkbox" id="miscEnabled" /></li>
               <li><label for="miscFontSize">Font Size:</label><input type="text" id="miscFontSize" /></li>
               <li><label for="miscFontColor">Color:</label><input type="text" id="miscFontColor" /></li>

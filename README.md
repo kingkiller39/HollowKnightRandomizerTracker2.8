@@ -7,7 +7,26 @@ This is the UI side of a tracker for items in Hollow Knight as an overlay in OBS
 
 https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/Index.html?editing=true&profile=1
 
-# Setup & Configuration
+# Minimum Setup 
+
+Requires Game Version 1.5 and OBS
+
+*Install the mod.
+* Open OBS
+  * Sources->Add->Browser Source
+    * URL: https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/
+    * Width: 1920
+    * Height: 1080
+    * FPS: 5 
+    * CSS: leave default values 
+    * Shutdown Source when not visible: Checked
+    * Refresh browser when scene becomes active: Checked
+    * Hit Ok
+  * Right Click on the new source and go to Transform->Fit To Screen (or Ctrl+F)
+  * In the game, go to Options, Mods, HKTracker Settings, and choose your preferred Style and Preset layout.
+
+
+# Setup & Configuration (Customize Layout)
 
 * Start out by going to https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/Index.html
   * Follow the directions on screen to specify the height and width of your OBS capture.
@@ -19,12 +38,11 @@ https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/Index.html?editi
     * The text containers (for seed/difficult also have settings for font size, color, and enabled/disabled)
     * The "Preview Mode" button will give you an idea of what the layout will look like in OBS.
     * Once done click the "Get Config URL" button which will give you a short version of the configuration. Copy that.
-      * If you ever need to edit your layout, use this same url, it will bring you back to your configuration.
 
 
 * Open OBS
   * Sources->Add->Browser Source
-    * URL: Use the URL From above.
+    * URL: https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/
     * Width: 1920 or <Width Of Your Stream>
     * Height: 1080 or <Height Of Your Stream
     * FPS: 5 
