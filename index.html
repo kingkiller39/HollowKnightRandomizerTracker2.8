@@ -1,0 +1,156 @@
+<html>
+  <head>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"></script>
+      <script
+      src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
+      integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
+      crossorigin="anonymous"></script>
+      
+      <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+      
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.2/jquery.contextMenu.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.2/jquery.ui.position.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.2/jquery.contextMenu.min.css">
+      
+      
+      
+      <script type="text/javascript" src="lz-string.min.js"></script>
+      <script type="text/javascript" src="default.js"></script>
+      
+      <link id="pagestyle" rel="stylesheet" href="Classic.css">
+      <script type="text/javascript" src="main.js"></script>
+
+  </head>
+  <body>
+      <div style="display:none" id="pageButtons">
+          <div id="previewModeButton" class="pageButton">Preview Mode</div>
+          <div id="pageSettingsButton" class="pageButton">Page Settings</div>
+          <div id="toggleSnapButton" class="pageButton" style="color: #00FF00;">Toggle Snap</div>
+          <div id="getTinyUrl" class="pageButton">Get Config Url</div>
+          <div id="profiles" class="pageButton">
+              <span>Profile:</span>
+              <div id="profile1">1</div>
+              <div id="profile2">2</div>
+              <div id="profile3">3</div>
+          </div>
+          <div id="Style" class="pageButton">
+              <span>Style:</span>
+              <div id="Classic">Classic</div>
+              <div id="Modern">Modern</div>
+          </div>
+          <div id="connectionStatus" style="color: #FF0000" class="pageButton">
+              Not Connected
+          </div>
+      </div>
+      <div style="display:none" id="tinyUrlDiv">
+          This is your overlay, copy this URL and paste it into the Browser Source URL in OBS.  It will not change.
+          <input type="text" id="urlText" style="width:400px" /><br />
+
+          <input type="button" id="copyUrl" value="Copy URL to Clipboard" /><br /><br />
+
+          Someone want your layout setup?  Send them this:
+          <input type="text" id="tinyUrlText" style="width:400px" /><br />
+
+          <input type="button" id="copyTinyUrl" value="Copy Export URL to Clipboard" /><br />
+
+      </div>
+      <div style="display:none" id="containerSettingDialog">
+          <ul style="list-style-type:none">
+              <li style="font-weight: bold;">
+                  <label for="containerSettingName">Container:</label>
+                  <span id="containerSettingName"></span>
+              </li>
+              <li><label for="scale">Scale:</label><input type="text" id="scale" /></li>
+              <li><label for="hideWhenMissing">Hide Icon When Missing:</label><input type="checkbox" id="hideWhenMissing" /></li>
+              <li>
+                  <label for="flourish">Flourish:</label><select id="flourish">
+                      <option value="none">None</option>
+                      <option value="topLeft">Top Left</option>
+                      <option value="topRight">Top Right</option>
+                  </select>
+              </li>
+              <li>
+                  <label for="growDirection">Grow From:</label><select id="growDirection">
+                      <option value="Left">Left To Right</option>
+                      <option value="Right">Right To Left</option>
+                  </select>
+              </li>
+          </ul>
+      </div>
+      <div style="display:none" id="pageSettingsDialog">
+          <ul style="list-style-type:none">
+              <li><label for="pageWidth">Page Width:</label><input type="text" id="pageWidth" /></li>
+              <li><label for="pageHeight">Page Height:</label><input type="text" id="pageHeight" /></li>
+              <li><label for="borderGlow">Border Glow:</label><input type="checkbox" id="borderGlowToggle" /></li>
+              <li><label for="borderObtain">Obtained Colour (Hex):</label><input type="text" id="borderObtainC" /></li>
+              <li><label for="borderEquip">Equipped Colour (Hex):</label><input type="text" id="borderEquipC" /></li>
+              <li><label for="borderGave">Gave Colour (Hex):</label><input type="text" id="borderGaveC" /></li>
+          </ul>
+      </div>
+      <div style="display:none" id="initialSettingsDialog">
+          <p>
+              Hey There!  Looks like you've never setup the Hollow Knight OBS Overlay before (or this is the first time since the big 2.0 release of the overlay).  To get started, lets set a few things up.  If you're seeing this message in OBS, take the URL for this page and go over to Chrome/FireFox/IE and go through the setup. Once done you'll be given a new URL for OBS that contains your setup.
+              <br />  <br />
+              For Page Width and Height, this should be the size, in pixels, that you normally capture HK with in OBS.  This works best at 1920 X 1080.
+              <br /> <br />
+              Next you'll be given the ability to move stuff around the page.  The green border signifies the area that you'll be displaying in OBS.  Icons can be moved from container to container or reordered within the container.  Icons moved into the Red/Disabled container will be hidden even if you pick them up.
+              <br /> <br />
+              For more information go to: <a href="https://github.com/kingkiller39/HollowKnightRandomizerTracker">https://github.com/kingkiller39/HollowKnightRandomizerTracker</a>
+              <br /><br />
+              To Edit an existing layout, please go here: <a href="https://kingkiller39.github.io/HollowKnightTracker/index.html?editing=true&profile=1">>https://kingkiller39.github.io/HollowKnightTracker/index.html?editing=true&profile=1</a>
+          </p>
+          <ul style="list-style-type:none">
+              <li><label for="setupPageWidth">Page Width:</label><input type="text" id="setupPageWidth" value="1920" /></li>
+              <li><label for="setupPageHeight">Page Height:</label><input type="text" id="setupPageHeight" value="1080" /></li>
+          </ul>
+      </div>
+      <!-- The core Firebase JS SDK is always required and must be listed first -->
+      <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
+
+      <!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#config-web-app -->
+
+      <script>
+          // Your web app's Firebase configuration
+          var firebaseConfig = {
+              apiKey: "AIzaSyBOA8aHWorp3n1Qg7TTYYgAxf5Nk8NxT_A",
+              authDomain: "dotted-crane-246923.firebaseapp.com",
+              databaseURL: "https://dotted-crane-246923.firebaseio.com",
+              projectId: "dotted-crane-246923",
+              storageBucket: "",
+              messagingSenderId: "1061569766218",
+              appId: "1:1061569766218:web:637dbb960dd48f9c"
+          };
+          // Initialize Firebase
+          firebase.initializeApp(firebaseConfig);
+      </script>
+      <div style="display:none" id="miscSettingsDialog">
+          <ul style="list-style-type:none;">
+              <li style="font-weight: bold;">
+                  <label for="miscSettingName">Setting:</label>
+                  <span id="miscSettingName"></span>
+              </li>
+              <li><label for="miscEnabled">Enabled:</label><input type="checkbox" id="miscEnabled" /></li>
+              <li><label for="miscFontSize">Font Size:</label><input type="text" id="miscFontSize" /></li>
+              <li><label for="miscFontColor">Color:</label><input type="text" id="miscFontColor" /></li>
+          </ul>
+      </div>
+      <div style="display:none" id="importDialog">
+          <p>
+              Looks like you're loading in a config from the URL.  This might be because you've just added the profile feature in Overlay 2.1.  If so, just select profile 1.<br />
+
+              If you're importing a layout from another runner, but don't want to overwrite your current layout, pick a profile you haven't used before.
+
+              <select id="importProfileSelect">
+                  <option value="1">Profile 1</option>
+                  <option value="2">Profile 2</option>
+                  <option value="3">Profile 3</option>
+              </select>
+          </p>
+      </div>
+  </body>
+</html>
+  
