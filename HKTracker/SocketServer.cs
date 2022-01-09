@@ -44,15 +44,15 @@ namespace HKTracker
                     Send($"{{ \"version\":\"{HKTracker.Instance.GetVersion()}\" }}");
                     break;
                 case "json":
-                    Send(GetJson());
-                    GetRandom();
-                    GetSwim();
-                    GetEPass();
-                    GetFocus();
-                    GetNail();
-                    GetDash();
-                    GetClaw();
-                    GetCDash();
+                        Send(GetJson());
+                        GetNail();
+                        GetDash();
+                        GetClaw();
+                        GetCDash();
+                        GetRandom();
+                        GetSwim();
+                        GetEPass();
+                        GetFocus();
                     break;
                 default:
                     if (e.Data.Contains('|'))
@@ -217,7 +217,12 @@ namespace HKTracker
 
         public void GetCDash()
         {
-            if (!RandomizeCDash || PlayerData.instance.GetBool("hasSuperDash")) { return; }
+            if (!RandomizeCDash) { return; }
+            //Get bool for hasSuperdash sometimes returns true when only 1 direction is had
+            else if (RandomizeCDash && (PlayerData.instance.GetBool("hasSuperdashLeft") || PlayerData.instance.GetBool("Left_Crystal_Heart")) && (PlayerData.instance.GetBool("hasSuperdashRight") || PlayerData.instance.GetBool("Right_Crystal_Heart"))) 
+            { 
+                return; 
+            }
             else
             {
                 SendMessage("hasSuperdashLeft", (PlayerData.instance.GetBool("hasSuperdashLeft") || PlayerData.instance.GetBool("Left_Crystal_Heart")).ToString());
