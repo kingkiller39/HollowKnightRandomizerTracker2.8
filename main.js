@@ -1188,7 +1188,7 @@ $(document).ready(function () {
                                 setSelected(data[name], id);
                             }
 
-                            if (name == "nailSmithUpgrades") {
+                            if (name == "nail") {
                                 if (data["nailSmithUpgrades"] > 0) {
                                     $("#nail" + '_count').html(data["nailSmithUpgrades"]).show();
                                 }
