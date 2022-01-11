@@ -651,6 +651,13 @@ function getEntities() {
 			"enabled": true,
 			"Name": "Focus",
 			"type": "skill"
+		},
+		"mrMushroomState": {
+			"sprite": "mrmushroom.png",
+			"enabled": true,
+			"Name": "mrMushroomState",
+			"type": "item",
+			"multiple": true
         }
 	};
 }
