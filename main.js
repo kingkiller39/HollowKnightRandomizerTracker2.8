@@ -1194,7 +1194,7 @@ $(document).ready(function () {
                             }
 
                             if (name == "nail") {
-                                if (data["nailSmithUpgrades"] > 0) {
+                                if (data["nailSmithUpgrades"] >= 0) {
                                     $("#nail" + '_count').html(data["nailSmithUpgrades"]).show();
                                 }
                                 else {
