@@ -488,7 +488,7 @@ $(document).ready(function () {
                 $(e.target).css("color", "#00FF00");
                 map.settings["Style"] = style;
                 document.getElementById("pagestyle").setAttribute("href", style + ".css");
-                data = [];
+                data = getDefaultData("./datadefault.json");
                 getPlayerData();
                 updateUrlConfig();
             });
@@ -889,7 +889,7 @@ $(document).ready(function () {
                         $('#Style div').css("color", "#FFFFFF");
                         $('#' + temp[1]).css("color", "#00FF00");
                         document.getElementById("pagestyle").setAttribute("href", style + ".css");
-                        data = [];
+                        data = getDefaultData("./datadefault.json");
                         getPlayerData();
                         return;
                     } else if (temp[0] == "BorderGlow") {
@@ -979,6 +979,18 @@ $(document).ready(function () {
         });
     }
 
+    function getDefaultData(filepath) {
+        var temp = [];
+        $.ajax({
+            type: 'GET',
+            url: filepath,
+            dataType: 'json',
+            success: function (data) { temp = data },
+            async: false
+        })
+        return temp;
+    }
+
     function send(command) {
         lastCommand = command;
         if (ws.readyState == 1) {
@@ -1003,6 +1015,7 @@ $(document).ready(function () {
         $(".RightItem").removeClass("RightItem");
         $(".charmDiv > .selected").css("filter", "");
         $(".charmDiv > .equipped").css("");
+        data = getDefaultData("./datadefault.json");
         data["nail"] = false;
         data["FullNail"] = false;
         data["canDownslash"] = false;
@@ -1032,7 +1045,7 @@ $(document).ready(function () {
         if (minData != undefined && "var" in minData) {
             if (minData.var == "SaveLoaded" || minData.var == "NewSave") {
                 console.log("Save Loaded");
-                data = [];
+                data = getDefaultData("./datadefault.json");
                 getPlayerData();
                 return;
             } else {
