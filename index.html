@@ -46,7 +46,12 @@
           </div>
       </div>
       <div style="display:none" id="tinyUrlDiv">
-          This is your overlay, copy this URL and paste it into the Browser Source URL in OBS.  It will not change.
+          Using OBS and running Hollow Knight 1.5? Use this URL for the Browser Source in OBS to take advantage of all the new features!
+          <input type="text" id="OBSURL" style="width:400px" value="https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/" /><br />
+
+          <input type="button" id="copyOBSUrl" value="Copy URL to Clipboard" /><br /><br />
+
+          This is your overlay, copy this URL and paste it into the Browser Source URL in your broadcasting software.  It will not change.
           <input type="text" id="urlText" style="width:400px" /><br />
 
           <input type="button" id="copyUrl" value="Copy URL to Clipboard" /><br /><br />
@@ -85,9 +90,9 @@
               <li><label for="pageWidth">Page Width:</label><input type="text" id="pageWidth" /></li>
               <li><label for="pageHeight">Page Height:</label><input type="text" id="pageHeight" /></li>
               <li><label for="borderGlow">Border Glow:</label><input type="checkbox" id="borderGlowToggle" checked/></li>
-              <li><label for="borderObtain">Obtained Colour (Hex):</label><input type="color" id="borderObtainC" value="#ffffff"/></li>
-              <li><label for="borderEquip">Equipped Colour (Hex):</label><input type="color" id="borderEquipC" value="#07ff6e"/></li>
-              <li><label for="borderGave">Gave Colour (Hex):</label><input type="color" id="borderGaveC" value="#FF0000"/></li>
+              <li><label for="borderObtain">Obtained Colour:</label><input type="color" id="borderObtainC" value="#ffffff"/></li>
+              <li><label for="borderEquip">Equipped Colour:</label><input type="color" id="borderEquipC" value="#07ff6e"/></li>
+              <li><label for="borderGave">Gave Colour:</label><input type="color" id="borderGaveC" value="#FF0000"/></li>
           </ul>
       </div>
       <div style="display:none" id="initialSettingsDialog">

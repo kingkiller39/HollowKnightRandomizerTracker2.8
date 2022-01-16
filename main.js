@@ -10,6 +10,9 @@ var hasAppliedLS = false;
 var hasAppliedRS = false;
 var OBSProfile = 999;
 var urlParams;
+var profileEquipC;
+var profileGaveC;
+var ClassicHasEquipped = ".LeftItem, .RightItem, .NailDown, .NailDownLeft, .NailDownUp, .NailDownRight, .NailDownLeftUP, .NailDownLeftRight, .NailDownUpRight, img.equipped, img.multiple, img.selected"
 $(document).ready(function () {
     /*
       var map;	
@@ -306,6 +309,7 @@ $(document).ready(function () {
                 var overrideUrl = getParameterByName("url");
 
                 $('#urlText').val(window.location.href.replace(/\?.*/, "") + "?profile=" + profileId + (overrideUrl != undefined ? "&url=" + overrideUrl : ""));
+                $("#OBSURL").val("https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/");
                 var config = LZString.compressToEncodedURIComponent(JSON.stringify(map));
 
                 toTiny("https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/index.html?config=" + config, FirebaseApiKey, function (value) {
@@ -318,6 +322,17 @@ $(document).ready(function () {
 
             $('#copyUrl').on('click', function () {
                 $('#urlText').select();
+                try {
+                    var successful = document.execCommand('copy');
+                    var msg = successful ? 'successful' : 'unsuccessful';
+
+                } catch (err) {
+                    console.log('Oops, unable to copy');
+                }
+            });
+
+            $('#copyOBSUrl').on('click', function () {
+                $('#OBSURL').select();
                 try {
                     var successful = document.execCommand('copy');
                     var msg = successful ? 'successful' : 'unsuccessful';
@@ -387,21 +402,21 @@ $(document).ready(function () {
 
                 updateUrlConfig();
             });
-            $('#borderObtainC').on('change', function () {
+            $('#borderObtainC').on('input', function () {
                 var value = $('#borderObtainC').val();
                 if (/^#[0-9A-F]{6}$/i.test(value)) {
                     map.settings.borderColourObtain = value;
                     updateUrlConfig();
                 }
             });
-            $('#borderGaveC').on('change', function () {
+            $('#borderGaveC').on('input', function () {
                 var value = $('#borderGaveC').val();
                 if (/^#[0-9A-F]{6}$/i.test(value)) {
                     map.settings.borderColourGave = value;
                     updateUrlConfig();
                 }
             });
-            $('#borderEquipC').on('change', function () {
+            $('#borderEquipC').on('input', function () {
                 var value = $('#borderEquipC').val();
                 if (/^#[0-9A-F]{6}$/i.test(value)) {
                     map.settings.borderColourEquip = value;
@@ -512,11 +527,18 @@ $(document).ready(function () {
             return;
         if (map.settings["Style"] != undefined) {
             document.getElementById("pagestyle").setAttribute("href", map.settings["Style"] + ".css");
+            $('#Style div').css("color", "#FFFFFF");
             $('#' + map.settings["Style"]).css("color", "#00FF00");
         }
         else {
             document.getElementById("pagestyle").setAttribute("href", "Classic.css");
+            $('#Style div').css("color", "#FFFFFF");
             $('#Classic').css("color", "#00FF00");
+        }
+        if (typeof map.settings.borderColourEquip !== null) {
+            $('#borderObtainC').val(map.settings.borderColourObtain);
+            $('#borderGaveC').val(map.settings.borderColourGave);
+            $('#borderEquipC').val(map.settings.borderColourEquip);
         }
         $.each(map.containers, function (i, container) {
             if (!isEditing && i == "disabled")
@@ -835,7 +857,9 @@ $(document).ready(function () {
                 }
 
                 var json = JSON.parse(received_msg);
-
+                if (Object.values(json).indexOf("NaN") > -1) {
+                    send("Exception|" + Object.keys(json)[Object.values(json).indexOf("NaN")])
+                }
                 updatePlayerData(json);
             }
             ws.onclose = function () {
@@ -889,14 +913,31 @@ $(document).ready(function () {
                         $('#Style div').css("color", "#FFFFFF");
                         $('#' + temp[1]).css("color", "#00FF00");
                         document.getElementById("pagestyle").setAttribute("href", style + ".css");
+                        if (style == "Modern") { $("*").css("box-shadow", ""); }
                         data = getDefaultData("./datadefault.json");
                         getPlayerData();
+                        return;
+                    } else if (temp[0] == "EquipColor") {
+                        if (temp[1] == "Default" && typeof map.settings.borderColourEquip == null) { map.settings.borderColourEquip = "#07ff6e"; }
+                        else if (temp[1] == "Default" && typeof map.settings.borderColourEquip !== null) { map.settings.borderColourEquip = profileEquipC; }
+                        else { map.settings.borderColourEquip = temp[1]; }
+                        loadDivs();
+                        updatePlayerData();
+                        return;
+                    } else if (temp[0] == "GaveColor") {
+                        if (temp[1] == "Default" && typeof map.settings.borderColourGave == null) { map.settings.borderColourGave = "#FF0000"; }
+                        else if (temp[1] == "Default" && typeof map.settings.borderColourGave !== null) { map.settings.borderColourGave = profileGaveC; }
+                        else { map.settings.borderColourGave = temp[1]; }
+                        loadDivs();
+                        updatePlayerData();
                         return;
                     } else if (temp[0] == "BorderGlow") {
                         if (temp[1] == "On") {
                             map.settings.borderGlow = true;
+                            $('#borderGlowToggle').prop("checked", true);
                         } else {
                             map.settings.borderGlow = false;
+                            $('#borderGlowToggle').prop("checked", false);
                         }
                         loadDivs();
                         updatePlayerData();
@@ -913,6 +954,8 @@ $(document).ready(function () {
                             if (usingOBS && jQuery.isEmptyObject(urlParams)) {
                                 wsprofile.send("OBSGetStyle");
                                 wsprofile.send("OBSGetGlow");
+                                wsprofile.send("OBSGetEquipC");
+                                wsprofile.send("OBSGetGaveC");
                             }
                             return;
                         } else if (temp[0] == "Preset" && temp[1] == "Minimal_Left") {
@@ -922,6 +965,8 @@ $(document).ready(function () {
                             if (usingOBS && jQuery.isEmptyObject(urlParams)) {
                                 wsprofile.send("OBSGetStyle");
                                 wsprofile.send("OBSGetGlow");
+                                wsprofile.send("OBSGetEquipC");
+                                wsprofile.send("OBSGetGaveC");
                             }
                             return;
                         } else if (temp[0] == "Preset" && temp[1] == "Minimal_Right") {
@@ -931,6 +976,8 @@ $(document).ready(function () {
                             if (usingOBS && jQuery.isEmptyObject(urlParams)) {
                                 wsprofile.send("OBSGetStyle");
                                 wsprofile.send("OBSGetGlow");
+                                wsprofile.send("OBSGetEquipC");
+                                wsprofile.send("OBSGetGaveC");
                             }
                             return;
                         } else if (temp[0] == "Preset" && temp[1] == "Rando_Racing") {
@@ -940,6 +987,8 @@ $(document).ready(function () {
                             if (usingOBS && jQuery.isEmptyObject(urlParams)) {
                                 wsprofile.send("OBSGetStyle");
                                 wsprofile.send("OBSGetGlow");
+                                wsprofile.send("OBSGetEquipC");
+                                wsprofile.send("OBSGetGaveC");
                             }
                             return;
                         }else return;
@@ -947,11 +996,15 @@ $(document).ready(function () {
                 } else if (profileId == temp[0] || OBSProfile == temp[0]) {
                     console.log("Profile ID matches, updating screen");
                     map = JSON.parse(atob(temp[1]));
+                    profileEquipC = map.settings.borderColourEquip;
+                    profileGaveC = map.settings.borderColourGave;
                     loadDivs();
                     updatePlayerData();
                     if (usingOBS && jQuery.isEmptyObject(urlParams)) {
                         wsprofile.send("OBSGetStyle");
                         wsprofile.send("OBSGetGlow");
+                        wsprofile.send("OBSGetEquipC");
+                        wsprofile.send("OBSGetGaveC");
                     }
                 }
 
@@ -1016,23 +1069,6 @@ $(document).ready(function () {
         $(".charmDiv > .selected").css("filter", "");
         $(".charmDiv > .equipped").css("");
         data = getDefaultData("./datadefault.json");
-        data["nail"] = false;
-        data["FullNail"] = false;
-        data["canDownslash"] = false;
-        data["canSideslashLeft"] = false;
-        data["canSideslashRight"] = false;
-        data["canUpslash"] = false;
-        data["swim"] = false;
-        data["elevatorPass"] = false;
-        data["DuplicateDreamer"] = false;
-        data["canFocus"] = false;
-        data["version"] = "1";
-        data["canDashRight"] = false;
-        data["canDashLeft"] = false;
-        data["hasSuperdashRight"] = false;
-        data["hasSuperdashLeft"] = false;
-        data["hasWalljumpRight"] = false;
-        data["hasWalljumpLeft"] = false;
         hasAppliedDS = false;
         hasAppliedUS = false;
         hasAppliedLS = false;
@@ -1416,13 +1452,14 @@ $(document).ready(function () {
         }
     }
     function doSkillv14(name, id, item) {
+        var result = hexToRgb(map.settings.borderColourEquip);
         if (name == "hasDash" && !data["canDashLeft"] && !data["canDashRight"]) { //no split dash
             setSelected(data[name], id);
             return;
         }
         else if (name == "hasDash" && data["canDashLeft"] && !data["canDashRight"]) { //can dash left
             if (BorderGlowModern()) {
-                $(id).css("drop-shadow(-4px 0px 0px black) drop-shadow(rgb(7, 100, 50) -4px 0px 3px)")
+                $(id).css('filter', `drop-shadow(-4px 0px 0px black) drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) -4px 0px 3px)`)
             } else {
                 $(id).removeClass("container");
                 $(id).addClass("LeftItem");
@@ -1431,7 +1468,7 @@ $(document).ready(function () {
         }
         else if (name == "hasDash" && !data["canDashLeft"] && data["canDashRight"]) { //can dash right
             if (BorderGlowModern()) {
-                $(id).css('filter', "drop-shadow(3px 0px 0px black) drop-shadow(rgb(7, 100, 50) 3px 0px 3px");
+                $(id).css('filter', `drop-shadow(3px 0px 0px black) drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) 3px 0px 3px`);
 
             } else {
                 $(id).removeClass("container");
@@ -1458,7 +1495,7 @@ $(document).ready(function () {
         else if (name == "hasWalljump" && data["hasWalljumpLeft"] && !data["hasWalljumpRight"]) {
             if (BorderGlowModern()) {
                 console.log("applying left claw");
-                $(id).css("filter", "drop-shadow(7px 0px 0px black) drop-shadow(rgb(7, 100, 50) -6px 0px 1px)");
+                $(id).css("filter", `drop-shadow(7px 0px 0px black) drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) -6px 0px 1px)`);
             } else {
                 $(id).removeClass("container");
                 $(id).addClass("LeftItem");
@@ -1467,7 +1504,7 @@ $(document).ready(function () {
         }
         else if (name == "hasWalljump" && !data["hasWalljumpLeft"] && data["hasWalljumpRight"]) {
             if (BorderGlowModern()) {
-                $(id).css("filter", "drop-shadow(-8px 2px 0px black) drop-shadow(rgb(7, 100, 50) 6px 0px 1px)");
+                $(id).css("filter", `drop-shadow(-8px 2px 0px black) drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) 6px 0px 1px)`);
             } else {
                 $(id).removeClass("container");
                 $(id).addClass("RightItem");
@@ -1497,6 +1534,7 @@ $(document).ready(function () {
 
     }
     function doSkillsv15(name, id, item) {
+        var result = hexToRgb(map.settings.borderColourEquip);
         if (name == "hasDash" && data[name]) {
             if (BorderGlowModern()) {
                 $(id).css("filter", "");
@@ -1509,7 +1547,7 @@ $(document).ready(function () {
             return;
         } else if (name == "hasDash" && data["canDashLeft"] && !data["canDashRight"]) {
             if (BorderGlowModern()) {
-                $(id).css("drop-shadow(-4px 0px 0px black) drop-shadow(rgb(7, 100, 50) -4px 0px 3px)")
+                $(id).css('filter', `drop-shadow(-4px 0px 0px black) drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) -4px 0px 3px)`);
             } else {
                 $(id).removeClass("container");
                 $(id).addClass("LeftItem");
@@ -1517,7 +1555,7 @@ $(document).ready(function () {
             return;
         } else if (name == "hasDash" && !data["canDashLeft"] && data["canDashRight"]) {
             if (BorderGlowModern()) {
-                $(id).css('filter', "drop-shadow(3px 0px 0px black) drop-shadow(rgb(7, 100, 50) 3px 0px 3px");
+                $(id).css('filter', `drop-shadow(3px 0px 0px black) drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) 3px 0px 3px)`);
 
             } else {
                 $(id).removeClass("container");
@@ -1538,7 +1576,7 @@ $(document).ready(function () {
             return;
         } else if (name == "hasWalljump" && data["hasWalljumpLeft"] && !data["hasWalljumpRight"]) {
             if (BorderGlowModern()) {
-                $(id).css("filter", "drop-shadow(7px 0px 0px black) drop-shadow(rgb(7, 100, 50) -6px 0px 1px)");
+                $(id).css("filter", `drop-shadow(7px 0px 0px black) drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) -6px 0px 1px)`);
             } else {
                 $(id).removeClass("container");
                 $(id).addClass("LeftItem");
@@ -1546,7 +1584,7 @@ $(document).ready(function () {
             return;
         } else if (name == "hasWalljump" && !data["hasWalljumpLeft"] && data["hasWalljumpRight"]) {
             if (BorderGlowModern()) {
-                $(id).css("filter", "drop-shadow(-8px 2px 0px black) drop-shadow(rgb(7, 100, 50) 6px 0px 1px)");
+                $(id).css("filter", `drop-shadow(-8px 2px 0px black) drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) 6px 0px 1px)`);
             } else {
                 $(id).removeClass("container");
                 $(id).addClass("RightItem");
@@ -1566,7 +1604,7 @@ $(document).ready(function () {
             return;
         } else if (name == "hasSuperDash" && data["hasSuperdashLeft"] && !data["hasSuperdashRight"]) {
             if (BorderGlowModern()) {
-                $(id).css("filter", "drop-shadow(rgb(7, 100, 50) -7px -1px 2px)")
+                $(id).css("filter", `drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) -7px -1px 2px)`);
             } else {
                 $(id).removeClass("container");
                 $(id).addClass("LeftItem");
@@ -1574,7 +1612,7 @@ $(document).ready(function () {
             return;
         } else if (name == "hasSuperDash" && !data["hasSuperdashLeft"] && data["hasSuperdashRight"]) {
             if (BorderGlowModern()) {
-                $(id).css("filter", "drop-shadow(rgb(7, 100, 50) 7px 0px 2px)")
+                $(id).css("filter", `drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) 7px 0px 2px)`);
             } else {
                 $(id).removeClass("container");
                 $(id).addClass("RightItem");
@@ -1599,6 +1637,8 @@ $(document).ready(function () {
     }
 
     function updateVisible() {
+        var result = hexToRgb(map.settings.borderColourEquip);
+        var gaveResult = hexToRgb(map.settings.borderColourGave)
         $('.hideIfSet > div.itemDiv:not(:has(>.selected)):not(:has(>.multiple))').hide();
         $('.container:not(.hideIfSet) div.itemDiv').css("display", "block");
         $('.container.hideIfSet div.itemDiv:has(>.selected)').css("display", "block");
@@ -1610,11 +1650,28 @@ $(document).ready(function () {
                 map.settings.borderColourGave = "#FF0000";
             }
             $(".itemDiv > .multiple").css("filter", "");
-            $(".selected").css("filter", "drop-shadow(0px 0px 5px #07ff6e)");
-            $(".selected").css("filter", "drop-shadow(0px 0px 5px " + map.settings.borderColourEquip + ")");
-            $(".gaveItem").css("filter", "grayscale(1) brightness(.8) drop-shadow(0px 0px 5px " + map.settings.borderColourGave + ")");
-            $(".charmDiv > .selected").css("filter", "grayscale(1) brightness(.5) drop-shadow(0px 0px 5px " + map.settings.borderColourObtain + ")");
-            $(".charmDiv > .equipped").css("filter", "drop-shadow(0px 0px 5px " + map.settings.borderColourEquip + ")");
+            $(".selected").css("filter", "drop-shadow(rgb(7, 255, 110) 0px 0px 5px)");
+            $(".selected").css("filter", `drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) 0px 0px 5px)`);
+            $(".gaveItem").css("filter", `grayscale(1) brightness(.8) drop-shadow(rgb(${gaveResult.r}, ${gaveResult.g}, ${gaveResult.b}) 0px 0px 5px)`);
+            $(".charmDiv > .selected").css("filter", `grayscale(1) brightness(.5) drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) 0px 0px 5px)`);
+            $(".charmDiv > .equipped").css("filter", `drop-shadow(rgb(${result.r}, ${result.g}, ${result.b}) 0px 0px 5px)`);
+        }
+        if (document.getElementById("pagestyle").href == "https://kingkiller39.github.io/HollowKnightRandomizerTracker2.8/Classic.css" && typeof map.settings.borderColourEquip !== null) {
+            var equip = map.settings.borderColourEquip;
+            var gave = map.settings.borderColourGave;
+            $(".LeftItem").css("box-shadow", "-5px 0px 0px 0px " + equip);
+            $(".RightItem").css("box-shadow", "5px 0px 0px 0px " + equip);
+            $(".NailDown").css("box-shadow", "0px 5px 0px -3px " + equip);
+            $(".NailDownLeft").css("box-shadow", "0px 5px 0px -3px " + equip + ", -5px 0px 0px -3px " + equip);
+            $(".NailDownUp").css("box-shadow", "0px 5px 0px -3px " + equip + ", 0px -5px 0px -3px " + equip);
+            $(".NailDownRight").css("box-shadow", "0px 5px 0px -3px " + equip + ", 5px 0px 0px -3px " + equip);
+            $(".NailDownLeftUP").css("box-shadow", "0px 5px 0px -3px " + equip + ", -5px 0px 0px -3px " + equip + ", 0px -5px 0px -3px " + equip);
+            $(".NailDownLeftRight").css("box-shadow", "0px 5px 0px -3px " + equip + ", -5px 0px 0px -3px " + equip + ", 5px 0px 0px -3px " + equip);
+            $(".NailDownUpRight").css("box-shadow", "0px 5px 0px -3px " + equip + ", 0px -5px 0px -3px " + equip + ", 5px 0px 0px -3px " + equip);
+            $(".container > div.itemDiv:not(.charmDiv):not(.LeftItem):not(.RightItem) > img.selected:not(.LeftItem):not(.RightItem):not(.gaveItem)").css("box-shadow", "0px 0px 5px 5px " + equip);
+            $(".charmDiv > .equipped").css("box-shadow", "0px 0px 5px 5px " + equip);
+            $(".multiple").css("box-shadow", "0px 0px 5px 5px " + equip);
+            $("img.gaveItem").css("box-shadow", "0px 0px 5px 5px " + gave);
         }
     }
 
@@ -1687,5 +1744,14 @@ $(document).ready(function () {
                 callback(response.shortLink);
             }
         });
+    }
+
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
     }
 });

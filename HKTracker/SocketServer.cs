@@ -5,6 +5,7 @@ using Modding;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using UnityEngine;
+using Newtonsoft.Json;
 namespace HKTracker
 {
     internal class SocketServer : WebSocketBehavior
@@ -44,15 +45,15 @@ namespace HKTracker
                     Send($"{{ \"version\":\"{HKTracker.Instance.GetVersion()}\" }}");
                     break;
                 case "json":
-                        Send(GetJson());
-                        GetNail();
-                        GetDash();
-                        GetClaw();
-                        GetCDash();
-                        GetRandom();
-                        GetSwim();
-                        GetEPass();
-                        GetFocus();
+                    Send(GetJson());
+                    GetNail();
+                    GetDash();
+                    GetClaw();
+                    GetCDash();
+                    GetRandom();
+                    GetSwim();
+                    GetEPass();
+                    GetFocus();
                     break;
                 default:
                     if (e.Data.Contains('|'))
@@ -66,6 +67,9 @@ namespace HKTracker
                             case "int":
                                 string i = PlayerData.instance.GetInt(e.Data.Split('|')[1]).ToString();
                                 SendMessage(e.Data.Split('|')[1], i);
+                                break;
+                            case "Exception":
+                                HKTracker.Instance.LogError("PlayerData contains invalid data at: " + e.Data.Split('|')[1]);
                                 break;
                         }
                     }
@@ -146,7 +150,7 @@ namespace HKTracker
         public int EchoInt(string var, int value)
         {
             HKTracker.Instance.LogDebug($"EchoInt: {var} = {value}");
-            if (var == "royalCharmState" && (value == 1 || value == 2 || value == 3 || value == 4))
+            if (var == "royalCharmState" && (value is 1 or 2 or 3 or 4))
             {
                 EchoBool("gotCharm_36", true);
             }
@@ -159,8 +163,21 @@ namespace HKTracker
 
         public string GetJson()
         {
+            string json = null;
+            var jsonSerializerSettings = new JsonSerializerSettings
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
             PlayerData playerData = PlayerData.instance;
-            string json = JsonUtility.ToJson(playerData);
+            try
+            {
+                json = JsonConvert.SerializeObject(playerData, jsonSerializerSettings);
+            }
+            catch (JsonSerializationException e)
+            {
+                HKTracker.Instance.LogError(e.Message);
+            }
             return json;
         }
 

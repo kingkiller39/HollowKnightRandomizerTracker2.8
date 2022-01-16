@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -9,6 +10,31 @@ namespace HKTracker
 {
     internal class ProfileStorageServer : WebSocketBehavior
     {
+        Dictionary<string, string> HexColor = new Dictionary<string, string>
+        {
+            { "Default", "Default" },
+            { "Red", "#FF0000" },
+            { "Green", "#008000" },
+            { "Blue", "#0000FF" },
+            { "Crimson", "#DC143C" },
+            { "DarkRed", "#8B0000" },
+            { "Pink", "#FFC0CB" },
+            { "LightPink", "#FFB6C1" },
+            { "HotPink", "#FF69B4" },
+            { "Orange", "#FFA500" },
+            { "DarkOrange", "#FF8C00" },
+            { "Yellow", "#FFFF00" },
+            { "Gold", "#FFD700" },
+            { "Purple", "#800080" },
+            { "MediumPurple", "#9370DB" },
+            { "Indigo", "#4B0082" },
+            { "Lime", "#00FF00" },
+            { "Chartreuse", "#7FFF00" },
+            { "YellowGreen", "#9ACD32" },
+            { "Turqoise", "#40E0D0" },
+            { "SteelBlue", "#4682B4" },
+            { "Navy", "#000080" }
+        };
         public ProfileStorageServer()
         {
             IgnoreExtensions = true;
@@ -46,8 +72,14 @@ namespace HKTracker
                 OnStyleEvent();
             } else if (e.Data.StartsWith("OBSGetGlow"))
             {
-                onGlowEvent();
-            }else
+                OnGlowEvent();
+            } else if (e.Data.StartsWith("OBSGetEquipC"))
+            {
+                OnEquipColorEvent();
+            } else if (e.Data.StartsWith("OBSGetGaveC"))
+            {
+                OnGaveColorEvent();
+            } else
             {
                 Send("load|int,save|int|{data}");
             }
@@ -86,7 +118,9 @@ namespace HKTracker
             base.OnClose(e);
             GlobalSettings.StyleEvent -= OnStyleEvent;
             GlobalSettings.PresetEvent -= OnPresetEvent;
-            GlobalSettings.GlowEvent -= onGlowEvent;
+            GlobalSettings.GlowEvent -= OnGlowEvent;
+            GlobalSettings.EquipColorEvent -= OnEquipColorEvent;
+            GlobalSettings.GaveColorEvent -= OnGaveColorEvent;
             HKTracker.Instance.Log("[ProfileStorage] CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
         }
 
@@ -105,10 +139,22 @@ namespace HKTracker
             HKTracker.Instance.LogDebug("sending: " + "Preset|" + HKTracker.GS.TrackerProfile);
             Send("Preset|" + HKTracker.GS.TrackerProfile);
         }
-        public void onGlowEvent()
+        public void OnGlowEvent()
         {
             HKTracker.Instance.LogDebug("sending: " + "BorderGlow|" + HKTracker.GS.TrackerGlow);
             Send("BorderGlow|" + HKTracker.GS.TrackerGlow);
+        }
+        public void OnEquipColorEvent()
+        {
+            HexColor.TryGetValue(HKTracker.GS.EquipColor.ToString(), out string temp);
+            HKTracker.Instance.LogDebug("sending: " + "EquipColor|" + temp);
+            Send("EquipColor|" + temp);
+        }
+        public void OnGaveColorEvent()
+        {
+            HexColor.TryGetValue(HKTracker.GS.GaveColor.ToString(), out string temp);
+            HKTracker.Instance.LogDebug("sending: " + "GaveColor|" + temp);
+            Send("GaveColor|" + temp);
         }
     }
 }

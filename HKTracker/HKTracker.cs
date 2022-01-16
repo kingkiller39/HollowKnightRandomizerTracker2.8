@@ -21,9 +21,10 @@ namespace HKTracker
         public override int LoadPriority() => 9999;
         private readonly WebSocketServer _wss = new WebSocketServer(11420);
         ProfileStorageServer temp = new ProfileStorageServer();
-        string[] StyleValues = new string[] { "Classic", "Modern" };
+        readonly string[] StyleValues = new string[] { "Classic", "Modern" };
+        readonly string[] ColorValues = new string[] { "Default", "Red", "Green", "Blue", "Crimson", "Dark Red", "Pink", "Light Pink", "Hot Pink", "Orange", "Dark Orange", "Yellow", "Gold", "Purple", "Medium Purple", "Indigo", "Lime", "Chartreuse", "Yellow Green", "Turqoise", "Steel Blue", "Navy" };
         internal static HKTracker Instance;
-        
+
         public bool ToggleButtonInsideMenu => true;
 
         /// <summary>
@@ -37,7 +38,6 @@ namespace HKTracker
         {
             Instance = this;
             Log("Initializing PlayerDataDump");
-
             //Setup websockets server
             _wss.AddWebSocketService<SocketServer>("/playerData", ss =>
             {
@@ -53,7 +53,9 @@ namespace HKTracker
             _wss.AddWebSocketService<ProfileStorageServer>("/ProfileStorage", ss => {
                 GlobalSettings.StyleEvent += ss.OnStyleEvent;
                 GlobalSettings.PresetEvent += ss.OnPresetEvent;
-                GlobalSettings.GlowEvent += ss.onGlowEvent;
+                GlobalSettings.GlowEvent += ss.OnGlowEvent;
+                GlobalSettings.EquipColorEvent += ss.OnEquipColorEvent;
+                GlobalSettings.GaveColorEvent += ss.OnGaveColorEvent;
             });
 
             _wss.Start();
@@ -83,6 +85,22 @@ namespace HKTracker
                     },
                     Saver = opt => GS.TrackerGlow = (GlobalSettings.BorderGlow)opt,
                     Loader = () => (int)GS.TrackerGlow
+                },
+                new IMenuMod.MenuEntry
+                {
+                    Name = "Equip Item Color",
+                    Description = null,
+                    Values = ColorValues,
+                    Saver = opt => GS.EquipColor = (GlobalSettings.Color)opt,
+                    Loader = () => (int)GS.EquipColor
+                },
+                new IMenuMod.MenuEntry
+                {
+                    Name = "Used Key Color",
+                    Description= null,
+                    Values = ColorValues,
+                    Saver= opt => GS.GaveColor = (GlobalSettings.Color)opt,
+                    Loader = () => (int)GS.GaveColor
                 },
                 new IMenuMod.MenuEntry
                 {

@@ -2028,6 +2028,21 @@
     "zoteStatueWallBroken": false,
     "seenGGWastes": false,
     "ordealAchieved": false,
-    "CurrentMaxHealth": 5
+    "CurrentMaxHealth": 5,
+    "FullNail": false,
+    "canDownslash": false,
+    "canSideslashLeft": false,
+    "canSideslashRight": false,
+    "canUpslash": false,
+    "swim": false,
+    "elevatorPass": false,
+    "DuplicateDreamer": false,
+    "canFocus": false,
+    "canDashRight": false,
+    "canDashLeft": false,
+    "hasSuperdashRight": false,
+    "hasSuperdashLeft": false,
+    "hasWalljumpRight": false,
+    "hasWalljumpLeft":  false
   }
 }

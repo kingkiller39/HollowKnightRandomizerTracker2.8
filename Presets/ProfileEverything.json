@@ -207,6 +207,7 @@
       "items": [
         "hasDreamNail",
         "hasDreamGate",
+        "charmSlots",
         "flamesCollected",
         "unlockedCompletionRate",
         "hasGodfinder",
