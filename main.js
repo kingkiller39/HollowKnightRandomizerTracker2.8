@@ -1174,6 +1174,7 @@ $(document).ready(function () {
 
                                 if (data[name.replace('got', 'equipped')] && !img.hasClass('equipped')) {
                                     img.addClass('equipped');
+                                    $(id).css("box-shadow", "");
                                     img.parent().addClass('jello-horizontal');
                                 } else if (!data[name.replace('got', 'equipped')] && img.hasClass('equipped')) {
                                     img.removeClass('equipped');
