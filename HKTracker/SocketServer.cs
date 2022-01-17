@@ -27,6 +27,7 @@ namespace HKTracker
         public static bool RandomizeSplitClaw = false;
         public static bool RandomizeCDash = false;
         public static readonly string RandoTrackLogFile = Path.Combine(Application.persistentDataPath, "Randomizer 4", "Recent", "TrackerLog.txt");
+        public static readonly string RandoSettingsLogFile = Path.Combine(Application.persistentDataPath, "Randomizer 4", "Recent", "settings.txt");
         public void Broadcast(string s)
         {
             Sessions.Broadcast(s);
@@ -346,10 +347,16 @@ namespace HKTracker
             RandomizeSplitDash = false;
             RandomizeSplitClaw = false;
             RandomizeCDash = false;
-
-            if (File.Exists(RandoTrackLogFile))
+            var settingFile = RandoTrackLogFile;
+            if (File.Exists(RandoSettingsLogFile))
             {
-                using (FileStream fs = new FileStream(RandoTrackLogFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                settingFile = RandoSettingsLogFile;
+            }
+
+
+            if (File.Exists(settingFile))
+            {
+                using (FileStream fs = new FileStream(settingFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     using (var reader = new StreamReader(fs))
                     {
