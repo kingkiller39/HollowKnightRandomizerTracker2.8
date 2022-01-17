@@ -1055,6 +1055,7 @@ $(document).ready(function () {
 
     function getPlayerData() {
         console.log("Refreshing data");
+        $("*").css("box-shadow", "");
         $(".selected").removeClass("selected");
         $(".equipped").removeClass("equipped");
         $(".multiple").removeClass("multiple");
@@ -1700,8 +1701,10 @@ $(document).ready(function () {
     function setMultipleSelected(has, id) {
         if (has && !$(id).hasClass('multiple'))
             $(id).addClass('multiple').parent().removeClass('hideIfSet');
-        else if (!has && $(id).hasClass('multiple'))
+        else if (!has && $(id).hasClass('multiple')) {
             $(id).removeClass('multiple').parent().addClass('hideIfSet');
+            $(id).css("box-shadow", "");
+        }
     }
 
     function BorderGlowModern() {
