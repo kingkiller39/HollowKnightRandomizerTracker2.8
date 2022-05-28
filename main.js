@@ -126,7 +126,7 @@ $(document).ready(function () {
             connect();
         }
 
-    } else if (urlConfig == undefined || urlConfig == null || !usingOBS) {
+    } else if ((urlConfig == undefined || urlConfig == null) && !usingOBS) {
         $('body').css('background-color', '#000000');
         $('#initialSettingsDialog').show().dialog({
             width: 500,
