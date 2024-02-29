@@ -76,7 +76,9 @@
     <Compile Include="GlobalSettings.cs" />
     <Compile Include="ProfileStorageServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueuingWebSocketBehavior.cs" />
     <Compile Include="SocketServer.cs" />
+    <Compile Include="UnityMainThreadTaskScheduler.cs" />
     <Reference Include="UnityEngine">
       <HintPath>UnityEngine.dll</HintPath>
     </Reference>

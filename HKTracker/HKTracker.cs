@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Modding;
 using WebSocketSharp.Server;
-using WebSocketSharp;
 using System.Reflection;
 
 namespace HKTracker
@@ -20,7 +17,10 @@ namespace HKTracker
         public void OnLoadGlobal(GlobalSettings s) => GS = s;
         public override int LoadPriority() => 9999;
         private readonly WebSocketServer _wss = new WebSocketServer(11420);
-        ProfileStorageServer temp = new ProfileStorageServer();
+        /// <summary>
+        /// Used by websocket OnMessage callbacks to run tasks on the main game thread.
+        /// </summary>
+        internal UnityMainThreadTaskScheduler mainThreadScheduler;
         readonly string[] StyleValues = new string[] { "Classic", "Modern" };
         readonly string[] ColorValues = new string[] { "Default", "Red", "Green", "Blue", "Crimson", "Dark Red", "Pink", "Light Pink", "Hot Pink", "Orange", "Dark Orange", "Yellow", "Gold", "Purple", "Medium Purple", "Indigo", "Lime", "Chartreuse", "Yellow Green", "Turqoise", "Steel Blue", "Navy" };
         internal static HKTracker Instance;
@@ -37,30 +37,18 @@ namespace HKTracker
         public override void Initialize()
         {
             Instance = this;
+            mainThreadScheduler = new UnityMainThreadTaskScheduler();
+
             Log("Initializing PlayerDataDump");
             //Setup websockets server
-            _wss.AddWebSocketService<SocketServer>("/playerData", ss =>
-            {
-                ModHooks.NewGameHook += ss.NewGame;
-                ModHooks.AfterSavegameLoadHook += ss.LoadSave;
-                On.GameMap.Start += ss.gameMapStart;
-                ModHooks.SetPlayerBoolHook += ss.EchoBool;
-                ModHooks.SetPlayerIntHook += ss.EchoInt;
-                ModHooks.ApplicationQuitHook += ss.OnQuit;
-            });
+            _wss.AddWebSocketService<SocketServer>("/playerData");
 
             //Setup ProfileStorage Server
-            _wss.AddWebSocketService<ProfileStorageServer>("/ProfileStorage", ss => {
-                GlobalSettings.StyleEvent += ss.OnStyleEvent;
-                GlobalSettings.PresetEvent += ss.OnPresetEvent;
-                GlobalSettings.GlowEvent += ss.OnGlowEvent;
-                GlobalSettings.EquipColorEvent += ss.OnEquipColorEvent;
-                GlobalSettings.GaveColorEvent += ss.OnGaveColorEvent;
-            });
+            _wss.AddWebSocketService<ProfileStorageServer>("/ProfileStorage");
 
             _wss.Start();
             Log("Initialized PlayerDataDump");
-            
+
         }
         public List<IMenuMod.MenuEntry> GetMenuData(IMenuMod.MenuEntry? toggleButtonEntry)
         {
@@ -116,7 +104,7 @@ namespace HKTracker
                         "Minimal Right",
                         "Rando Racing"
                     },
-                    
+
                     Saver = opt => GS.TrackerProfile = (GlobalSettings.Profile)opt,
                     Loader = () => (int)GS.TrackerProfile
                 }
@@ -131,6 +119,7 @@ namespace HKTracker
             _wss.Stop();
             _wss.RemoveWebSocketService("/playerData");
             _wss.RemoveWebSocketService("/ProfileStorage");
+            mainThreadScheduler.Dispose();
         }
     }
 }
