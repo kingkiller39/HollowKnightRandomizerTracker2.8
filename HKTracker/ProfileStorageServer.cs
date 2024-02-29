@@ -4,11 +4,10 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 using WebSocketSharp;
-using WebSocketSharp.Server;
 
 namespace HKTracker
 {
-    internal class ProfileStorageServer : WebSocketBehavior
+    internal class ProfileStorageServer : QueuingWebSocketBehavior
     {
         Dictionary<string, string> HexColor = new Dictionary<string, string>
         {
@@ -53,7 +52,7 @@ namespace HKTracker
                 string[] temp = e.Data.Split('|');
                 if (int.TryParse(temp[1], out int profileId))
                 {
-                    Send(profileId + "|" + GetProfile(profileId));
+                    QueuedSend(profileId + "|" + GetProfile(profileId));
                 }
             } else if (e.Data.StartsWith("save"))
             {
@@ -81,7 +80,7 @@ namespace HKTracker
                 OnGaveColorEvent();
             } else
             {
-                Send("load|int,save|int|{data}");
+                QueuedSend("load|int,save|int|{data}");
             }
         }
 
@@ -132,29 +131,29 @@ namespace HKTracker
         public void OnStyleEvent()
         {
             HKTracker.Instance.LogDebug("sending: " + "Style|" + HKTracker.GS.TrackerStyle);
-            Send("Style|" + HKTracker.GS.TrackerStyle);
+            QueuedSend("Style|" + HKTracker.GS.TrackerStyle);
         }
         public void OnPresetEvent()
         {
             HKTracker.Instance.LogDebug("sending: " + "Preset|" + HKTracker.GS.TrackerProfile);
-            Send("Preset|" + HKTracker.GS.TrackerProfile);
+            QueuedSend("Preset|" + HKTracker.GS.TrackerProfile);
         }
         public void OnGlowEvent()
         {
             HKTracker.Instance.LogDebug("sending: " + "BorderGlow|" + HKTracker.GS.TrackerGlow);
-            Send("BorderGlow|" + HKTracker.GS.TrackerGlow);
+            QueuedSend("BorderGlow|" + HKTracker.GS.TrackerGlow);
         }
         public void OnEquipColorEvent()
         {
             HexColor.TryGetValue(HKTracker.GS.EquipColor.ToString(), out string temp);
             HKTracker.Instance.LogDebug("sending: " + "EquipColor|" + temp);
-            Send("EquipColor|" + temp);
+            QueuedSend("EquipColor|" + temp);
         }
         public void OnGaveColorEvent()
         {
             HexColor.TryGetValue(HKTracker.GS.GaveColor.ToString(), out string temp);
             HKTracker.Instance.LogDebug("sending: " + "GaveColor|" + temp);
-            Send("GaveColor|" + temp);
+            QueuedSend("GaveColor|" + temp);
         }
     }
 }

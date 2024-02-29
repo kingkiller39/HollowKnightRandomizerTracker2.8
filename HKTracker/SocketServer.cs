@@ -3,12 +3,11 @@ using System.Linq;
 using System.IO;
 using Modding;
 using WebSocketSharp;
-using WebSocketSharp.Server;
 using UnityEngine;
 using Newtonsoft.Json;
 namespace HKTracker
 {
-    internal class SocketServer : WebSocketBehavior
+    internal class SocketServer : QueuingWebSocketBehavior
     {
         public SocketServer()
         {
@@ -40,13 +39,13 @@ namespace HKTracker
             switch (e.Data)
             {
                 case "mods":
-                    Send(JsonUtility.ToJson(ModHooks.LoadedModsWithVersions));
+                    QueuedSend(JsonUtility.ToJson(ModHooks.LoadedModsWithVersions));
                     break;
                 case "version":
-                    Send($"{{ \"version\":\"{HKTracker.Instance.GetVersion()}\" }}");
+                    QueuedSend($"{{ \"version\":\"{HKTracker.Instance.GetVersion()}\" }}");
                     break;
                 case "json":
-                    Send(GetJson());
+                    QueuedSend(GetJson());
                     GetNail();
                     GetDash();
                     GetClaw();
@@ -76,7 +75,7 @@ namespace HKTracker
                     }
                     else
                     {
-                        Send("mods,version,json,bool|{var},int|{var}");
+                        QueuedSend("mods,version,json,bool|{var},int|{var}");
                     }
                     break;
             }
@@ -110,7 +109,7 @@ namespace HKTracker
         public void SendMessage(string var, string value)
         {
             if (State != WebSocketState.Open) return;
-            Send(new Row(var, value).ToJsonElementPair);
+            QueuedSend(new Row(var, value).ToJsonElementPair);
         }
 
         public void LoadSave(SaveGameData data)
