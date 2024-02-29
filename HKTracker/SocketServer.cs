@@ -96,6 +96,7 @@ namespace HKTracker
             ModHooks.SetPlayerIntHook -= EchoInt;
             On.GameMap.Start -= gameMapStart;
             ModHooks.ApplicationQuitHook -= OnQuit;
+
             HKTracker.Instance.Log("CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
         }
 
@@ -104,6 +105,13 @@ namespace HKTracker
         protected override void OnOpen()
         {
             HKTracker.Instance.Log("OPEN");
+
+            ModHooks.NewGameHook += NewGame;
+            ModHooks.AfterSavegameLoadHook += LoadSave;
+            ModHooks.SetPlayerBoolHook += EchoBool;
+            ModHooks.SetPlayerIntHook += EchoInt;
+            On.GameMap.Start += gameMapStart;
+            ModHooks.ApplicationQuitHook += OnQuit;
         }
 
         public void SendMessage(string var, string value)

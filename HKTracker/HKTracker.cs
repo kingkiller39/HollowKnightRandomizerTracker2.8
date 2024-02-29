@@ -39,28 +39,14 @@ namespace HKTracker
             Instance = this;
             Log("Initializing PlayerDataDump");
             //Setup websockets server
-            _wss.AddWebSocketService<SocketServer>("/playerData", ss =>
-            {
-                ModHooks.NewGameHook += ss.NewGame;
-                ModHooks.AfterSavegameLoadHook += ss.LoadSave;
-                On.GameMap.Start += ss.gameMapStart;
-                ModHooks.SetPlayerBoolHook += ss.EchoBool;
-                ModHooks.SetPlayerIntHook += ss.EchoInt;
-                ModHooks.ApplicationQuitHook += ss.OnQuit;
-            });
+            _wss.AddWebSocketService<SocketServer>("/playerData");
 
             //Setup ProfileStorage Server
-            _wss.AddWebSocketService<ProfileStorageServer>("/ProfileStorage", ss => {
-                GlobalSettings.StyleEvent += ss.OnStyleEvent;
-                GlobalSettings.PresetEvent += ss.OnPresetEvent;
-                GlobalSettings.GlowEvent += ss.OnGlowEvent;
-                GlobalSettings.EquipColorEvent += ss.OnEquipColorEvent;
-                GlobalSettings.GaveColorEvent += ss.OnGaveColorEvent;
-            });
+            _wss.AddWebSocketService<ProfileStorageServer>("/ProfileStorage");
 
             _wss.Start();
             Log("Initialized PlayerDataDump");
-            
+
         }
         public List<IMenuMod.MenuEntry> GetMenuData(IMenuMod.MenuEntry? toggleButtonEntry)
         {
@@ -116,7 +102,7 @@ namespace HKTracker
                         "Minimal Right",
                         "Rando Racing"
                     },
-                    
+
                     Saver = opt => GS.TrackerProfile = (GlobalSettings.Profile)opt,
                     Loader = () => (int)GS.TrackerProfile
                 }

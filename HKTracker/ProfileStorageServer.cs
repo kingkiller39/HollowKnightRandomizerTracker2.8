@@ -115,17 +115,25 @@ namespace HKTracker
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
+
             GlobalSettings.StyleEvent -= OnStyleEvent;
             GlobalSettings.PresetEvent -= OnPresetEvent;
             GlobalSettings.GlowEvent -= OnGlowEvent;
             GlobalSettings.EquipColorEvent -= OnEquipColorEvent;
             GlobalSettings.GaveColorEvent -= OnGaveColorEvent;
+
             HKTracker.Instance.Log("[ProfileStorage] CLOSE: Code:" + e.Code + ", Reason:" + e.Reason);
         }
 
         protected override void OnOpen()
         {
             HKTracker.Instance.Log("[ProfileStorage] OPEN");
+
+            GlobalSettings.StyleEvent += OnStyleEvent;
+            GlobalSettings.PresetEvent += OnPresetEvent;
+            GlobalSettings.GlowEvent += OnGlowEvent;
+            GlobalSettings.EquipColorEvent += OnEquipColorEvent;
+            GlobalSettings.GaveColorEvent += OnGaveColorEvent;
         }
 
         public void OnStyleEvent()
