@@ -5,6 +5,7 @@ using Modding;
 using WebSocketSharp;
 using UnityEngine;
 using Newtonsoft.Json;
+
 namespace HKTracker
 {
     internal class SocketServer : QueuingWebSocketBehavior
@@ -36,49 +37,52 @@ namespace HKTracker
         {
             if (State != WebSocketState.Open) return;
 
-            switch (e.Data)
+            HKTracker.Instance.mainThreadScheduler.Factory.StartNew(() =>
             {
-                case "mods":
-                    QueuedSend(JsonUtility.ToJson(ModHooks.LoadedModsWithVersions));
-                    break;
-                case "version":
-                    QueuedSend($"{{ \"version\":\"{HKTracker.Instance.GetVersion()}\" }}");
-                    break;
-                case "json":
-                    QueuedSend(GetJson());
-                    GetNail();
-                    GetDash();
-                    GetClaw();
-                    GetCDash();
-                    GetRandom();
-                    GetSwim();
-                    GetEPass();
-                    GetFocus();
-                    break;
-                default:
-                    if (e.Data.Contains('|'))
-                    {
-                        switch (e.Data.Split('|')[0])
+                switch (e.Data)
+                {
+                    case "mods":
+                        QueuedSend(JsonUtility.ToJson(ModHooks.LoadedModsWithVersions));
+                        break;
+                    case "version":
+                        QueuedSend($"{{ \"version\":\"{HKTracker.Instance.GetVersion()}\" }}");
+                        break;
+                    case "json":
+                        QueuedSend(GetJson());
+                        GetNail();
+                        GetDash();
+                        GetClaw();
+                        GetCDash();
+                        GetRandom();
+                        GetSwim();
+                        GetEPass();
+                        GetFocus();
+                        break;
+                    default:
+                        if (e.Data.Contains('|'))
                         {
-                            case "bool":
-                                string b = PlayerData.instance.GetBool(e.Data.Split('|')[1]).ToString();
-                                SendMessage(e.Data.Split('|')[1], b);
-                                break;
-                            case "int":
-                                string i = PlayerData.instance.GetInt(e.Data.Split('|')[1]).ToString();
-                                SendMessage(e.Data.Split('|')[1], i);
-                                break;
-                            case "Exception":
-                                HKTracker.Instance.LogError("PlayerData contains invalid data at: " + e.Data.Split('|')[1]);
-                                break;
+                            switch (e.Data.Split('|')[0])
+                            {
+                                case "bool":
+                                    string b = PlayerData.instance.GetBool(e.Data.Split('|')[1]).ToString();
+                                    SendMessage(e.Data.Split('|')[1], b);
+                                    break;
+                                case "int":
+                                    string i = PlayerData.instance.GetInt(e.Data.Split('|')[1]).ToString();
+                                    SendMessage(e.Data.Split('|')[1], i);
+                                    break;
+                                case "Exception":
+                                    HKTracker.Instance.LogError("PlayerData contains invalid data at: " + e.Data.Split('|')[1]);
+                                    break;
+                            }
                         }
-                    }
-                    else
-                    {
-                        QueuedSend("mods,version,json,bool|{var},int|{var}");
-                    }
-                    break;
-            }
+                        else
+                        {
+                            QueuedSend("mods,version,json,bool|{var},int|{var}");
+                        }
+                        break;
+                }
+            });
         }
 
         protected override void OnError(WebSocketSharp.ErrorEventArgs e)
@@ -136,7 +140,6 @@ namespace HKTracker
 
         public bool EchoBool(string var, bool value)
         {
-            
             HKTracker.Instance.LogDebug($"EchoBool: {var} = {value}");
             if (var == "atBench" && value && !RandoAtBench)
             {

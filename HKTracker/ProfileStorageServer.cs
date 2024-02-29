@@ -64,20 +64,19 @@ namespace HKTracker
                 }
             } else if (e.Data.StartsWith("OBSGetPreset"))
             {
-                OnPresetEvent();
-                
+                HKTracker.Instance.mainThreadScheduler.Factory.StartNew(OnPresetEvent);
             } else if (e.Data.StartsWith("OBSGetStyle"))
             {
-                OnStyleEvent();
+                HKTracker.Instance.mainThreadScheduler.Factory.StartNew(OnStyleEvent);
             } else if (e.Data.StartsWith("OBSGetGlow"))
             {
-                OnGlowEvent();
+                HKTracker.Instance.mainThreadScheduler.Factory.StartNew(OnGlowEvent);
             } else if (e.Data.StartsWith("OBSGetEquipC"))
             {
-                OnEquipColorEvent();
+                HKTracker.Instance.mainThreadScheduler.Factory.StartNew(OnEquipColorEvent);
             } else if (e.Data.StartsWith("OBSGetGaveC"))
             {
-                OnGaveColorEvent();
+                HKTracker.Instance.mainThreadScheduler.Factory.StartNew(OnGaveColorEvent);
             } else
             {
                 QueuedSend("load|int,save|int|{data}");
